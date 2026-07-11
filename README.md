@@ -5,7 +5,7 @@ This repository collects notes, tooling, and extracted firmware artifacts for th
 ## Project Status
 
 - **MCU**: Artery AT32F403A (Cortex-M4F). Reference BSP, linker scripts, and peripheral headers are archived under `reference project/` and `artery_cortex-m4/`.
-- **OEM Firmware**: Decrypted flash images and Ghidra projects live in `firmware/`. Decompiled outputs (e.g. `dissassembled_v3_mem_map.c`) are the primary source material for renaming work.
+- **OEM Firmware**: Prefer **V0.29** clear image `firmware/decrypted_v0.29.bin` (from `RT_950Pro_V0.29_*.BTF` via `firmware/scripts/fwcrypt_io.py`). Legacy V0.18 remains as `firmware/decrypted.bin`. RE tooling notes: `docs/rizin_setup.md`, status: `docs/re_status.md`. Older Ghidra/C exports are low-trust; primary analysis is **radare2/iaito** (`firmware/RE/radare2/`).
 - **Peripherals**:
   - BK4829 RF transceivers: One on hardware SPI1, the second via bit-banged SPI on GPIOA.
   - SI4732 broadcast receiver: bit-banged I2C on PA8/PA9.

@@ -1,0 +1,47 @@
+│           0x080032a0      02eb8202       add.w r2, r2, r2, lsl 2
+│           0x080032a4      9340           lsls r3, r2
+│           0x080032a6      9c43           bics r4, r3
+│           0x080032a8      9140           lsls r1, r2
+│           0x080032aa      0c43           orrs r4, r1
+│           0x080032ac      c462           str r4, [r0, 0x2c]          ; arg1
+└           0x080032ae      70bd           pop {r4, r5, r6, pc}
+            ; CALL XREF from fcn.080033d8 @ 0x80034c2(x)
+            ; CALL XREF from fcn.08022f80 @ 0x8022fd6(x)
+┌ 10: fcn.080032b0 (int16_t arg1);
+│ `- args(r0)
+│           0x080032b0      8168           ldr r1, [r0, 8]             ; arg1
+│           0x080032b2      41f00801       orr r1, r1, 8
+│           0x080032b6      8160           str r1, [r0, 8]             ; arg1
+└           0x080032b8      7047           bx lr
+            ; CALL XREF from fcn.08013d88 @ 0x8013d9c(x)
+            ; CALL XREF from fcn.08013dc4 @ 0x8013dd8(x)
+            ; CALL XREF from fcn.08022f80 @ 0x8022ff8(x)
+┌ 24: fcn.080032ba (int16_t arg1, uint32_t arg2);
+│ `- args(r0, r1)
+│           0x080032ba      0029           cmp r1, 0                   ; arg2
+│       ┌─< 0x080032bc      04d0           beq 0x80032c8
+│       │   0x080032be      8168           ldr r1, [r0, 8]             ; arg1
+│       │   0x080032c0      41f4a001       orr r1, r1, 0x500000
+│       │   0x080032c4      8160           str r1, [r0, 8]             ; arg1
+│       │   0x080032c6      7047           bx lr
+│       │   ; CODE XREF from fcn.080032ba @ 0x80032bc(x)
+│       └─> 0x080032c8      8168           ldr r1, [r0, 8]             ; arg1
+│           0x080032ca      21f4a001       bic r1, r1, 0x500000
+│           0x080032ce      8160           str r1, [r0, 8]             ; arg1
+└           0x080032d0      7047           bx lr
+            ; CALL XREF from fcn.08022f80 @ 0x8022fe6(x)
+┌ 10: fcn.080032d2 (int16_t arg1);
+│ `- args(r0)
+│           0x080032d2      8168           ldr r1, [r0, 8]             ; arg1
+│           0x080032d4      41f00401       orr r1, r1, 4
+│           0x080032d8      8160           str r1, [r0, 8]             ; arg1
+└           0x080032da      7047           bx lr
+            ; CALL XREF from fcn.080033d8 @ 0x8003474(x)
+            ; CALL XREF from fcn.08022f80 @ 0x8022f98(x)
+┌ 18: fcn.080032dc (int16_t arg1);
+│ `- args(r0)
+│           0x080032dc      0021           movs r1, 0
+│           0x080032de      0160           str r1, [r0]                ; arg1
+│           0x080032e0      0171           strb r1, [r0, 4]            ; arg1
+│           0x080032e2      4171           strb r1, [r0, 5]            ; arg1
+│           0x080032e4      8160           str r1, [r0, 8]             ; arg1
