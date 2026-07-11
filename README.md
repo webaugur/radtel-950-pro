@@ -17,11 +17,13 @@ This repository collects notes, tooling, and extracted firmware artifacts for th
 
 ```
 .
-├── docs/                     # Markdown notes, pinout tables, function catalogue
-├── firmware/                 # Decompiled sources, decrypted binaries, Ghidra project
+├── docs/                     # Markdown notes, pinout, CPS teardown, function catalogue
+├── firmware/                 # Decrypted MCU images, RE (radare2/Ghidra), CPS decompile
 ├── reference project/        # Vendor AT32 reference firmware project
 ├── artery_cortex-m4/         # AT32 BSP / SDK manuals
 ```
+
+CPS (channel programming) teardown: **`docs/cps_teardown.md`** and artifacts under **`firmware/RE/cps/`**.
 
 
 ## Hardware Notes
