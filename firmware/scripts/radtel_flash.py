@@ -22,8 +22,9 @@ It does not send PROGRAM, UPDATE, or any 0xAA frame. The radio must be in
 USB update mode before a --commit run. The script then reproduces the
 captured handshake:
     1. ASCII "PROGRAMBT9000U" (expects ACK 0x06)
-    2. ASCII "UPDATE" (expects ACK 0x06)
-    3. CMD 0x42 (enter binary mode)
+    2. ASCII "UPDATE" (expects ACK 0x06). The radio then reboots onto
+       the update screen and drops bytes sent during that black screen.
+    3. CMD 0x42 (enter binary mode), repeated until the bootloader ACKs
     4. CMD 0x0A with payload "BOOTLOADER_V3"
     5. CMD 0x02 with static 32-byte metadata (model + signature)
     6. CMD 0x04 with payload 0x01 0x78
@@ -331,14 +332,34 @@ def flash_prepared(
 
     if resume and not (0 <= resume < plan.total_chunks):
         raise ValueError(f"resume chunk {resume} is outside 0..{plan.total_chunks - 1}")
-    with CDCFlasher(port, baudrate, timeout) as flasher:
+    flasher: Optional[CDCFlasher] = None
+    try:
+        flasher = CDCFlasher(port, baudrate, timeout)
         if not skip_handshake:
             note("PROGRAMBT9000U")
             flasher.send_ascii(ASCII_PROGRAM, "PROGRAM handshake")
             note("UPDATE")
             flasher.send_ascii(ASCII_UPDATE, "UPDATE handshake")
+            # EnUPDATE HandShake_0 sleeps 80 ms after the UPDATE ACK, on the
+            # same open port, before CMD 0x42. The radio is entering the
+            # update screen and drops a packet that arrives sooner. There is
+            # no other ready signal; the following 0x42 ACK is the one.
+            time.sleep(0.08)
         note("enter binary 0x42")
-        flasher.send_packet(CMD_ENTER_BINARY, 0x0000, b"")
+        # The OEM timer is 2 s, then up to 5 resends of the same frame.
+        last_error: Optional[BaseException] = None
+        for attempt in range(6):
+            try:
+                flasher.send_packet(CMD_ENTER_BINARY, 0x0000, b"")
+                last_error = None
+                break
+            except ProtocolError as exc:
+                last_error = exc
+                if attempt == 5:
+                    break
+                note(f"resend 0x42 ({attempt + 1})")
+        if last_error is not None:
+            raise ProtocolError(f"bootloader did not answer 0x42 ({last_error})")
         note("bootloader version 0x0A")
         flasher.send_packet(CMD_BOOT_VERSION, 0x0000, BOOT_VERSION_PAYLOAD)
         note("metadata 0x02")
@@ -354,6 +375,9 @@ def flash_prepared(
                 note(f"chunk {chunk_index + 1}/{plan.total_chunks}")
         note("finalise 0x45")
         flasher.send_packet(CMD_FINALISE, 0x0000, b"")
+    finally:
+        if flasher is not None:
+            flasher.close()
 
 
 def describe_plan(plan: FlashPlan) -> str:
