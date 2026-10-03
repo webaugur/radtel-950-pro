@@ -1,15 +1,14 @@
 # USB / COM captures
 
-Drop OEM CPS (Wine) or community-editor serial traces here for protocol work.
+OEM CPS (Wine) serial traces for RT-950 Pro protocol work. Prefer **usbmon** (Wine rejects PTY proxies).
 
-## 2026-10-03 — full CPS Read (CH340 / ttyUSB0)
+## Sessions
 
-| File | Role |
-|------|------|
-| `usbmon-read-20261003-074920.user.log` | Raw usbmon bus 2 text |
-| `serial-decoded-dev011.log` | Decoded HOST↔RADIO bytes (CPS session) |
-| `codeplug-read.bin` | Reassembled EEPROM/codeplug image from `R` reads |
-| `PROTOCOL_FROM_CAPTURE.md` | Protocol notes derived from this capture |
-| `serial_snoop.py` | PTY proxy (Wine rejects PTYs — prefer usbmon) |
+| Session | Artifacts |
+|---------|-----------|
+| First Read | `usbmon-read-20261003-074920.user.log`, `serial-decoded-dev011.log`, `codeplug-read.bin`, OEM `.dat` |
+| First Write | `usbmon-write-20261003-075558.user.log`, `serial-decoded-write-dev011.log` |
+| Florida Write | `usbmon-write-florida-20261003-075848.user.log`, `serial-decoded-write-florida-dev011.log` |
+| Florida Read | `usbmon-read-florida-20261003-075947.user.log`, `serial-decoded-read-florida-dev011.log`, `codeplug-read-florida.bin` |
 
-See `PROTOCOL_FROM_CAPTURE.md` for the wire format.
+Protocol summary: **`PROTOCOL_FROM_CAPTURE.md`**

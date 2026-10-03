@@ -66,3 +66,35 @@ Wine may remap `dosdevices/com1` → `/dev/ttyS0`. The launcher
 1. Map `codeplug-read.bin` offsets → `Channel` / zones / FunConfig (use CPS UI values + IL).
 2. Capture a **Write** (small change) to confirm host→radio block format.
 3. Implement `ProgrammingSession::read_codeplug` in `cps/crates/rt950-protocol`.
+
+## Block write (from live Write capture 2026-10-03)
+
+**Source:** `usbmon-write-20261003-075558` → `serial-decoded-write-dev011.log`
+
+Same session preamble as Read (`PROGRAMBT9000U` / `F` / `M` / `SEND…` → `0x06`).
+
+Then host streams payload with **no** `W`+address header observed:
+
+| Pattern | Detail |
+|---------|--------|
+| Data groups | **100 bytes** host → radio, then radio `0x06` |
+| USB chunking | typically `32 + 32 + 32 + 4` |
+| End | single byte **`E` (`0x45`)** after final ACK |
+| Volume (this run) | ~27 221 host bytes after `SEND` (~272 ACKs at 100-byte spacing) |
+
+**Open question (confirm with Florida dataset):** whether writes are always full-image streams vs sparse updates, and how address/region is implied (order after `SEND` vs bits inside `SEND`).
+
+
+## Confirmation — Florida dataset (write then read)
+
+| Capture | File |
+|---------|------|
+| Write | `usbmon-write-florida-20261003-075848` → `serial-decoded-write-florida-dev011.log` |
+| Read | `usbmon-read-florida-20261003-075947` → `serial-decoded-read-florida-dev011.log` / `codeplug-read-florida.bin` |
+
+**Write confirmed:** after `SEND`, host sends **27200** bytes in **272 × 100-byte** groups (USB `32+32+32+4`), each ACKed `0x06`, then **`E`**. Same as first write session.
+
+**Read confirmed:** **271** × `R addr_be16 0x80` with echo+128 payload; addresses step by `0x80` through the main map. Rebuilt image **54016** bytes.
+
+**Dataset change confirmed:** `codeplug-read-florida.bin` differs from first `codeplug-read.bin` in **11314 / 54016** bytes (not a trivial noop).
+
