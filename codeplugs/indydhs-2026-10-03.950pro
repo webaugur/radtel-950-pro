@@ -18016,8 +18016,8 @@
         "ssbName": "HFGCS11175"
       },
       {
-        "fmFreq": 8930,
-        "fmName": "GREATEST HIT",
+        "fmFreq": 8870,
+        "fmName": "WICR",
         "amFreq": 5000,
         "amName": "WWV 5",
         "ssbFreq": 8992,
@@ -18026,8 +18026,8 @@
         "ssbName": "HFGCS8992"
       },
       {
-        "fmFreq": 9150,
-        "fmName": "BBC4",
+        "fmFreq": 8930,
+        "fmName": "WJEL",
         "amFreq": 10000,
         "amName": "WWV 10",
         "ssbFreq": 11175,
@@ -18036,8 +18036,8 @@
         "ssbName": "HFGCS11175"
       },
       {
-        "fmFreq": 9890,
-        "fmName": "CAPITAL",
+        "fmFreq": 9010,
+        "fmName": "WFYI",
         "amFreq": 15000,
         "amName": "WWV 15",
         "ssbFreq": 15016,
@@ -18046,8 +18046,8 @@
         "ssbName": "HFGCS15016"
       },
       {
-        "fmFreq": 10110,
-        "fmName": "CLASSIC FM",
+        "fmFreq": 9090,
+        "fmName": "WBDG",
         "amFreq": 9410,
         "amName": "BBC 9410",
         "ssbFreq": 27470,
@@ -18056,8 +18056,8 @@
         "ssbName": "CB 470"
       },
       {
-        "fmFreq": 10200,
-        "fmName": "PULSE",
+        "fmFreq": 9110,
+        "fmName": "WEDM",
         "amFreq": 12095,
         "amName": "BBC 12095",
         "ssbFreq": 3865,
@@ -18066,8 +18066,8 @@
         "ssbName": "HAM 3865"
       },
       {
-        "fmFreq": 10270,
-        "fmName": "HEART YORKSH",
+        "fmFreq": 9150,
+        "fmName": "WRFT",
         "amFreq": 9395,
         "amName": "DW 9395",
         "ssbFreq": 14300,
@@ -18076,8 +18076,8 @@
         "ssbName": "HAM MARIT"
       },
       {
-        "fmFreq": 10580,
-        "fmName": "CAPITAL YORK",
+        "fmFreq": 9310,
+        "fmName": "WIBC",
         "amFreq": 810,
         "amName": "WSYW 810",
         "ssbFreq": 2872,
@@ -18086,8 +18086,8 @@
         "ssbName": "SHANWICK"
       },
       {
-        "fmFreq": 10710,
-        "fmName": "BBC YORK",
+        "fmFreq": 9470,
+        "fmName": "WFBQ",
         "amFreq": 1310,
         "amName": "WTLC 1310",
         "ssbFreq": 2899,
@@ -18096,8 +18096,8 @@
         "ssbName": "GANDER"
       },
       {
-        "fmFreq": 0,
-        "fmName": "",
+        "fmFreq": 9630,
+        "fmName": "WYHX",
         "amFreq": 1590,
         "amName": "WNTS 1590",
         "ssbFreq": 2962,
@@ -18106,8 +18106,8 @@
         "ssbName": "NEW YORK"
       },
       {
-        "fmFreq": 0,
-        "fmName": "",
+        "fmFreq": 10330,
+        "fmName": "WOLT",
         "amFreq": 1430,
         "amName": "WXNT 1430",
         "ssbFreq": 5450,
@@ -18116,8 +18116,8 @@
         "ssbName": "RAF VOLMET"
       },
       {
-        "fmFreq": 0,
-        "fmName": "",
+        "fmFreq": 10570,
+        "fmName": "WYXB",
         "amFreq": 950,
         "amName": "WXLW 950",
         "ssbFreq": 5616,
@@ -18126,8 +18126,8 @@
         "ssbName": "GANDER"
       },
       {
-        "fmFreq": 0,
-        "fmName": "",
+        "fmFreq": 10790,
+        "fmName": "WNTR",
         "amFreq": 1500,
         "amName": "WBRI 1500",
         "ssbFreq": 6622,
@@ -18136,8 +18136,8 @@
         "ssbName": "NEW YORK"
       },
       {
-        "fmFreq": 0,
-        "fmName": "",
+        "fmFreq": 8810,
+        "fmName": "WNAP",
         "amFreq": 1260,
         "amName": "WNDE 1260",
         "ssbFreq": 8825,
@@ -18146,8 +18146,8 @@
         "ssbName": "NEW YORK"
       },
       {
-        "fmFreq": 0,
-        "fmName": "",
+        "fmFreq": 9270,
+        "fmName": "W224DI",
         "amFreq": 1070,
         "amName": "WFNI 1070",
         "ssbFreq": 8864,
@@ -18156,8 +18156,8 @@
         "ssbName": "GANDER"
       },
       {
-        "fmFreq": 0,
-        "fmName": "",
+        "fmFreq": 9350,
+        "fmName": "W228CX",
         "amFreq": 1520,
         "amName": "WSVX 1520",
         "ssbFreq": 11396,
