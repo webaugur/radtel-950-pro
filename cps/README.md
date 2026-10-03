@@ -27,7 +27,8 @@ CARGO_BUILD_JOBS=1 cargo build -p rt950-cps
 ## What the window does
 
 - **Open / Save .dat** — `dat-export` / `dat-import` (OEM `KDH.RadioData`)
-- **Read radio / Write radio** — `read-dat` / `write-dat` on the port field (write asks first)
+- **Read radio** — asks for a new `.dat` path, then `read-dat` (no existing file required)
+- **Write radio** — `write-dat` on the port field (asks first)
 - Zones are an even split of the channel list (990 / 15 = 66 on the Florida file)
 - Dark mode and a shell log (stderr)
 

@@ -150,28 +150,25 @@ impl CpsApp {
     }
 
     fn read_radio(&mut self) {
-        let Some(template) = self.template.clone() else {
-            self.status = "Open a .dat first so Read has a channel layout.".into();
+        let Some(path) = rfd::FileDialog::new()
+            .add_filter("CPS data", &["dat"])
+            .set_file_name("RT-950-read.dat")
+            .save_file()
+        else {
             return;
         };
-        let out = std::env::temp_dir().join("rt950-cps-read.dat");
         let lines = vec![
             format!("port {}", self.port),
-            format!(
-                "read-dat {} {}",
-                shell_quote(&out),
-                shell_quote(&template)
-            ),
+            format!("read-dat {}", shell_quote(&path)),
         ];
-        self.status = "Reading radio…".into();
+        self.status = format!("Reading radio into {}…", path.display());
         if let Err(e) = self.run(&lines) {
             self.status = e;
             return;
         }
-        self.load_dat(&out);
+        self.load_dat(&path);
         if self.doc.is_some() {
-            self.template = Some(template);
-            self.status = format!("Read from {}", self.port);
+            self.status = format!("Read {} into {}", self.port, path.display());
         }
     }
 
