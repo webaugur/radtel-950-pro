@@ -14,22 +14,37 @@ fi
 install_launcher() {
     ROOT=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
     if [ -x "$ROOT/rt950-cps" ]; then
-        BIN=$ROOT/rt950-cps
-    elif [ -x "$ROOT/../../cps/target/release/rt950-cps" ]; then
-        BIN=$(CDPATH= cd -- "$ROOT/../../cps/target/release" && pwd)/rt950-cps
-    elif [ -x "$ROOT/../../cps/target/debug/rt950-cps" ]; then
-        BIN=$(CDPATH= cd -- "$ROOT/../../cps/target/debug" && pwd)/rt950-cps
+        SRC=$ROOT
     else
-        echo "No rt950-cps binary next to setup.sh or in the repo build." >&2
+        REPO=$(CDPATH= cd -- "$ROOT/../.." && pwd)
+        SRC=$REPO/dist/rt950-usb
+    fi
+    if [ ! -x "$SRC/rt950-cps" ]; then
+        echo "Missing $SRC/rt950-cps. Run tools/usb-stick/stage.sh first." >&2
         exit 1
     fi
-    ICON=$ROOT/rt950-cps.svg
+    APP=$HOME/Applications/rt950pro
+    mkdir -p "$HOME/Applications" "$HOME/bin"
+    if [ "$(readlink -f "$SRC")" != "$(readlink -f "$APP" 2>/dev/null || echo "$APP")" ]; then
+        rm -rf "$APP"
+        cp -a "$SRC" "$APP"
+    fi
+    for name in run.sh setup.sh uninstall.sh rt950-cps.svg; do
+        if [ -f "$ROOT/$name" ]; then
+            cp "$ROOT/$name" "$APP/$name"
+        fi
+    done
+    chmod 755 "$APP/run.sh" "$APP/setup.sh" "$APP/rt950-cps"
+    if [ -f "$APP/uninstall.sh" ]; then
+        chmod 755 "$APP/uninstall.sh"
+    fi
+    ln -sfn "$APP/run.sh" "$HOME/bin/rt950pro"
+    BIN=$APP/rt950-cps
+    ICON=$APP/rt950-cps.svg
     if [ ! -f "$ICON" ]; then
         echo "Missing icon: $ICON" >&2
         exit 1
     fi
-    BIN=$(readlink -f "$BIN")
-    ICON=$(readlink -f "$ICON")
     APP_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/applications
     MIME_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/mime/packages
     ICON_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable
@@ -89,8 +104,12 @@ EOF
         "$HOME/Documents/IndianaDell/scripts/gnome/sync-desktop-icons.sh" --no-rename --file "$DESKTOP"
         "$HOME/Documents/IndianaDell/scripts/gnome/sync-desktop-icons.sh" --no-rename --file "$HOME/Applications/RT-950 CPS.desktop"
     fi
+    echo "Installed: $APP"
+    echo "Command: $HOME/bin/rt950pro"
+    echo "Menu: $APP_DIR/rt950-cps.desktop"
     echo "Launcher: $HOME/Applications/RT-950 CPS.desktop"
     echo "Opens .950pro files with $BIN"
+    echo "Remove this install with: sh $APP/uninstall.sh"
 }
 
 if [ "${SETUP_LAUNCHER_ONLY:-}" = 1 ]; then
@@ -115,9 +134,10 @@ It will ask for your password, then do two things:
 
 It then registers this copy of the CPS, without sudo:
 
-3. Install a launcher and the .950pro file type for this user.
-   Double-clicking a .950pro file opens this program.
-   The launcher is written to the application menu and to ~/Applications.
+3. Copy this program to ~/Applications/rt950pro.
+   Link ~/bin/rt950pro to its run.sh.
+   Install the menu entry and the .950pro file type for this user.
+   Double-clicking a .950pro file opens that copy.
 
 Nothing is written to the radio. Answering no leaves the machine as it is.
 
