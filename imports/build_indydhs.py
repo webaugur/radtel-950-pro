@@ -23,6 +23,12 @@ county list. Trunked deployable control channels and talkgroups have no
 conventional carrier, so they are omitted. 6.25 kHz MED interstitials are not
 in the NIFOG 2.02 channel tables used here.
 
+Empty slots that match a published neighbour plan are filled in place.
+Zone 1 takes the 16 analogue PMR446 channels (ECC/DEC/(15)05), transmit on.
+Rail takes Canadian AAR 2-6. VHF Interop takes Canadian SAR-IF and the
+TB-8 220 MHz mutual-aid pairs. Zone 7 takes the three Canadian 800 MHz
+interop rows that fit (I-CALL, its direct, ITAC-1).
+
 The radio transmits FM only. Analog NIFOG rows are transmit-enabled (flag 2).
 P25 rows (8K10F1E, NAC $293 / $F7E or $68F) are stored receive-only (flag 0):
 an analog transmission is the wrong emission on those channels. NOAA weather
@@ -423,6 +429,66 @@ def build(doc: dict) -> dict:
         + fill(blank, p25_rest, mod=0, wide=1)
         + fill(blank, itinerant, rxqt="156.7", txqt="156.7", mod=2, wide=1, power=2)
     )
+
+    # ECC/DEC/(15)05: analogue PMR446, 12.5 kHz, lowest carrier 446.00625 MHz,
+    # 16 channels. Digital 6.25 kHz rows are not a mode this radio can store.
+    # Transmit on. txPower 2 is Low. The rule is 500 mW ERP; Low is not that measurement.
+    pmr: list[tuple[str, float, float]] = []
+    for n in range(16):
+        mhz = 446.00625 + n * 0.0125
+        pmr.append((f"PMR {n + 1:02d}", mhz, mhz))
+    if f"{pmr[0][1]:.5f}" != "446.00625" or f"{pmr[-1][1]:.5f}" != "446.19375":
+        raise SystemExit(f"PMR446 plan drifted: {pmr[0]} {pmr[-1]}")
+    personal = personal + fill(blank, pmr, mod=2, wide=1, power=2)
+
+    # NIFOG railroad page: AAR channels 2-6 are used in Canada only.
+    # TB-8 also names 159.81, 159.93 and 160.05 as Canadian public-safety
+    # simplex, and says they are not yet available nationwide. One memory each.
+    ca_rail = [
+        ("CA AAR 02", 159.8100, 159.8100),
+        ("CA AAR 03", 159.9300, 159.9300),
+        ("CA AAR 04", 160.0500, 160.0500),
+        ("CA AAR 05", 160.1850, 160.1850),
+        ("CA AAR 06", 160.2000, 160.2000),
+    ]
+    rail = rail + fill(blank, ca_rail, mod=2, wide=1)
+
+    # ISED SAR-IF: 149.080 simplex, 11K0F3E, CTCSS 156.7 both ways.
+    # TB-8 Table 1: 220 MHz mutual-aid pairs, 5 kHz. Stored narrow (12.5 kHz).
+    # Mobile RX is the base frequency. Mobile TX is the mobile frequency.
+    ca_vhf = [("CA SAR-IF", 149.0800, 149.0800)]
+    ca_220 = [
+        ("CA220 161", 220.8025, 221.8025),
+        ("CA220 162", 220.8075, 221.8075),
+        ("CA220 163", 220.8125, 221.8125),
+        ("CA220 164", 220.8175, 221.8175),
+        ("CA220 165", 220.8225, 221.8225),
+        ("CA220 166", 220.8275, 221.8275),
+        ("CA220 167", 220.8325, 221.8325),
+        ("CA220 168", 220.8375, 221.8375),
+        ("CA220 169", 220.8425, 221.8425),
+        ("CA220 170", 220.8475, 221.8475),
+        ("CA220 181", 220.9025, 221.9025),
+        ("CA220 182", 220.9075, 221.9075),
+        ("CA220 183", 220.9125, 221.9125),
+        ("CA220 184", 220.9175, 221.9175),
+        ("CA220 185", 220.9225, 221.9225),
+    ]
+    vhf_rows = (
+        vhf_rows
+        + fill(blank, ca_vhf, rxqt="156.7", txqt="156.7", mod=2, wide=1)
+        + fill(blank, ca_220, mod=2, wide=1)
+    )
+
+    # ISED TB-8 Table 3. Canadian 800 MHz interop, 25 kHz, not the US 8TAC set.
+    # Three slots remain in this zone, so only the calling pair and ITAC-1 fit.
+    # The bulletin does not print a CTCSS tone.
+    ca_800 = [
+        ("CA I-CALL", 866.0125, 821.0125),
+        ("CA ICALL D", 866.0125, 866.0125),
+        ("CA ITAC-1", 866.5125, 821.5125),
+    ]
+    band78_rows = band78_rows + fill(blank, ca_800, mod=2, wide=0)
 
     zones = [
         ("CB MURS FRS", personal),
