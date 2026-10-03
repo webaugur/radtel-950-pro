@@ -1,10 +1,8 @@
 # RT-950 / 950Pro CPS (Rust UI)
 
-`eframe` / `egui` front end. One binary opens and saves a `.950pro` file, draws
-the map, and sends the boot picture. A `.dat` file or a radio read/write calls
-`mono RadtelDat.exe` only when that helper and `BT-RT950PRO_CPS.exe` are
-present. If they are not, that step is skipped and the window stays open.
-`firmware/scripts/radtel_cps.py` remains the terminal tool for `flash`. The
+`eframe` / `egui` front end. One binary opens and saves a `.950pro` file, reads
+a radio image, draws the map, and sends the boot picture. It does not launch
+another program. `firmware/scripts/radtel_cps.py` remains a terminal tool. The
 window does not start it.
 
 Layout: zone list, a short channel row (name, RX → TX, mode / bandwidth / power),
@@ -30,14 +28,12 @@ CARGO_BUILD_JOBS=1 cargo build -p rt950-cps
 ## What the window does
 
 - **Open / Save .950pro** — JSON in this process
-- **Open / Save .dat** — Mono `export` / `import` (OEM `KDH.RadioData`)
-- **Read radio** — asks for a new `.dat` path, then Mono `read` (no existing file required)
-- **Write radio** — Mono `write` on the port field (asks first)
-- **Boot picture** — Rust upload of a 24-bit 240×320 BMP (asks first)
+- **Read radio** — reads the 54016-byte image over the cable and saves a `.bin`
+- **Boot picture** — upload of a 24-bit 240×320 BMP (asks first)
 - Zones are an even split of the channel list (990 / 15 = 66 on the Florida file)
 - Dark mode and a transfer log
 
-Run it from the radtel repo so it can find `RadtelDat.exe` and the blank template:
+Run it from the radtel repo:
 
 ```bash
 cd ~/Documents/DragonSDR/webaugur/radtel-950-pro

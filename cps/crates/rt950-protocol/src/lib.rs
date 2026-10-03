@@ -1,15 +1,16 @@
 //! RT-950 / RT-950 Pro codeplug types and serial programming protocol.
 //!
-//! Codeplug block read/write is still the OEM `DoIt` path (`RadtelDat.exe`).
-//! Boot-picture upload is implemented here from the captured Import Image
-//! sequence. See `docs/captures/PROTOCOL_FROM_CAPTURE.md`.
+//! The codeplug image read and the boot-picture upload are in this crate.
+//! See `docs/captures/PROTOCOL_FROM_CAPTURE.md`.
 
 mod boot;
 mod codeplug;
 mod error;
+mod image;
 mod serial;
 
 pub use boot::{bmp_file_to_rgb565, upload_boot_picture, BOOT_PIXELS};
+pub use image::{read_image, IMAGE_SIZE};
 pub use codeplug::{
     empty_codeplug, AprsData, Channel, ChannelData, Codeplug, DtmfData, FreqModeData,
     FunConfigData, ModulationData,

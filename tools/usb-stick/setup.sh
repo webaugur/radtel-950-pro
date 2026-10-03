@@ -122,20 +122,13 @@ This prepares this Ubuntu machine to run the RT-950 CPS.
 
 It will ask for your password, then do two things:
 
-1. Install these packages if they are missing:
-     mono-runtime  mono-libraries
-   Mono runs RadtelDat.exe, which uses the OEM CPS program for a .dat
-   file and for reading or writing the radio. The window itself does
-   not need Python. Apt may download the packages from Ubuntu's
-   archives, and apt will show the package list and ask you to confirm.
-
-2. Add the user $USER to the dialout group.
+1. Add the user $USER to the dialout group.
    That lets this account open /dev/ttyUSB0, the radio programming cable.
    The new group is used after you log out and back in.
 
 It then registers this copy of the CPS, without sudo:
 
-3. Copy this program to ~/Applications/rt950pro.
+2. Copy this program to ~/Applications/rt950pro.
    Link ~/bin/rt950pro to its run.sh.
    Install the menu entry and the .950pro file type for this user.
    Double-clicking a .950pro file opens that copy.
@@ -154,7 +147,6 @@ case "$answer" in
         ;;
 esac
 
-sudo apt install mono-runtime mono-libraries
 sudo usermod -aG dialout "$USER"
 install_launcher
 
