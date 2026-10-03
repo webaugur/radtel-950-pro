@@ -1,5 +1,5 @@
 //! Logical codeplug matching OEM CPS / community editor domains.
-//! Field names follow `docs/cps_teardown.md` (`KDH.Channel`, `KDH.RadioData`).
+//! Field names follow `re/cps/cps_teardown.md` (`KDH.Channel`, `KDH.RadioData`).
 
 use serde::{Deserialize, Serialize};
 

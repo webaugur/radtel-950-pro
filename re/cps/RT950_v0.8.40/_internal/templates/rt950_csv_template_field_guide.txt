@@ -1,0 +1,9 @@
+RT-950 / RT-950Pro CSV Template Field Guide
+===========================================
+
+Use rt950_channels_template.csv for channel import/open.
+Use rt950_zones_template.csv from Edit > Zones > Import CSV.
+
+Channel columns: slot, rxFreq, txFreq, rxQT, txQT, signallingGroup, pttId, txPower, scram, learnFHSS, bandWide, encrypt, busyLockout, scanAdd, enableTx, rxModulation, fhssCode, chName.
+
+Zone columns: zone, zone_name. Keep zone_name to 16 characters for safest radio display compatibility.

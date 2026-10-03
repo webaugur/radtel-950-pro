@@ -17,6 +17,9 @@ echo "Building release rt950-cps"
 rm -rf "$DEST"
 mkdir -p "$DEST/codeplugs"
 cp "$REPO/cps/target/release/rt950-cps" "$DEST/rt950-cps"
+if [ -f "$REPO/docs/guide/RT-950-CPS.pdf" ]; then
+    cp "$REPO/docs/guide/RT-950-CPS.pdf" "$DEST/RT-950-CPS.pdf"
+fi
 cp "$SCRIPT_DIR/run.sh" "$DEST/run.sh"
 cp "$SCRIPT_DIR/setup.sh" "$DEST/setup.sh"
 cp "$SCRIPT_DIR/uninstall.sh" "$DEST/uninstall.sh"

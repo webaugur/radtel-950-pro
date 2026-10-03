@@ -1,6 +1,6 @@
-//! RT-950 CPS front end. One binary edits a `.950pro` file and sends the boot
-//! picture. It does not launch another program. A radio read does not yet
-//! produce a `.950pro` or a `.dat`.
+//! RT-950 CPS front end. One binary edits a `.950pro` file, reads and writes
+//! that document on the radio, and sends the boot picture. It does not launch
+//! another program.
 
 mod aprs;
 mod channels;
@@ -271,12 +271,51 @@ impl CpsApp {
 
     fn read_radio(&mut self) {
         self.kiss = None;
-        self.status = "Read cannot save a .950pro or a .dat yet.".into();
+        let port = self.port.clone();
+        self.status = format!("Reading the codeplug from {port}…");
+        match rt950_protocol::read_codeplug(&port, |msg| self.log_lines(msg)) {
+            Ok(mut doc) => {
+                let restored = restore_memory_transmit(&mut doc);
+                let n = doc
+                    .pointer("/channelData/channelList")
+                    .and_then(|v| v.as_array())
+                    .map(|list| list.len())
+                    .unwrap_or(0);
+                self.doc = Some(doc);
+                self.zone = 0;
+                self.selected = Some(0);
+                self.status = if restored == 0 {
+                    format!("Read {n} channels from {port}.")
+                } else {
+                    format!(
+                        "Read {n} channels from {port}. Restored FM transmit on {restored} memories."
+                    )
+                };
+            }
+            Err(e) => {
+                let status = format!("error: {e}");
+                self.log_lines(&status);
+                self.fail_status(status);
+            }
+        }
     }
 
     fn write_radio(&mut self) {
         self.kiss = None;
-        self.status = "The radio was not written.".into();
+        let Some(doc) = self.doc.clone() else {
+            self.status = "Open a .950pro before writing the radio.".into();
+            return;
+        };
+        let port = self.port.clone();
+        self.status = format!("Writing the codeplug to {port}…");
+        match rt950_protocol::write_codeplug(&port, &doc, |msg| self.log_lines(msg)) {
+            Ok(()) => self.status = format!("Wrote the codeplug to {port}."),
+            Err(e) => {
+                let status = format!("error: {e}");
+                self.log_lines(&status);
+                self.fail_status(status);
+            }
+        }
     }
 
     fn send_boot(&mut self) {
@@ -325,7 +364,11 @@ impl eframe::App for CpsApp {
                     self.read_radio();
                 }
                 if ui.button("Write radio").clicked() {
-                    self.write_radio();
+                    if self.doc.is_none() {
+                        self.status = "Open a .950pro before writing the radio.".into();
+                    } else {
+                        self.confirm_write = true;
+                    }
                 }
                 ui.separator();
                 if ui.button("Open").clicked() {

@@ -1,0 +1,3 @@
+snoop ready: Wine COM -> /tmp/radtel_snoop -> /dev/ttyUSB0
+logging to /home/user/Documents/DragonSDR/webaugur/radtel-950-pro/re/cps/captures/read-20261003-074703.log
+Press Ctrl+C to stop after the CPS Read finishes.

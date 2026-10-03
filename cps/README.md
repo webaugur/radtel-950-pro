@@ -1,9 +1,10 @@
 # RT-950 / 950Pro CPS (Rust UI)
 
-`eframe` / `egui` front end. One binary opens and saves a `.950pro` file, draws
-the map, and sends the boot picture. It does not launch another program.
-`firmware/scripts/radtel_cps.py` remains a terminal tool. The window does not
-start it. A radio read does not yet produce a `.950pro` or a `.dat`.
+`eframe` / `egui` front end. One binary opens and saves a `.950pro` file, reads
+and writes that codeplug on the radio, draws the map, and sends the boot
+picture. It does not launch another program. A `.dat` is not opened. The guide
+is `docs/guide/RT-950-CPS.md`, and `tools/usb-stick/stage.sh` copies
+`docs/guide/RT-950-CPS.pdf` next to the binary.
 
 Layout: zone list, a short channel row (name, RX → TX, mode / bandwidth / power),
 and an inspector for the rest. Not the OEM 16-column grid.
@@ -27,9 +28,10 @@ CARGO_BUILD_JOBS=1 cargo build -p rt950-cps
 
 ## What the window does
 
-- **Open / Save .950pro** — JSON in this process. A `.dat` is not written.
+- **Open / Save .950pro** — JSON in this process. A `.dat` is refused.
+- **Read / Write radio** — the session in the guide appendix. Write asks first.
 - **Boot picture** — upload of a 24-bit 240×320 BMP (asks first)
-- Zones are an even split of the channel list (990 / 15 = 66 on the Florida file)
+- Zones follow the zone-name list (10 zones of 99 on a current codeplug)
 - Dark mode and a transfer log
 
 Run it from the radtel repo:
@@ -39,11 +41,4 @@ cd ~/Documents/DragonSDR/webaugur/radtel-950-pro
 ./cps/target/debug/rt950-cps
 ```
 
-## Capture plan
-
-1. Quit `rt950-cps` so the tty is free.
-2. Install/run OEM CPS under Wine; connect the radio.
-3. Capture a full **Read** (and ideally a small **Write**) with usbmon/Wireshark or a tty sniffer.
-4. Drop traces under `docs/captures/` and extend `rt950-protocol`.
-
-Firmware flash stays in `firmware/scripts/radtel_flash.py` (different `0xAA`…`0x55` protocol).
+Firmware flash stays in `re/firmware/scripts/radtel_flash.py` (different `0xAA`…`0x55` protocol). The guide is the user-facing description of the window.

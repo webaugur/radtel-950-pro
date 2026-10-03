@@ -1,0 +1,3 @@
+# RT-950 serial snoop started 2026-10-03T07:47:03.416982+00:00
+# device=/dev/ttyUSB0 link=/tmp/radtel_snoop -> /dev/pts/4 baud=115200
+# format: ISO8601 DIR LEN | HEX | ASCII

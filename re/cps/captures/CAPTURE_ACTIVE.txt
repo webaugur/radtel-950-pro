@@ -1,0 +1,4 @@
+LOG=/home/user/Documents/DragonSDR/webaugur/radtel-950-pro/re/cps/captures/usbmon-oursession-20261003-074448.log
+PID=216559
+BUS=2u
+DEV=Bus 002 Device 011 CH340

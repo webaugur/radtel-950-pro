@@ -1,0 +1,6 @@
+﻿slot,rxFreq,txFreq,rxQT,txQT,signallingGroup,pttId,txPower,scram,learnFHSS,bandWide,encrypt,busyLockout,scanAdd,enableTx,rxModulation,fhssCode,chName
+1,151.82000,151.82000,OFF,OFF,0,0,2,0,0,1,0,0,1,1,0,,MURS 1
+2,151.88000,151.88000,OFF,OFF,0,0,2,0,0,1,0,0,1,1,0,,MURS 2
+3,151.94000,151.94000,OFF,OFF,0,0,2,0,0,1,0,0,1,1,0,,MURS 3
+4,154.57000,154.57000,OFF,OFF,0,0,2,0,0,0,0,0,1,1,0,,MURS 4
+5,154.60000,154.60000,OFF,OFF,0,0,2,0,0,0,0,0,1,1,0,,MURS 5

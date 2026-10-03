@@ -1,0 +1,4 @@
+﻿slot,rxFreq,txFreq,rxQT,txQT,signallingGroup,pttId,txPower,scram,learnFHSS,bandWide,encrypt,busyLockout,scanAdd,enableTx,rxModulation,fhssCode,chName
+1,462.55000,462.55000,OFF,141.3,0,0,1,0,0,1,0,0,1,1,0,,GMRS 15
+2,462.57500,467.57500,OFF,141.3,0,0,2,0,0,1,0,0,1,1,0,,GMRSr16
+3,118.00000,,OFF,OFF,0,0,0,0,0,0,0,0,1,0,1,,AIR AM RX
