@@ -7,7 +7,7 @@ modify the IndyHam file. Frequencies are the ones printed in NIFOG 2.02
 
 Zone map (10 x 99):
   1 CB MURS FRS   IndyHam personal radio, unchanged
-  2 Indiana       IndyHam, including IHERN channels 25-50
+  2 Indiana       five 49 MHz walkie channels, then IndyHam (IHERN shifts to 30-55)
   3 Rail          IndyHam, AIS still at 79-82
   4 Federal       IndyHam federal rows, then federal IR and LE
   5 VHF Interop   low-band, VTAC, mutual aid, marine, SAR air, NOAA
@@ -490,6 +490,19 @@ def build(doc: dict) -> dict:
     ]
     band78_rows = band78_rows + fill(blank, ca_800, mod=2, wide=0)
 
+    # 47 CFR 15.235 is the band 49.82-49.90 MHz. The five toy walkie-talkie
+    # carriers sit 15 kHz apart, 10 kHz inside each band edge. Simplex FM.
+    # Inserted at the top of Indiana. The five empty tail slots absorb the shift.
+    # txPower 2 is Low. Part 15 is a field-strength limit, not that power step.
+    wt49 = [
+        ("WT49 A", 49.830, 49.830),
+        ("WT49 B", 49.845, 49.845),
+        ("WT49 C", 49.860, 49.860),
+        ("WT49 D", 49.875, 49.875),
+        ("WT49 E", 49.890, 49.890),
+    ]
+    indiana = fill(blank, wt49, mod=2, wide=1, power=2) + indiana
+
     zones = [
         ("CB MURS FRS", personal),
         ("Indiana", indiana),
@@ -542,8 +555,10 @@ def main() -> None:
         raise SystemExit(f"800 MHz block missing: {eight}")
     if z7[0]["rxModulation"] != 2 or z7[10]["rxModulation"] != 0:
         raise SystemExit("8CALL should transmit and 7TAC should be receive-only")
-    if ch[0]["rxModulation"] != 2 or ch[99 + 32]["chName"] != "IHERN CSQ":
-        raise SystemExit("personal radio or IHERN did not survive the import")
+    if ch[0]["rxModulation"] != 2 or ch[99]["chName"] != "WT49 A":
+        raise SystemExit("personal radio or the 49 MHz walkie channels did not survive the import")
+    if ch[99 + 37]["chName"] != "IHERN CSQ":
+        raise SystemExit("IHERN CSQ is not five slots below its old position")
     if not SOURCE.is_file() or SOURCE.stat().st_size == 0:
         raise SystemExit("IndyHam source missing after the build")
     print(f"wrote {OUT_DAT}")
