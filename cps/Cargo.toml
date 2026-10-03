@@ -1,0 +1,18 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/rt950-protocol",
+    "crates/rt950-cps",
+]
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/webaugur/radtel-950-pro"
+
+[workspace.dependencies]
+rt950-protocol = { path = "crates/rt950-protocol" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+serialport = "4.7"

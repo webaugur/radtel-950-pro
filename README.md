@@ -28,6 +28,8 @@ CPS (channel programming) teardown: **`docs/cps_teardown.md`** and artifacts und
 
 Community CPS alternative (git submodule): **[cruzerdlc/RT-950-950Pro-Editor](https://github.com/cruzerdlc/RT-950-950Pro-Editor)** → **`docs/RT-950-950Pro-Editor/`** — notes in **`docs/community-cps-editor.md`**.
 
+Our Rust CPS scaffold (egui/eframe, Maxx Steele style): **`cps/`** — see **`cps/README.md`**. Run `CARGO_BUILD_JOBS=1 cargo run -p rt950-cps` from `cps/`.
+
 
 ## Hardware Notes
 

@@ -3,3 +3,6 @@ openrtx_radtel/
 sample_code/
 .DS_Store
 archive-mostly-garbage/
+
+# Rust CPS (egui)
+cps/target/
