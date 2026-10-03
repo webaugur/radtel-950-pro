@@ -1,33 +1,32 @@
 #!/bin/sh
-# Run the RT-950 CPS from this directory. Copy the whole directory onto a
-# USB stick, plug it into an Ubuntu desktop, and run ./run.sh.
-# The stick does not contain Python, Mono, or the graphics libraries.
-# ./setup.sh explains and runs the one-time apt install and dialout change.
+# Run the RT-950 CPS from this directory. A .950pro file needs only this
+# program. Mono, python3-serial, and BT-RT950PRO_CPS.exe are used for a
+# .dat file and for reading or writing the radio. ./setup.sh installs those.
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
-export RT950_CPS_EXE="${RT950_CPS_EXE:-$ROOT/cps/BT-RT950PRO_CPS.exe}"
 
-missing=""
-command -v python3 >/dev/null 2>&1 || missing="$missing python3"
-python3 -c 'import serial' >/dev/null 2>&1 || missing="$missing python3-serial"
-command -v mono >/dev/null 2>&1 || missing="$missing mono-runtime mono-libraries"
-if [ -n "$missing" ]; then
-    echo "This Ubuntu machine is missing:$missing" >&2
-    echo "In this folder, run: sh setup.sh" >&2
-    exit 1
-fi
 if [ ! -x "$ROOT/rt950-cps" ]; then
     echo "Missing $ROOT/rt950-cps. Run tools/usb-stick/stage.sh on the build machine first." >&2
     exit 1
 fi
-if [ ! -f "$RT950_CPS_EXE" ]; then
-    echo "Missing CPS program: $RT950_CPS_EXE" >&2
-    exit 1
+
+if [ -z "${RT950_CPS_EXE:-}" ] && [ -f "$ROOT/cps/BT-RT950PRO_CPS.exe" ]; then
+    export RT950_CPS_EXE="$ROOT/cps/BT-RT950PRO_CPS.exe"
 fi
-if [ ! -f "$ROOT/firmware/scripts/radtel_cps.py" ]; then
-    echo "Missing $ROOT/firmware/scripts/radtel_cps.py" >&2
-    exit 1
+
+oem_missing=""
+command -v python3 >/dev/null 2>&1 || oem_missing="$oem_missing python3"
+python3 -c 'import serial' >/dev/null 2>&1 || oem_missing="$oem_missing python3-serial"
+command -v mono >/dev/null 2>&1 || oem_missing="$oem_missing mono"
+if [ -n "${RT950_CPS_EXE:-}" ]; then
+    [ -f "$RT950_CPS_EXE" ] || oem_missing="$oem_missing BT-RT950PRO_CPS.exe"
+elif [ ! -f "$ROOT/cps/BT-RT950PRO_CPS.exe" ]; then
+    oem_missing="$oem_missing BT-RT950PRO_CPS.exe"
+fi
+if [ -n "$oem_missing" ]; then
+    echo "OEM codeplug support is not installed:$oem_missing" >&2
+    echo ".950pro files still open and save. For a .dat file or the radio, run: sh setup.sh" >&2
 fi
 if ! id -nG | tr ' ' '\n' | grep -qx dialout; then
     echo "This user is not in the dialout group, so /dev/ttyUSB0 may not open." >&2
