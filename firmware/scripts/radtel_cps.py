@@ -549,23 +549,24 @@ def run_flash(radio: Radio, args: list[str]) -> str:
     `confirm` is rejected so a codeplug write habit cannot flash the radio.
     """
     if not args or len(args) > 3:
-        raise ShellError("usage: flash <image> [raw] [commit]")
-    raw = False
+        raise ShellError("usage: flash <image> [decrypt] [commit]")
+    # The file is sent as stored. EnUPDATE does not decrypt a .BTF.
+    decrypt = False
     commit = False
     for token in args[1:]:
-        if token.lower() == "raw":
-            if raw:
-                raise ShellError("usage: flash <image> [raw] [commit]")
-            raw = True
+        if token.lower() in ("decrypt", "raw"):
+            if token.lower() == "decrypt":
+                decrypt = True
+            # "raw" is accepted so an old command still sends the file unchanged.
         elif token.lower() == "commit":
             if commit:
-                raise ShellError("usage: flash <image> [raw] [commit]")
+                raise ShellError("usage: flash <image> [decrypt] [commit]")
             commit = True
         else:
-            raise ShellError("usage: flash <image> [raw] [commit]  (`confirm` does not flash)")
+            raise ShellError("usage: flash <image> [decrypt] [commit]  (`confirm` does not flash)")
     flasher = _load_flasher()
     try:
-        plan = flasher.prepare_flash(Path(args[0]), treat_as_raw=raw)
+        plan = flasher.prepare_flash(Path(args[0]), treat_as_raw=not decrypt)
     except ValueError as exc:
         raise ShellError(str(exc)) from exc
     held = radio.ser is not None and getattr(radio.ser, "is_open", False)

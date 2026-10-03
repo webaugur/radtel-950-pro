@@ -9,9 +9,10 @@ This script implements the protocol observed in the captured USB traces:
 - Data blocks (CMD=0x03) use param1 as the chunk index and param2 as the
   payload length (usually 1024 bytes).
 
-The tool can accept a raw binary image (already ready to send) or a RT*.BTF
-file. For BTF files we implement the FwCrypt decode (same logic as
-fwcrypt_io.py) to obtain the plaintext firmware before chunking.
+The tool sends the file bytes unchanged. EnUPDATE does not decrypt a
+.BTF; the bootloader does that as it writes. Decoding here and then
+sending the plaintext makes the bootloader decode it a second time,
+and the radio boots to "firmware error".
 
 Example usage:
     python radtel_flash.py --port /dev/ttyUSB0 firmware.btf
@@ -347,6 +348,8 @@ def flash_prepared(
             time.sleep(0.08)
         note("enter binary 0x42")
         # The OEM timer is 2 s, then up to 5 resends of the same frame.
+        # 0x00E5 is what this bootloader returns when the update screen is
+        # already up. The OEM flashing-mode path then starts at 0x0A.
         last_error: Optional[BaseException] = None
         for attempt in range(6):
             try:
@@ -354,6 +357,10 @@ def flash_prepared(
                 last_error = None
                 break
             except ProtocolError as exc:
+                if "0x00e5" in str(exc).lower():
+                    note("already in update, continuing at 0x0A")
+                    last_error = None
+                    break
                 last_error = exc
                 if attempt == 5:
                     break
@@ -398,7 +405,16 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     parser.add_argument("--baud", type=int, default=115200, help="UART baud rate (default: 115200)")
     parser.add_argument("--chunk-size", type=int, default=DEFAULT_CHUNK_SIZE, help="Payload bytes per CMD=0x03 packet")
     parser.add_argument("--skip-handshake", action="store_true", help="Skip the PROGRAM/UPDATE ASCII handshake")
-    parser.add_argument("--raw", action="store_true", help="Treat the input file as a ready-to-send binary (skip fwcrypt decode)")
+    parser.add_argument(
+        "--raw",
+        action="store_true",
+        help="Send the file bytes unchanged. This is the default.",
+    )
+    parser.add_argument(
+        "--decrypt",
+        action="store_true",
+        help="FwCrypt-decode a .BTF before sending. EnUPDATE does not do this.",
+    )
     parser.add_argument("--timeout", type=float, default=2.0, help="Serial read/write timeout in seconds")
     parser.add_argument("--resume", type=int, default=0, help="Start chunk index (for manual resume)")
     parser.add_argument(
@@ -410,7 +426,16 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     try:
-        plan = prepare_flash(args.image, chunk_size=args.chunk_size, treat_as_raw=args.raw)
+        if args.raw and args.decrypt:
+            print("ERROR: --raw and --decrypt conflict", file=sys.stderr)
+            return 1
+        # Default is the file as stored. --decrypt is the old path and
+        # bricks a radio whose bootloader decrypts on write.
+        plan = prepare_flash(
+            args.image,
+            chunk_size=args.chunk_size,
+            treat_as_raw=not args.decrypt,
+        )
     except ValueError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
