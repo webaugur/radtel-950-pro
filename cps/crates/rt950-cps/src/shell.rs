@@ -1,7 +1,7 @@
 //! Talk to `firmware/scripts/radtel_cps.py`. The UI does not open the radio.
 
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 pub struct Shell {
@@ -40,12 +40,16 @@ impl Shell {
         Err("cannot find firmware/scripts/radtel_cps.py (run from the radtel-950-pro tree)".into())
     }
 
-    pub fn run(&self, lines: &[String]) -> Result<ShellResult, String> {
-        let mut child = Command::new("python3")
-            .arg(&self.script)
+    pub fn run(&self, lines: &[String], cps_exe: Option<&Path>) -> Result<ShellResult, String> {
+        let mut cmd = Command::new("python3");
+        cmd.arg(&self.script)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
+            .stderr(Stdio::piped());
+        if let Some(exe) = cps_exe {
+            cmd.env("RT950_CPS_EXE", exe);
+        }
+        let mut child = cmd
             .spawn()
             .map_err(|e| format!("failed to start cps shell: {e}"))?;
         {

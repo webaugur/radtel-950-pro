@@ -33,6 +33,12 @@ fn main() -> eframe::Result {
     )
 }
 
+fn is_dat(path: &Path) -> bool {
+    path.extension()
+        .and_then(|ext| ext.to_str())
+        .is_some_and(|ext| ext.eq_ignore_ascii_case("dat"))
+}
+
 fn is_950pro(path: &Path) -> bool {
     path.extension()
         .and_then(|ext| ext.to_str())
@@ -114,14 +120,95 @@ fn restore_memory_transmit(doc: &mut Value) -> usize {
     restored
 }
 
+/// Pretty-printed codeplug. A trailing newline keeps the file a text file.
+fn write_codeplug_file(doc: &Value, path: &Path) -> Result<(), String> {
+    let text = serde_json::to_string_pretty(doc)
+        .map_err(|e| format!("{} failed: {e}", path.display()))?;
+    std::fs::write(path, format!("{text}\n")).map_err(|e| format!("{} failed: {e}", path.display()))
+}
+
 /// Pretty-printed copy of the in-memory codeplug, next to the `.dat` just saved.
 fn write_codeplug_json(doc: &Value, dat: &Path) -> Result<PathBuf, String> {
     let json_path = json_beside(dat);
-    let text = serde_json::to_string_pretty(doc)
-        .map_err(|e| format!("{} failed: {e}", json_path.display()))?;
-    std::fs::write(&json_path, format!("{text}\n"))
-        .map_err(|e| format!("{} failed: {e}", json_path.display()))?;
+    write_codeplug_file(doc, &json_path)?;
     Ok(json_path)
+}
+
+fn search_up(relative: &Path) -> Option<PathBuf> {
+    let mut starts = Vec::new();
+    if let Ok(cwd) = std::env::current_dir() {
+        starts.push(cwd);
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            starts.push(dir.to_path_buf());
+        }
+    }
+    for start in starts {
+        let mut dir = start;
+        for _ in 0..8 {
+            let candidate = dir.join(relative);
+            if candidate.is_file() {
+                return Some(candidate);
+            }
+            if !dir.pop() {
+                break;
+            }
+        }
+    }
+    None
+}
+
+fn mono_installed() -> bool {
+    std::process::Command::new("mono")
+        .arg("--version")
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .map(|status| status.success())
+        .unwrap_or(false)
+}
+
+fn cps_exe_path() -> Option<PathBuf> {
+    if let Some(env) = std::env::var_os("RT950_CPS_EXE") {
+        let path = PathBuf::from(env);
+        if path.is_file() {
+            return Some(path);
+        }
+    }
+    if let Some(path) = search_up(Path::new("cps/BT-RT950PRO_CPS.exe")) {
+        return Some(path);
+    }
+    let home = std::env::var_os("HOME")?;
+    let wine = PathBuf::from(home).join(
+        "Applications/Radtel950Pro/drive_c/Program Files (x86)/RT-950PRO_CPS/BT-RT950PRO_CPS.exe",
+    );
+    wine.is_file().then_some(wine)
+}
+
+fn dat_helper_path() -> Option<PathBuf> {
+    search_up(Path::new("firmware/scripts/RadtelDat.exe"))
+}
+
+/// `None` when a `.dat` can be opened or written. `Some` is the status text.
+fn oem_dat_block(mono: bool, helper: bool, exe: bool) -> Option<String> {
+    let mut missing = Vec::new();
+    if !mono {
+        missing.push("mono");
+    }
+    if !helper {
+        missing.push("firmware/scripts/RadtelDat.exe");
+    }
+    if !exe {
+        missing.push("BT-RT950PRO_CPS.exe");
+    }
+    if missing.is_empty() {
+        return None;
+    }
+    Some(format!(
+        "Cannot use a .dat file. Missing {}. sh setup.sh installs Mono. A .950pro file opens and saves without the OEM program. BT-RT950PRO_CPS.exe is read from $RT950_CPS_EXE, from cps/ next to this program, or from the Wine copy under the home directory.",
+        missing.join(", ")
+    ))
 }
 
 /// OEM DoIt codes (TOOVER, MODELERR, EXCABORT, MANCANC) and a shell
@@ -192,7 +279,7 @@ impl CpsApp {
             port: "/dev/ttyUSB0".into(),
             log: Vec::new(),
             log_open: false,
-            status: "Open a .dat or .950pro, or read the radio.".into(),
+            status: "Open a .950pro, or read the radio.".into(),
             power_cycle: None,
             dark,
             confirm_write: false,
@@ -233,7 +320,8 @@ impl CpsApp {
 
     fn run(&mut self, lines: &[String]) -> Result<String, String> {
         let shell = self.shell.as_ref().map_err(|e| e.clone())?;
-        let result = shell.run(lines)?;
+        let exe = cps_exe_path();
+        let result = shell.run(lines, exe.as_deref())?;
         self.log_lines(&result.stderr);
         if result.code != 0 {
             let detail = result
@@ -291,25 +379,44 @@ impl CpsApp {
         self.doc = Some(doc);
         self.zone = 0;
         self.selected = Some(0);
-        let restored_note = if restored == 0 {
-            String::new()
+        self.status = if restored == 0 {
+            format!("Opened {}", path.display())
         } else {
-            format!(" Restored FM transmit on {restored} memories.")
-        };
-        self.status = match &self.template {
-            Some(template) => format!(
-                "Opened {} (template {}).{restored_note}",
-                path.display(),
-                template.display()
-            ),
-            None => format!(
-                "Opened {}. Save needs a .dat template.{restored_note}",
+            format!(
+                "Opened {}. Restored FM transmit on {restored} memories.",
                 path.display()
-            ),
+            )
         };
     }
 
+    /// False leaves the fix-it text in the status line and starts no transfer.
+    fn oem_ready(&mut self) -> bool {
+        match oem_dat_block(
+            mono_installed(),
+            dat_helper_path().is_some(),
+            cps_exe_path().is_some(),
+        ) {
+            None => true,
+            Some(text) => {
+                self.status = text;
+                false
+            }
+        }
+    }
+
+    fn dat_template(&self) -> Option<PathBuf> {
+        if let Some(path) = self.template.clone() {
+            if path.is_file() {
+                return Some(path);
+            }
+        }
+        bundled_dat_template()
+    }
+
     fn load_dat(&mut self, path: &Path) {
+        if !self.oem_ready() {
+            return;
+        }
         let line = format!("dat-export {}", shell_quote(path));
         match self.run(&[line]) {
             Ok(stdout) => match serde_json::from_str::<Value>(stdout.trim()) {
@@ -339,9 +446,32 @@ impl CpsApp {
         }
     }
 
-    fn save_dat(&mut self, path: &Path) {
-        let Some(template) = self.template.clone() else {
-            self.status = "Open or read a .dat before saving (needed as template).".into();
+    fn save_codeplug(&mut self, path: &Path) {
+        let path = if path.extension().is_none() {
+            path.with_extension("950pro")
+        } else {
+            path.to_path_buf()
+        };
+        if is_950pro(&path) {
+            let Some(doc) = &self.doc else {
+                self.status = "Nothing to save.".into();
+                return;
+            };
+            self.status = match write_codeplug_file(doc, &path) {
+                Ok(()) => format!("Saved {}", path.display()),
+                Err(e) => e,
+            };
+            return;
+        }
+        if !is_dat(&path) {
+            self.status = format!("Save {} as .950pro or .dat.", path.display());
+            return;
+        }
+        if !self.oem_ready() {
+            return;
+        }
+        let Some(template) = self.dat_template() else {
+            self.status = "Saving a .dat needs RT-950PRO_CPS_NI.dat, or open a .dat first.".into();
             return;
         };
         let Some(doc) = &self.doc else {
@@ -357,12 +487,12 @@ impl CpsApp {
             "dat-import {} {} {}",
             shell_quote(&template),
             shell_quote(&json_path),
-            shell_quote(path)
+            shell_quote(&path)
         );
         match self.run(&[line]) {
             Ok(_) => {
-                self.template = Some(path.to_path_buf());
-                self.status = match self.doc.as_ref().map(|doc| write_codeplug_json(doc, path)) {
+                self.template = Some(path.clone());
+                self.status = match self.doc.as_ref().map(|doc| write_codeplug_json(doc, &path)) {
                     Some(Ok(json_path)) => {
                         format!("Saved {} and {}", path.display(), json_path.display())
                     }
@@ -376,6 +506,9 @@ impl CpsApp {
 
     fn read_radio(&mut self) {
         self.kiss = None;
+        if !self.oem_ready() {
+            return;
+        }
         let Some(path) = rfd::FileDialog::new()
             .add_filter("CPS data", &["dat"])
             .set_file_name("RT-950-read.dat")
@@ -426,8 +559,12 @@ impl CpsApp {
 
     fn write_radio(&mut self) {
         self.kiss = None;
-        let Some(template) = self.template.clone() else {
-            self.status = "Nothing loaded to write.".into();
+        if !self.oem_ready() {
+            return;
+        }
+        let Some(template) = bundled_dat_template().or_else(|| self.dat_template()) else {
+            self.status = "Writing the radio needs RT-950PRO_CPS_NI.dat, or open a .dat first."
+                .into();
             return;
         };
         let Some(doc) = &self.doc else {
@@ -493,26 +630,28 @@ impl eframe::App for CpsApp {
                 if ui.button("Read radio").clicked() {
                     self.read_radio();
                 }
-                if ui.button("Write radio").clicked() {
+                if ui.button("Write radio").clicked() && self.oem_ready() {
                     self.confirm_write = true;
                 }
                 ui.separator();
-                if ui.button("Open .dat").clicked() {
+                if ui.button("Open").clicked() {
                     if let Some(path) = rfd::FileDialog::new()
-                        .add_filter("Codeplug", &["dat", "950pro"])
-                        .add_filter("CPS data", &["dat"])
                         .add_filter("RT-950 JSON", &["950pro"])
+                        .add_filter("CPS data", &["dat"])
+                        .add_filter("Codeplug", &["950pro", "dat"])
                         .pick_file()
                     {
                         self.open_codeplug(&path);
                     }
                 }
-                if ui.button("Save .dat").clicked() {
+                if ui.button("Save").clicked() {
                     if let Some(path) = rfd::FileDialog::new()
+                        .add_filter("RT-950 JSON", &["950pro"])
                         .add_filter("CPS data", &["dat"])
+                        .set_file_name("codeplug.950pro")
                         .save_file()
                     {
-                        self.save_dat(&path);
+                        self.save_codeplug(&path);
                     }
                 }
                 ui.separator();
@@ -814,7 +953,10 @@ mod tests {
 
     use serde_json::json;
 
-    use super::{dat_beside, is_950pro, json_beside, power_cycle_notice, restore_memory_transmit};
+    use super::{
+        dat_beside, is_950pro, json_beside, oem_dat_block, power_cycle_notice,
+        restore_memory_transmit, write_codeplug_file,
+    };
 
     #[test]
     fn save_writes_950pro_beside_the_dat() {
@@ -868,5 +1010,30 @@ mod tests {
         assert!(power_cycle_notice("Read aborted (EXCABORT)."));
         assert!(power_cycle_notice("timeout: wanted 1 bytes, got 0"));
         assert!(!power_cycle_notice("error: open /dev/ttyUSB0 failed: busy"));
+    }
+
+    #[test]
+    fn dat_without_oem_explains_how_to_fix_it() {
+        let text = oem_dat_block(false, false, false).expect("missing stack");
+        assert!(text.contains("mono"));
+        assert!(text.contains("RadtelDat.exe"));
+        assert!(text.contains("BT-RT950PRO_CPS.exe"));
+        assert!(text.contains("setup.sh"));
+        assert!(text.contains(".950pro"));
+        assert!(oem_dat_block(true, true, true).is_none());
+        let mono_only = oem_dat_block(false, true, true).expect("mono");
+        assert!(mono_only.contains("Missing mono."));
+    }
+
+    #[test]
+    fn save_950pro_writes_json_without_a_template() {
+        let path = std::env::temp_dir().join("rt950-cps-save-test.950pro");
+        let doc = json!({"channelData": {"channelList": []}});
+        write_codeplug_file(&doc, &path).unwrap();
+        let text = std::fs::read_to_string(&path).unwrap();
+        let _ = std::fs::remove_file(&path);
+        assert!(text.ends_with('\n'));
+        assert!(text.contains("\"channelData\""));
+        assert!(!text.contains("RT-950PRO_CPS"));
     }
 }
