@@ -1,5 +1,6 @@
-//! RT-950 CPS front end. One binary edits a `.950pro` file, reads the radio
-//! image, and sends the boot picture. It does not launch another program.
+//! RT-950 CPS front end. One binary edits a `.950pro` file and sends the boot
+//! picture. It does not launch another program. A radio read does not yet
+//! produce a `.950pro` or a `.dat`.
 
 mod aprs;
 mod channels;
@@ -270,34 +271,7 @@ impl CpsApp {
 
     fn read_radio(&mut self) {
         self.kiss = None;
-        let Some(path) = rfd::FileDialog::new()
-            .add_filter("Radio image", &["bin"])
-            .set_file_name("radio-image.bin")
-            .save_file()
-        else {
-            return;
-        };
-        let port = self.port.clone();
-        self.status = format!("Reading {port}…");
-        match rt950_protocol::read_image(&port, |msg| {
-            self.log_lines(msg);
-        }) {
-            Ok(image) => match std::fs::write(&path, &image) {
-                Ok(()) => {
-                    self.status = format!(
-                        "Read {} bytes from {port} into {}",
-                        image.len(),
-                        path.display()
-                    );
-                }
-                Err(e) => self.fail_status(format!("error: write {} failed: {e}", path.display())),
-            },
-            Err(e) => {
-                let status = format!("error: {e}");
-                self.log_lines(&status);
-                self.fail_status(status);
-            }
-        }
+        self.status = "Read cannot save a .950pro or a .dat yet.".into();
     }
 
     fn write_radio(&mut self) {

@@ -1,9 +1,9 @@
 # RT-950 / 950Pro CPS (Rust UI)
 
-`eframe` / `egui` front end. One binary opens and saves a `.950pro` file, reads
-a radio image, draws the map, and sends the boot picture. It does not launch
-another program. `firmware/scripts/radtel_cps.py` remains a terminal tool. The
-window does not start it.
+`eframe` / `egui` front end. One binary opens and saves a `.950pro` file, draws
+the map, and sends the boot picture. It does not launch another program.
+`firmware/scripts/radtel_cps.py` remains a terminal tool. The window does not
+start it. A radio read does not yet produce a `.950pro` or a `.dat`.
 
 Layout: zone list, a short channel row (name, RX → TX, mode / bandwidth / power),
 and an inspector for the rest. Not the OEM 16-column grid.
@@ -27,8 +27,7 @@ CARGO_BUILD_JOBS=1 cargo build -p rt950-cps
 
 ## What the window does
 
-- **Open / Save .950pro** — JSON in this process
-- **Read radio** — reads the 54016-byte image over the cable and saves a `.bin`
+- **Open / Save .950pro** — JSON in this process. A `.dat` is not written.
 - **Boot picture** — upload of a 24-bit 240×320 BMP (asks first)
 - Zones are an even split of the channel list (990 / 15 = 66 on the Florida file)
 - Dark mode and a transfer log
