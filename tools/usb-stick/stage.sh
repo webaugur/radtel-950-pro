@@ -30,7 +30,8 @@ rm -rf "$DEST"
 mkdir -p "$DEST/firmware/scripts" "$DEST/cps" "$DEST/codeplugs"
 cp "$REPO/cps/target/release/rt950-cps" "$DEST/rt950-cps"
 cp "$SCRIPT_DIR/run.sh" "$DEST/run.sh"
-chmod 755 "$DEST/run.sh" "$DEST/rt950-cps"
+cp "$SCRIPT_DIR/setup.sh" "$DEST/setup.sh"
+chmod 755 "$DEST/run.sh" "$DEST/setup.sh" "$DEST/rt950-cps"
 cp "$REPO/firmware/scripts/radtel_cps.py" \
    "$REPO/firmware/scripts/radtel_flash.py" \
    "$REPO/firmware/scripts/RadtelDat.exe" \
