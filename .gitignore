@@ -6,3 +6,6 @@ archive-mostly-garbage/
 
 # Rust CPS (egui)
 cps/target/
+
+# Staged USB-stick tree (binary and copied CPS exe)
+dist/
