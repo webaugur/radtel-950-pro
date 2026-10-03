@@ -299,8 +299,8 @@ const LEGEND: &[(egui::Color32, &str)] = &[
     (MARINE, "Marine"),
 ];
 
-/// `(color, label, drawn)`. A service outside the window stays in the row
-/// and is not painted.
+/// `(color, label, drawn)`. A service outside the window stays in the row.
+/// The channel page dims it instead of removing the slot.
 pub fn legend(lo: f64, hi: f64) -> Vec<(egui::Color32, &'static str, bool)> {
     LEGEND
         .iter()

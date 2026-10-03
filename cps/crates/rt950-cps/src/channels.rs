@@ -67,14 +67,14 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, zone: &mut usize, selected: &mut
         let spans = scope::channel_spans();
         clicked = scope::dial(ui, tuned, lo, hi, &spans);
         ui.add_space(4.0);
-        // One fixed row. Hidden services keep their width so this frame,
-        // the zone tabs, and the channel list stay put when the zone changes.
+        // One fixed row. Services outside this window stay in place and dim,
+        // so the zone tabs and the channel list do not move.
         ui.horizontal(|ui| {
             ui.set_min_height(18.0);
             for (color, label, drawn) in scope::legend(lo, hi) {
                 ui.scope(|ui| {
                     if !drawn {
-                        ui.set_opacity(0.0);
+                        ui.set_opacity(0.35);
                     }
                     scope::swatch(ui, color, label);
                 });
