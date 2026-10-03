@@ -1,13 +1,15 @@
-//! RT-950 CPS front end. Radio and .dat I/O go through radtel_cps.py.
+//! RT-950 CPS front end. `.950pro` is JSON in this process. A `.dat` and a
+//! radio read or write run `mono RadtelDat.exe`. The boot picture is sent
+//! by `rt950-protocol`. `radtel_cps.py` is the terminal tool, not this window.
 
 mod aprs;
 mod channels;
-mod kiss;
 mod dtmf;
 mod edit;
+mod kiss;
+mod oem;
 mod radio;
 mod scope;
-mod shell;
 mod shortwave;
 mod vfo;
 
@@ -16,7 +18,6 @@ use std::path::{Path, PathBuf};
 
 use eframe::egui;
 use serde_json::{json, Value};
-use shell::Shell;
 
 fn main() -> eframe::Result {
     let options = eframe::NativeOptions {
@@ -122,8 +123,8 @@ fn restore_memory_transmit(doc: &mut Value) -> usize {
 
 /// Pretty-printed codeplug. A trailing newline keeps the file a text file.
 fn write_codeplug_file(doc: &Value, path: &Path) -> Result<(), String> {
-    let text = serde_json::to_string_pretty(doc)
-        .map_err(|e| format!("{} failed: {e}", path.display()))?;
+    let text =
+        serde_json::to_string_pretty(doc).map_err(|e| format!("{} failed: {e}", path.display()))?;
     std::fs::write(path, format!("{text}\n")).map_err(|e| format!("{} failed: {e}", path.display()))
 }
 
@@ -211,7 +212,7 @@ fn oem_dat_block(mono: bool, helper: bool, exe: bool) -> Option<String> {
     ))
 }
 
-/// OEM DoIt codes (TOOVER, MODELERR, EXCABORT, MANCANC) and a shell
+/// OEM DoIt codes (TOOVER, MODELERR, EXCABORT, MANCANC) and a transfer
 /// timeout mean the radio stopped answering. Tell the operator to power-cycle.
 fn power_cycle_notice(detail: &str) -> bool {
     let u = detail.to_ascii_uppercase();
@@ -245,7 +246,6 @@ enum Page {
 }
 
 struct CpsApp {
-    shell: Result<Shell, String>,
     doc: Option<Value>,
     template: Option<PathBuf>,
     zone: usize,
@@ -271,7 +271,6 @@ impl CpsApp {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
         let dark = cc.egui_ctx.global_style().visuals.dark_mode;
         let app = Self {
-            shell: Shell::locate(),
             doc: None,
             template: None,
             zone: 0,
@@ -318,27 +317,42 @@ impl CpsApp {
         }
     }
 
-    fn run(&mut self, lines: &[String]) -> Result<String, String> {
-        let shell = self.shell.as_ref().map_err(|e| e.clone())?;
-        let exe = cps_exe_path();
-        let result = shell.run(lines, exe.as_deref())?;
-        self.log_lines(&result.stderr);
-        if result.code != 0 {
-            let detail = result
-                .stderr
-                .lines()
-                .rev()
-                .find(|l| l.starts_with("error:"))
-                .unwrap_or("cps shell failed")
-                .to_string();
-            self.log_open = true;
-            self.status = detail.clone();
-            if power_cycle_notice(&detail) {
-                self.power_cycle = Some(detail.clone());
-            }
-            return Err(detail);
+    fn fail_status(&mut self, status: String) {
+        self.log_open = true;
+        self.status = status.clone();
+        if power_cycle_notice(&status) {
+            self.power_cycle = Some(status);
         }
-        Ok(result.stdout)
+    }
+
+    fn apply_dat(&mut self, result: Result<oem::DatResult, String>) -> Result<String, String> {
+        match result {
+            Err(status) => {
+                self.log_lines(&status);
+                self.fail_status(status.clone());
+                Err(status)
+            }
+            Ok(result) => {
+                self.log_lines(&result.stderr);
+                if result.code != 0 {
+                    let status = oem::failure_status(&result.stderr, &result.stdout, result.code);
+                    if result.stderr.trim().is_empty() {
+                        self.log_lines(&status);
+                    }
+                    self.fail_status(status.clone());
+                    Err(status)
+                } else {
+                    Ok(result.stdout)
+                }
+            }
+        }
+    }
+
+    fn oem_paths(&mut self) -> Option<(PathBuf, PathBuf)> {
+        if !self.oem_ready() {
+            return None;
+        }
+        Some((dat_helper_path()?, cps_exe_path()?))
     }
 
     fn open_codeplug(&mut self, path: &Path) {
@@ -413,12 +427,14 @@ impl CpsApp {
         bundled_dat_template()
     }
 
-    fn load_dat(&mut self, path: &Path) {
-        if !self.oem_ready() {
-            return;
-        }
-        let line = format!("dat-export {}", shell_quote(path));
-        match self.run(&[line]) {
+    fn load_dat(&mut self, path: &Path) -> bool {
+        let Some((helper, exe)) = self.oem_paths() else {
+            return false;
+        };
+        let op = oem::DatOp::Export {
+            dat: path.to_path_buf(),
+        };
+        match self.apply_dat(oem::run(&helper, &exe, &op)) {
             Ok(stdout) => match serde_json::from_str::<Value>(stdout.trim()) {
                 Ok(doc) => {
                     let mut doc = doc;
@@ -435,14 +451,19 @@ impl CpsApp {
                             path.display()
                         )
                     };
+                    true
                 }
                 Err(e) => {
-                    self.status = format!("JSON from shell was not a codeplug: {e}");
+                    self.status = format!("JSON from the .dat was not a codeplug: {e}");
                     self.log_open = true;
                     self.log_lines(&stdout);
+                    false
                 }
             },
-            Err(e) => self.status = e,
+            Err(e) => {
+                self.status = e;
+                false
+            }
         }
     }
 
@@ -467,9 +488,9 @@ impl CpsApp {
             self.status = format!("Save {} as .950pro or .dat.", path.display());
             return;
         }
-        if !self.oem_ready() {
+        let Some((helper, exe)) = self.oem_paths() else {
             return;
-        }
+        };
         let Some(template) = self.dat_template() else {
             self.status = "Saving a .dat needs RT-950PRO_CPS_NI.dat, or open a .dat first.".into();
             return;
@@ -483,13 +504,12 @@ impl CpsApp {
             self.status = format!("temp JSON failed: {e}");
             return;
         }
-        let line = format!(
-            "dat-import {} {} {}",
-            shell_quote(&template),
-            shell_quote(&json_path),
-            shell_quote(&path)
-        );
-        match self.run(&[line]) {
+        let op = oem::DatOp::Import {
+            template,
+            json: json_path,
+            outfile: path.clone(),
+        };
+        match self.apply_dat(oem::run(&helper, &exe, &op)) {
             Ok(_) => {
                 self.template = Some(path.clone());
                 self.status = match self.doc.as_ref().map(|doc| write_codeplug_json(doc, &path)) {
@@ -506,9 +526,9 @@ impl CpsApp {
 
     fn read_radio(&mut self) {
         self.kiss = None;
-        if !self.oem_ready() {
+        let Some((helper, exe)) = self.oem_paths() else {
             return;
-        }
+        };
         let Some(path) = rfd::FileDialog::new()
             .add_filter("CPS data", &["dat"])
             .set_file_name("RT-950-read.dat")
@@ -516,16 +536,19 @@ impl CpsApp {
         else {
             return;
         };
-        let lines = vec![
-            format!("port {}", self.port),
-            format!("read-dat {}", shell_quote(&path)),
-        ];
         self.status = format!("Reading radio into {}…", path.display());
-        if let Err(e) = self.run(&lines) {
+        let read = oem::DatOp::Read {
+            port: self.port.clone(),
+            outfile: path.clone(),
+            template: None,
+        };
+        if let Err(e) = self.apply_dat(oem::run(&helper, &exe, &read)) {
             self.status = e;
             return;
         }
-        self.load_dat(&path);
+        if !self.load_dat(&path) {
+            return;
+        }
         let Some(doc) = self.doc.clone() else {
             return;
         };
@@ -533,16 +556,19 @@ impl CpsApp {
         // document back so foobar.dat and foobar.950pro agree.
         let scratch = std::env::temp_dir().join("rt950-cps-read.json");
         if let Err(e) = std::fs::write(&scratch, doc.to_string()) {
-            self.status = format!("Read {} into {}. temp JSON failed: {e}", self.port, path.display());
+            self.status = format!(
+                "Read {} into {}. temp JSON failed: {e}",
+                self.port,
+                path.display()
+            );
             return;
         }
-        let line = format!(
-            "dat-import {} {} {}",
-            shell_quote(&path),
-            shell_quote(&scratch),
-            shell_quote(&path)
-        );
-        if let Err(e) = self.run(&[line]) {
+        let import = oem::DatOp::Import {
+            template: path.clone(),
+            json: scratch,
+            outfile: path.clone(),
+        };
+        if let Err(e) = self.apply_dat(oem::run(&helper, &exe, &import)) {
             self.status = format!("Read {} into {}. {e}", self.port, path.display());
             return;
         }
@@ -559,12 +585,12 @@ impl CpsApp {
 
     fn write_radio(&mut self) {
         self.kiss = None;
-        if !self.oem_ready() {
+        let Some((helper, exe)) = self.oem_paths() else {
             return;
-        }
+        };
         let Some(template) = bundled_dat_template().or_else(|| self.dat_template()) else {
-            self.status = "Writing the radio needs RT-950PRO_CPS_NI.dat, or open a .dat first."
-                .into();
+            self.status =
+                "Writing the radio needs RT-950PRO_CPS_NI.dat, or open a .dat first.".into();
             return;
         };
         let Some(doc) = &self.doc else {
@@ -577,18 +603,21 @@ impl CpsApp {
             self.status = format!("temp JSON failed: {e}");
             return;
         }
-        let lines = vec![
-            format!(
-                "dat-import {} {} {}",
-                shell_quote(&template),
-                shell_quote(&json_path),
-                shell_quote(&dat_path)
-            ),
-            format!("port {}", self.port),
-            format!("write-dat {} confirm", shell_quote(&dat_path)),
-        ];
+        let import = oem::DatOp::Import {
+            template,
+            json: json_path,
+            outfile: dat_path.clone(),
+        };
         self.status = "Writing radio…".into();
-        match self.run(&lines) {
+        if let Err(e) = self.apply_dat(oem::run(&helper, &exe, &import)) {
+            self.status = e;
+            return;
+        }
+        let write = oem::DatOp::Write {
+            port: self.port.clone(),
+            dat: dat_path,
+        };
+        match self.apply_dat(oem::run(&helper, &exe, &write)) {
             Ok(_) => self.status = format!("Wrote {}", self.port),
             Err(e) => self.status = e,
         }
@@ -601,16 +630,25 @@ impl CpsApp {
             self.status = e;
             return;
         }
-        let lines = vec![
-            format!("port {}", self.port),
-            "open".into(),
-            format!("boot-picture {} confirm", shell_quote(&path)),
-            "close".into(),
-        ];
+        let pixels = match rt950_protocol::bmp_file_to_rgb565(&path) {
+            Ok(pixels) => pixels,
+            Err(e) => {
+                self.log_lines(&e.to_string());
+                self.fail_status(format!("error: {e}"));
+                return;
+            }
+        };
+        let port = self.port.clone();
         self.status = format!("Sending boot picture {}…", path.display());
-        match self.run(&lines) {
-            Ok(_) => self.status = format!("Sent boot picture to {}", self.port),
-            Err(e) => self.status = e,
+        match rt950_protocol::upload_boot_picture(&port, &pixels, |msg| {
+            self.log_lines(msg);
+        }) {
+            Ok(()) => self.status = format!("Sent boot picture to {port}"),
+            Err(e) => {
+                let status = format!("error: {e}");
+                self.log_lines(&status);
+                self.fail_status(status);
+            }
         }
     }
 }
@@ -707,7 +745,7 @@ impl eframe::App for CpsApp {
                 .default_size(120.0)
                 .show_inside(ui, |ui| {
                     ui.horizontal(|ui| {
-                        ui.label("Shell");
+                        ui.label("Log");
                         if ui.button("Clear").clicked() {
                             self.log.clear();
                         }
@@ -938,15 +976,6 @@ fn check_bmp(path: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn shell_quote(path: &Path) -> String {
-    let s = path.display().to_string();
-    if s.contains([' ', '\t', '"', '\'']) {
-        format!("\"{}\"", s.replace('"', "\\\""))
-    } else {
-        s
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use std::path::{Path, PathBuf};
@@ -971,7 +1000,6 @@ mod tests {
             PathBuf::from("/tmp/indyham-2026-10-03.dat")
         );
     }
-
 
     #[test]
     fn radio_read_restores_fm_transmit_and_leaves_ais_receive_only() {

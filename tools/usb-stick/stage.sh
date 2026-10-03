@@ -34,6 +34,8 @@ cp "$SCRIPT_DIR/setup.sh" "$DEST/setup.sh"
 cp "$SCRIPT_DIR/uninstall.sh" "$DEST/uninstall.sh"
 cp "$SCRIPT_DIR/rt950-cps.svg" "$DEST/rt950-cps.svg"
 chmod 755 "$DEST/run.sh" "$DEST/setup.sh" "$DEST/uninstall.sh" "$DEST/rt950-cps"
+# The window does not run radtel_cps.py. It stays on the stick for the
+# terminal flash command and the block read/write shell.
 cp "$REPO/firmware/scripts/radtel_cps.py" \
    "$REPO/firmware/scripts/radtel_flash.py" \
    "$REPO/firmware/scripts/RadtelDat.exe" \

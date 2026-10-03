@@ -1,7 +1,8 @@
 #!/bin/sh
 # Run the RT-950 CPS from this directory. A .950pro file needs only this
-# program. Mono, python3-serial, and BT-RT950PRO_CPS.exe are used for a
-# .dat file and for reading or writing the radio. ./setup.sh installs those.
+# program. Mono and BT-RT950PRO_CPS.exe are used for a .dat file and for
+# reading or writing the radio. ./setup.sh installs Mono. The window does
+# not need Python.
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
@@ -16,8 +17,6 @@ if [ -z "${RT950_CPS_EXE:-}" ] && [ -f "$ROOT/cps/BT-RT950PRO_CPS.exe" ]; then
 fi
 
 oem_missing=""
-command -v python3 >/dev/null 2>&1 || oem_missing="$oem_missing python3"
-python3 -c 'import serial' >/dev/null 2>&1 || oem_missing="$oem_missing python3-serial"
 command -v mono >/dev/null 2>&1 || oem_missing="$oem_missing mono"
 if [ -n "${RT950_CPS_EXE:-}" ]; then
     [ -f "$RT950_CPS_EXE" ] || oem_missing="$oem_missing BT-RT950PRO_CPS.exe"
