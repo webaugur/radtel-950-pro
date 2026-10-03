@@ -10,7 +10,7 @@ Zone map (10 x 99):
   2 Indiana       five 49 MHz walkie channels, then IndyHam (IHERN shifts to 30-55)
   3 Rail          IndyHam, AIS still at 79-82
   4 Federal       IndyHam federal rows, then federal IR and LE
-  5 VHF Interop   low-band, VTAC, mutual aid, marine, SAR air, NOAA
+  5 Interop       low-band, VTAC, mutual aid, marine, SAR, old studio mics
   6 UHF Interop   UCALL/UTAC and the 12.5 kHz MED pairs
   7 700 800 TAC   800 MHz 8CALL/8TAC, then 700 MHz P25 conventional
   8 Military 1    IndyHam
@@ -25,9 +25,10 @@ in the NIFOG 2.02 channel tables used here.
 
 Empty slots that match a published neighbour plan are filled in place.
 Zone 1 takes the 16 analogue PMR446 channels (ECC/DEC/(15)05), transmit on.
-Rail takes Canadian AAR 2-6. VHF Interop takes Canadian SAR-IF and the
-TB-8 220 MHz mutual-aid pairs. Zone 7 takes the three Canadian 800 MHz
-interop rows that fit (I-CALL, its direct, ITAC-1).
+Rail takes Canadian AAR 2-6. Interop takes Canadian SAR-IF and the
+TB-8 220 MHz mutual-aid pairs, then the old broadcast-studio wireless
+mics and remotes that fit in the slots that remain. Zone 7 takes the
+three Canadian 800 MHz interop rows that fit (I-CALL, its direct, ITAC-1).
 
 The radio transmits FM only. Analog NIFOG rows are transmit-enabled (flag 2).
 P25 rows (8K10F1E, NAC $293 / $F7E or $68F) are stored receive-only (flag 0):
@@ -480,6 +481,72 @@ def build(doc: dict) -> dict:
         + fill(blank, ca_220, mod=2, wide=1)
     )
 
+    # Old studio wireless mics and remote-pickup gear, for testing whatever
+    # is in the rack. Simplex FM, tone off. The radio's wide setting is
+    # 25 kHz / 5 kHz deviation, so a 54 kHz or 200 kHz mic will not come
+    # through cleanly. txPower 2 is Low. That is not a measured 50 mW.
+    # 72 MHz is in the FM-broadcast receive range. Transmit there is untested.
+    #
+    # 47 CFR 90.257 lists the 72-76 MHz channels. These eight are the ones
+    # that also match the usual A-E / F-H product plan (72.1 through 72.9
+    # and 75.5, 75.7, 75.9). 75.900 is the common channel nearest 76 MHz.
+    # 90.209 authorizes 20 kHz in this band. Mobile output there is capped
+    # at 1 W, and the channels must not interfere with TV 4 or 5.
+    studio_lo = [
+        ("WM 72.100", 72.100, 72.100),
+        ("WM 72.300", 72.300, 72.300),
+        ("WM 72.500", 72.500, 72.500),
+        ("WM 72.700", 72.700, 72.700),
+        ("WM 72.900", 72.900, 72.900),
+        ("WM 75.500", 75.500, 75.500),
+        ("WM 75.700", 75.700, 75.700),
+        ("WM 75.900", 75.900, 75.900),
+    ]
+    # FCC 15-100: the eight traveling frequencies that Part 90 allowed for
+    # decades. The other eight 90.265(b) centers were added later. The four
+    # kept here are the 200 kHz centers in 90.265(b)(1). The four companion
+    # 54 kHz centers from that expansion do not fit.
+    studio_vhf = [
+        ("WM 169.445", 169.445, 169.445),
+        ("WM 169.505", 169.505, 169.505),
+        ("WM 170.245", 170.245, 170.245),
+        ("WM 170.305", 170.305, 170.305),
+        ("WM 171.045", 171.045, 171.045),
+        ("WM 171.105", 171.105, 171.105),
+        ("WM 171.845", 171.845, 171.845),
+        ("WM 171.905", 171.905, 171.905),
+        ("WM 169.575", 169.575, 169.575),
+        ("WM 170.025", 170.025, 170.025),
+        ("WM 171.075", 171.075, 171.075),
+        ("WM 171.875", 171.875, 171.875),
+    ]
+    # 47 CFR 74.402. The five 161.64-161.76 centers are the old wide Group K2
+    # remotes and are in paragraph (b)(3). 166.25 and 170.15 are paragraph
+    # (a)(3); (e)(8) bars them inside the Springfield southern arc and within
+    # 150 miles of New York City. Indianapolis is outside both. The four UHF
+    # centers are paragraph (d)(1), the 50/100 kHz program channels. The long
+    # 6.25 kHz and 25 kHz segment tables do not fit. RPU gear is licensed and
+    # runs watts, so these stay at CPS High, which is not a measured Marti power.
+    studio_rpu = [
+        ("RPU 161.64", 161.640, 161.640),
+        ("RPU 161.67", 161.670, 161.670),
+        ("RPU 161.70", 161.700, 161.700),
+        ("RPU 161.73", 161.730, 161.730),
+        ("RPU 161.76", 161.760, 161.760),
+        ("RPU 166.25", 166.250, 166.250),
+        ("RPU 170.15", 170.150, 170.150),
+        ("RPU 450.90", 450.900, 450.900),
+        ("RPU 450.95", 450.950, 450.950),
+        ("RPU 455.90", 455.900, 455.900),
+        ("RPU 455.95", 455.950, 455.950),
+    ]
+    vhf_rows = (
+        vhf_rows
+        + fill(blank, studio_lo, mod=2, wide=0, power=2)
+        + fill(blank, studio_vhf, mod=2, wide=0, power=2)
+        + fill(blank, studio_rpu, mod=2, wide=0, power=0)
+    )
+
     # ISED TB-8 Table 3. Canadian 800 MHz interop, 25 kHz, not the US 8TAC set.
     # Three slots remain in this zone, so only the calling pair and ITAC-1 fit.
     # The bulletin does not print a CTCSS tone.
@@ -508,7 +575,7 @@ def build(doc: dict) -> dict:
         ("Indiana", indiana),
         ("Rail", rail),
         ("Federal", federal_rows),
-        ("VHF Interop", vhf_rows),
+        ("Interop", vhf_rows),
         ("UHF Interop", uhf_rows),
         ("700 800 TAC", band78_rows),
         ("Military 1", military_1),
@@ -559,6 +626,18 @@ def main() -> None:
         raise SystemExit("personal radio or the 49 MHz walkie channels did not survive the import")
     if ch[99 + 37]["chName"] != "IHERN CSQ":
         raise SystemExit("IHERN CSQ is not five slots below its old position")
+    if checked["channelData"]["arrayZoneName"][4] != "Interop":
+        raise SystemExit("zone 5 was not renamed to Interop")
+    z5 = ch[4 * 99 : 5 * 99]
+    z5_names = [c["chName"] for c in z5]
+    if z5_names.index("WM 72.100") != z5_names.index("CA220 185") + 1:
+        raise SystemExit("studio channels did not follow the Canadian 220 block")
+    if z5_names[98] != "RPU 455.95" or z5[98]["rxModulation"] != 2:
+        raise SystemExit("UHF remote-pickup tail did not land on the last Interop slot")
+    if z5[z5_names.index("WM 72.100")]["txPower"] != 2:
+        raise SystemExit("studio mics are not on Low")
+    if z5[98]["txPower"] != 0 or z5[98]["bandWide"] != 0:
+        raise SystemExit("UHF remote pickup is not wide FM at High")
     if not SOURCE.is_file() or SOURCE.stat().st_size == 0:
         raise SystemExit("IndyHam source missing after the build")
     print(f"wrote {OUT_DAT}")
