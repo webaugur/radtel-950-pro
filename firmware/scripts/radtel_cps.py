@@ -32,6 +32,8 @@ Examples:
 
 from __future__ import annotations
 
+import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -46,6 +48,11 @@ BLOCK = 0x80
 WRITE_GROUP = 100
 DEFAULT_BAUD = 115_200
 READ_TIMEOUT_S = 2.0
+SCRIPT_DIR = Path(__file__).resolve().parent
+DEFAULT_CPS_EXE = Path.home() / (
+    "Applications/Radtel950Pro/drive_c/Program Files (x86)/RT-950PRO_CPS/BT-RT950PRO_CPS.exe"
+)
+DAT_HELPER = SCRIPT_DIR / "RadtelDat.exe"
 
 
 class ShellError(Exception):
@@ -117,6 +124,7 @@ class Radio:
         self.port_name = "/dev/ttyUSB0"
         self.baud = DEFAULT_BAUD
         self.ser = None
+        self.cps_exe = Path(os.environ.get("RT950_CPS_EXE", str(DEFAULT_CPS_EXE)))
 
     def open(self) -> None:
         if self.ser is not None and getattr(self.ser, "is_open", False):
@@ -275,6 +283,45 @@ class Radio:
         self.write(b"E")
 
 
+def run_dat_helper(radio: Radio, args: list[str], timeout_s: float) -> None:
+    """Run RadtelDat.exe. OEM .dat I/O uses the CPS assembly's own codec."""
+    if not DAT_HELPER.is_file():
+        raise ShellError(f"missing {DAT_HELPER} (mcs -sdk:4.5 -out:RadtelDat.exe RadtelDat.cs)")
+    if not radio.cps_exe.is_file():
+        raise ShellError(f"CPS exe not found: {radio.cps_exe}")
+    if radio.ser is not None:
+        # Mono opens the tty itself; don't hold it here.
+        radio.close()
+    cmd = ["mono", str(DAT_HELPER), *args]
+    try:
+        proc = subprocess.run(
+            cmd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout_s,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ShellError(f"dat helper timed out after {timeout_s:.0f}s") from exc
+    except OSError as exc:
+        raise ShellError(f"failed to run mono: {exc}") from exc
+    if proc.stderr:
+        for line in proc.stderr.splitlines():
+            if line.strip():
+                print(line, file=sys.stderr, flush=True)
+    if proc.returncode != 0:
+        tail = (proc.stderr or proc.stdout or "").strip().splitlines()
+        detail = tail[-1] if tail else f"exit {proc.returncode}"
+        if detail.startswith("error:"):
+            detail = detail[len("error:") :].strip()
+        raise ShellError(detail)
+    if proc.stdout:
+        sys.stdout.write(proc.stdout)
+        if not proc.stdout.endswith("\n"):
+            sys.stdout.write("\n")
+        sys.stdout.flush()
+
+
 HELP = """\
 commands (stdin). stdout = results, stderr = errors / progress.
   help
@@ -292,6 +339,12 @@ commands (stdin). stdout = results, stderr = errors / progress.
   write-stream <file> confirm
                              session + 100-byte ACK groups + 'E'
                              (file is the packed write blob, NOT the sparse read image)
+  dat-info <file.dat>        OEM CPS .dat summary (no radio)
+  read-dat <outfile.dat> [template.dat]
+                             pull radio into an OEM .dat
+  write-dat <file.dat> confirm
+                             push an OEM .dat (e.g. RT-950PRO_CPS_NI.dat)
+  cps-exe <path>             override BT-RT950PRO_CPS.exe location
   end                        send 'E'
   raw <hex> [nbytes]         write hex; if nbytes set, read that many and print
   quit | exit
@@ -400,6 +453,42 @@ def dispatch(radio: Radio, line: str) -> bool:
         radio.session()
         radio.write_stream(data)
         out(f"ok write-stream {path} {len(data)}")
+        return True
+    if cmd == "cps-exe":
+        if len(args) != 1:
+            raise ShellError("usage: cps-exe <path>")
+        radio.cps_exe = Path(args[0])
+        if not radio.cps_exe.is_file():
+            raise ShellError(f"not a file: {radio.cps_exe}")
+        out(f"ok cps-exe {radio.cps_exe}")
+        return True
+    if cmd == "dat-info":
+        if len(args) != 1:
+            raise ShellError("usage: dat-info <file.dat>")
+        run_dat_helper(radio, ["info", str(radio.cps_exe), args[0]], timeout_s=60)
+        return True
+    if cmd == "read-dat":
+        if len(args) not in (1, 2):
+            raise ShellError("usage: read-dat <outfile.dat> [template.dat]")
+        helper_args = [
+            "read",
+            str(radio.cps_exe),
+            radio.port_name,
+            str(radio.baud),
+            args[0],
+        ]
+        if len(args) == 2:
+            helper_args.append(args[1])
+        run_dat_helper(radio, helper_args, timeout_s=180)
+        return True
+    if cmd == "write-dat":
+        if len(args) != 2 or args[1].lower() != "confirm":
+            raise ShellError("usage: write-dat <file.dat> confirm")
+        run_dat_helper(
+            radio,
+            ["write", str(radio.cps_exe), radio.port_name, str(radio.baud), args[0]],
+            timeout_s=180,
+        )
         return True
     if cmd == "end":
         radio.write(b"E")

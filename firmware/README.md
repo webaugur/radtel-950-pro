@@ -23,3 +23,22 @@ EOF
 `write-stream <file> confirm` programs the radio. Do not feed it the sparse
 `read-image` file (54016 bytes); OEM writes a packed 27200-byte stream.
 
+OEM `.dat` files (BinaryFormatter `KDH.RadioData`, e.g. `RT-950PRO_CPS_NI.dat`)
+go through `RadtelDat.exe`, which calls the CPS assembly's own `DoIt()`:
+
+```bash
+python3 firmware/scripts/radtel_cps.py <<'EOF'
+port /dev/ttyUSB0
+dat-info /path/to/RT-950PRO_CPS_NI.dat
+write-dat /path/to/RT-950PRO_CPS_NI.dat confirm
+read-dat /tmp/from-radio.dat
+quit
+EOF
+```
+
+Rebuild the helper if needed:
+
+```bash
+mcs -sdk:4.5 -out:firmware/scripts/RadtelDat.exe firmware/scripts/RadtelDat.cs
+```
+
