@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build imports/RT-950PRO_CPS_imports.dat from the RadioReference HTML lists.
+"""Build codeplugs/RT-950PRO_CPS_imports.dat from the RadioReference HTML lists.
 
 Uses the CPS shell's dat-export / dat-import so the .dat stays OEM BinaryFormatter.
 Does not write the radio.
@@ -20,7 +20,7 @@ CPS_EXE = Path.home() / (
     "Applications/Radtel950Pro/drive_c/Program Files (x86)/RT-950PRO_CPS/BT-RT950PRO_CPS.exe"
 )
 TEMPLATE = ROOT / "RT-950PRO_CPS_NI.dat"
-OUT_DAT = IMPORTS / "RT-950PRO_CPS_imports.dat"
+OUT_DAT = ROOT / "codeplugs" / "RT-950PRO_CPS_imports.dat"
 
 CHANNELS = 990
 # This CPS stores 10 zones x 99 channels. The older manual's 15 x 64 is not

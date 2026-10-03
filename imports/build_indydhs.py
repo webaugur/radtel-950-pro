@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Build imports/indydhs-2026-10-03.dat from the IndyHam codeplug plus NIFOG 2.02.
+"""Build codeplugs/indydhs-2026-10-03.dat from the IndyHam codeplug plus NIFOG 2.02.
 
-Clones imports/indyham-2026-10-03.dat. Does not write the radio and does not
+Clones codeplugs/indyham-2026-10-03.dat. Does not write the radio and does not
 modify the IndyHam file. Frequencies are the ones printed in NIFOG 2.02
 (CISA, 12 Dec 2024). Nothing here is guessed.
 
@@ -40,14 +40,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-IMPORTS = Path(__file__).resolve().parent
 HELPER = ROOT / "firmware/scripts/RadtelDat.exe"
 CPS_EXE = Path.home() / (
     "Applications/Radtel950Pro/drive_c/Program Files (x86)/RT-950PRO_CPS/BT-RT950PRO_CPS.exe"
 )
-SOURCE = IMPORTS / "indyham-2026-10-03.dat"
-OUT_DAT = IMPORTS / "indydhs-2026-10-03.dat"
-OUT_JSON = IMPORTS / "indydhs-2026-10-03.950pro"
+CODEPLUGS = ROOT / "codeplugs"
+SOURCE = CODEPLUGS / "indyham-2026-10-03.dat"
+OUT_DAT = CODEPLUGS / "indydhs-2026-10-03.dat"
+OUT_JSON = CODEPLUGS / "indydhs-2026-10-03.950pro"
 
 PER_ZONE = 99
 NAME_LEN = 12
