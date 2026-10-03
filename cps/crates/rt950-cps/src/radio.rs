@@ -1,7 +1,7 @@
 //! Optional features (`funConfigData`).
 //! Reserved `FrOneByte*` / `FrTwoByte*` / `FrThreeByte*` fields stay untouched.
 //!
-//! The page uses the same tab row as shortwave. Each tab is a set of editors.
+//! Audio, Power, Keys, Display, and Zones stay as tabs inside Global.
 
 use eframe::egui;
 use serde_json::{json, Value};
@@ -36,17 +36,15 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value) {
     ui.data_mut(|data| data.insert_temp(id, tab));
     ui.add_space(6.0);
 
-    let height = ui.available_height();
-    egui::ScrollArea::vertical()
-        .id_salt(("radio-body", tab))
-        .max_height(height)
-        .show(ui, |ui| match tab {
-            1 => power(ui, doc),
-            2 => keys(ui, doc),
-            3 => display(ui, doc),
-            4 => zones(ui, doc),
-            _ => audio(ui, doc),
-        });
+    // Natural height. Global owns the scroll, so this section must not
+    // claim the rest of the window.
+    match tab {
+        1 => power(ui, doc),
+        2 => keys(ui, doc),
+        3 => display(ui, doc),
+        4 => zones(ui, doc),
+        _ => audio(ui, doc),
+    }
 }
 
 fn audio(ui: &mut egui::Ui, doc: &mut Value) {

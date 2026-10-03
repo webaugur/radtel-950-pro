@@ -139,26 +139,20 @@ fn page_from_arg(name: Option<&str>) -> Page {
         Some("shortwave") => Page::Shortwave,
         Some("am") => Page::Am,
         Some("fm") => Page::Fm,
-        Some("vfo") => Page::Vfo,
-        Some("radio") => Page::Radio,
-        Some("dtmf") => Page::Dtmf,
+        Some("global" | "vfo" | "radio" | "dtmf" | "boot") => Page::Global,
         Some("aprs") => Page::Aprs,
-        Some("boot") => Page::Boot,
         _ => Page::Channels,
     }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Page {
+    Global,
+    Aprs,
     Channels,
     Shortwave,
     Am,
     Fm,
-    Vfo,
-    Radio,
-    Dtmf,
-    Aprs,
-    Boot,
 }
 
 struct CpsApp {
@@ -523,37 +517,29 @@ impl eframe::App for CpsApp {
         });
 
         egui::Panel::top("pages").show_inside(ui, |ui| {
-            ui.horizontal(|ui| {
-                for (page, label) in [
-                    (Page::Vfo, "VFO"),
-                    (Page::Radio, "Radio"),
-                    (Page::Dtmf, "DTMF"),
-                    (Page::Aprs, "APRS"),
-                    (Page::Boot, "Boot picture"),
-                ] {
-                    if ui
-                        .add(egui::Button::selectable(self.page == page, label))
-                        .clicked()
-                    {
-                        self.page = page;
-                    }
-                }
-            });
-            ui.horizontal(|ui| {
-                for (page, label) in [
-                    (Page::Channels, "Channels"),
-                    (Page::Shortwave, "Shortwave"),
-                    (Page::Am, "AM"),
-                    (Page::Fm, "FM"),
-                ] {
-                    if ui
-                        .add(egui::Button::selectable(self.page == page, label))
-                        .clicked()
-                    {
-                        self.page = page;
-                    }
-                }
-            });
+            // One row. A later tab scrolls sideways instead of wrapping
+            // onto a second line and pushing the page body down.
+            egui::ScrollArea::horizontal()
+                .id_salt("page-tabs")
+                .show(ui, |ui| {
+                    ui.horizontal(|ui| {
+                        for (page, label) in [
+                            (Page::Global, "Global"),
+                            (Page::Aprs, "APRS"),
+                            (Page::Channels, "Channels"),
+                            (Page::Shortwave, "Shortwave"),
+                            (Page::Am, "AM"),
+                            (Page::Fm, "FM"),
+                        ] {
+                            if ui
+                                .add(egui::Button::selectable(self.page == page, label))
+                                .clicked()
+                            {
+                                self.page = page;
+                            }
+                        }
+                    });
+                });
         });
 
         egui::Panel::bottom("status").show_inside(ui, |ui| {
@@ -615,26 +601,26 @@ impl eframe::App for CpsApp {
                     ui.label("Open a .dat to edit FM memories.");
                 }
             }
-            Page::Vfo => {
-                if let Some(doc) = self.doc.as_mut() {
-                    vfo::show(ui, doc);
-                } else {
-                    ui.label("Open a .dat to edit the VFOs.");
-                }
-            }
-            Page::Radio => {
-                if let Some(doc) = self.doc.as_mut() {
-                    radio::show(ui, doc);
-                } else {
-                    ui.label("Open a .dat to edit radio options.");
-                }
-            }
-            Page::Dtmf => {
-                if let Some(doc) = self.doc.as_mut() {
-                    dtmf::show(ui, doc);
-                } else {
-                    ui.label("Open a .dat to edit DTMF.");
-                }
+            Page::Global => {
+                egui::ScrollArea::vertical()
+                    .id_salt("global")
+                    .auto_shrink([false, false])
+                    .show(ui, |ui| {
+                        if let Some(doc) = self.doc.as_mut() {
+                            ui.heading("VFO");
+                            vfo::show(ui, doc);
+                            ui.add_space(16.0);
+                            ui.heading("Radio");
+                            radio::show(ui, doc);
+                            ui.add_space(16.0);
+                            dtmf::show(ui, doc);
+                            ui.add_space(16.0);
+                        } else {
+                            ui.label("Open a .dat to edit global settings.");
+                            ui.add_space(16.0);
+                        }
+                        self.ui_boot(ui);
+                    });
             }
             Page::Aprs => {
                 if let Some(doc) = self.doc.as_mut() {
@@ -643,7 +629,6 @@ impl eframe::App for CpsApp {
                     ui.label("Open a .dat to edit APRS.");
                 }
             }
-            Page::Boot => self.ui_boot(ui),
         });
 
         if let Some(detail) = self.power_cycle.clone() {

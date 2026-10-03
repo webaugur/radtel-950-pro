@@ -15,8 +15,10 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value) {
         for (title, key) in [("VFO A", "vfoA"), ("VFO B", "vfoB"), ("VFO C", "vfoC")] {
             // allocate_ui keeps the parent's horizontal layout, which put every
             // field of every VFO on one row and reused the text-field ids.
+            // Height 0 lets the column grow with its fields. The Global page
+            // scrolls; a viewport-tall column would swallow that scroll.
             ui.allocate_ui_with_layout(
-                egui::vec2(width, ui.available_height()),
+                egui::vec2(width, 0.0),
                 egui::Layout::top_down(egui::Align::Min),
                 |ui| {
                     ui.push_id(key, |ui| column(ui, doc, title, key));
@@ -33,7 +35,7 @@ fn column(ui: &mut egui::Ui, doc: &mut Value, title: &str, key: &str) {
             edit::missing(ui, "VFO");
             return;
         };
-        egui::ScrollArea::vertical().id_salt(key).show(ui, |ui| {
+        ui.push_id(key, |ui| {
             edit::text_at(ui, key, "RX MHz", vfo, "tB_RxFreq");
             edit::text_at(ui, key, "RX tone", vfo, "cbB_RxQT");
             edit::text_at(ui, key, "TX tone", vfo, "cbB_TxQT");
