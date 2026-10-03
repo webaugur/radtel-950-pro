@@ -1,12 +1,13 @@
 //! KISS receive and APRS position decode for the map.
 //!
 //! The GPS module's NMEA stream stays on the radio's internal UART. This
-//! module reads the USB KISS feed only.
+//! module reads the USB KISS feed. Beacon writes one position frame on that
+//! same port. The radio's own beacon is still the side key.
 
 use std::collections::HashMap;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc::{self, Receiver};
+use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::Arc;
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
@@ -37,21 +38,28 @@ pub enum FeedEvent {
 pub struct Feed {
     stop: Arc<AtomicBool>,
     rx: Receiver<FeedEvent>,
+    outbound: Sender<Vec<u8>>,
     thread: Option<JoinHandle<()>>,
 }
 
 impl Feed {
     pub fn start(port: &str, ctx: egui::Context) -> Self {
         let (tx, rx) = mpsc::channel();
+        let (outbound, outbound_rx) = mpsc::channel();
         let stop = Arc::new(AtomicBool::new(false));
         let stop_thread = Arc::clone(&stop);
         let port = port.to_string();
-        let thread = thread::spawn(move || listen(port, stop_thread, tx, ctx));
+        let thread = thread::spawn(move || listen(port, stop_thread, tx, outbound_rx, ctx));
         Self {
             stop,
             rx,
+            outbound,
             thread: Some(thread),
         }
+    }
+
+    pub fn send_kiss(&self, frame: Vec<u8>) -> bool {
+        self.outbound.send(frame).is_ok()
     }
 
     pub fn poll(&self) -> Vec<FeedEvent> {
@@ -75,7 +83,13 @@ impl Drop for Feed {
     }
 }
 
-fn listen(port: String, stop: Arc<AtomicBool>, tx: mpsc::Sender<FeedEvent>, ctx: egui::Context) {
+fn listen(
+    port: String,
+    stop: Arc<AtomicBool>,
+    tx: mpsc::Sender<FeedEvent>,
+    outbound: Receiver<Vec<u8>>,
+    ctx: egui::Context,
+) {
     let mut serial = match serialport::new(&port, 115_200)
         .timeout(Duration::from_millis(200))
         .open()
@@ -92,6 +106,13 @@ fn listen(port: String, stop: Arc<AtomicBool>, tx: mpsc::Sender<FeedEvent>, ctx:
     let mut buf = Vec::new();
     let mut chunk = [0u8; 512];
     while !stop.load(Ordering::Relaxed) {
+        while let Ok(frame) = outbound.try_recv() {
+            if serial.write_all(&frame).and_then(|()| serial.flush()).is_err() {
+                let _ = tx.send(FeedEvent::Error(format!("{port}: beacon write failed")));
+                ctx.request_repaint();
+                return;
+            }
+        }
         match serial.read(&mut chunk) {
             Ok(0) => {}
             Ok(n) => {
@@ -440,6 +461,184 @@ pub fn map_center(aprs: &Value, stations: &HashMap<String, Station>) -> Option<(
     stations.get(&call).map(|station| (station.lat, station.lon))
 }
 
+/// One uncompressed APRS position, wrapped as a KISS data frame.
+/// The center is the same point the map uses. There is no separate
+/// "beacon now" command on the programming cable.
+pub fn beacon_kiss(aprs: &Value, stations: &HashMap<String, Station>) -> Result<Vec<u8>, String> {
+    let (lat, lon) = map_center(aprs, stations).ok_or_else(|| {
+        "No position to send. Fixed coordinates are empty, or this callsign has not reported a GPS position.".to_string()
+    })?;
+    let (base, ssid) = station_address(aprs)?;
+    let hops = path_hops(aprs)?;
+    let (table, symbol) = symbol_bytes(aprs);
+    let comment = comment_bytes(aprs);
+    let info = format!(
+        "!{}{}{}{}{}",
+        aprs_coord(lat, true)?,
+        table as char,
+        aprs_coord(lon, false)?,
+        symbol as char,
+        comment
+    );
+    let mut ax25 = Vec::new();
+    ax25.extend(ax25_address("APRS", 0, false)?);
+    ax25.extend(ax25_address(&base, ssid, hops.is_empty())?);
+    for (i, (call, hop_ssid)) in hops.iter().enumerate() {
+        ax25.extend(ax25_address(call, *hop_ssid, i + 1 == hops.len())?);
+    }
+    ax25.push(0x03);
+    ax25.push(0xF0);
+    ax25.extend(info.into_bytes());
+    Ok(kiss_wrap(&ax25))
+}
+
+fn station_address(aprs: &Value) -> Result<(String, u8), String> {
+    let call = aprs
+        .get("tB_CallSign")
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .trim()
+        .to_ascii_uppercase();
+    let ssid = aprs.get("cbB_SSID").and_then(Value::as_i64).unwrap_or(0);
+    if !(0..=15).contains(&ssid) {
+        return Err("SSID must be 0 to 15.".to_string());
+    }
+    if !valid_ax25_call(&call) {
+        return Err("Callsign must be 1 to 6 letters or digits.".to_string());
+    }
+    Ok((call, ssid as u8))
+}
+
+fn valid_ax25_call(call: &str) -> bool {
+    (1..=6).contains(&call.len()) && call.bytes().all(|byte| byte.is_ascii_alphanumeric())
+}
+
+fn path_hops(aprs: &Value) -> Result<Vec<(String, u8)>, String> {
+    let which = aprs
+        .get("cbB_RoutingSelect")
+        .and_then(Value::as_i64)
+        .unwrap_or(0);
+    let mut hops = Vec::new();
+    match which {
+        1 => hops.push(("WIDE1".to_string(), 1)),
+        2 => {
+            hops.push(("WIDE1".to_string(), 1));
+            hops.push(("WIDE2".to_string(), 1));
+        }
+        3 => hops.extend(custom_hop(aprs, "tB_CustomRoutingOne", "cbB_CustomRoutingOneSSID")?),
+        4 => {
+            hops.extend(custom_hop(aprs, "tB_CustomRoutingOne", "cbB_CustomRoutingOneSSID")?);
+            hops.extend(custom_hop(aprs, "tB_CustomRoutingTwo", "cbB_CustomRoutingTwoSSID")?);
+        }
+        _ => {}
+    }
+    if hops.len() > 8 {
+        return Err("Beacon path has more than 8 hops.".to_string());
+    }
+    Ok(hops)
+}
+
+fn custom_hop(aprs: &Value, call_key: &str, ssid_key: &str) -> Result<Option<(String, u8)>, String> {
+    let call = aprs
+        .get(call_key)
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .trim()
+        .to_ascii_uppercase();
+    if call.is_empty() {
+        return Ok(None);
+    }
+    let ssid = aprs.get(ssid_key).and_then(Value::as_i64).unwrap_or(0);
+    if !(0..=15).contains(&ssid) || !valid_ax25_call(&call) {
+        return Err(format!("Path {call} is not a valid AX.25 address."));
+    }
+    Ok(Some((call, ssid as u8)))
+}
+
+fn symbol_bytes(aprs: &Value) -> (u8, u8) {
+    // CPS symbols match the radio manual: /L /b /> /R. User-defined icons
+    // have no published character map here, so they go out as a house.
+    match aprs.get("cbB_RadioSymbol").and_then(Value::as_i64).unwrap_or(0) {
+        1 => (b'/', b'b'),
+        2 => (b'/', b'>'),
+        3 => (b'/', b'R'),
+        4 => (b'/', b'-'),
+        _ => (b'/', b'L'),
+    }
+}
+
+fn comment_bytes(aprs: &Value) -> String {
+    aprs.get("tB_CustomMessages")
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .chars()
+        .filter(|ch| ch.is_ascii_graphic() || *ch == ' ')
+        .take(36)
+        .collect::<String>()
+        .trim()
+        .to_string()
+}
+
+fn aprs_coord(value: f64, latitude: bool) -> Result<String, String> {
+    if !value.is_finite() {
+        return Err("Position is not a number.".to_string());
+    }
+    let hemisphere = if latitude {
+        if value < 0.0 { 'S' } else { 'N' }
+    } else if value < 0.0 {
+        'W'
+    } else {
+        'E'
+    };
+    let abs = value.abs();
+    let mut degrees = abs.floor() as u32;
+    let mut minutes = (abs - f64::from(degrees)) * 60.0;
+    if minutes >= 59.995 {
+        minutes = 0.0;
+        degrees += 1;
+    }
+    let limit = if latitude { 90 } else { 180 };
+    if degrees > limit {
+        return Err("Position is out of range.".to_string());
+    }
+    let width = if latitude { 2 } else { 3 };
+    Ok(format!("{degrees:0width$}{minutes:05.2}{hemisphere}"))
+}
+
+fn ax25_address(call: &str, ssid: u8, last: bool) -> Result<[u8; 7], String> {
+    if !valid_ax25_call(call) || ssid > 15 {
+        return Err(format!("Path {call} is not a valid AX.25 address."));
+    }
+    let mut out = [b' ' << 1; 7];
+    for (i, byte) in call.bytes().enumerate() {
+        out[i] = byte << 1;
+    }
+    // Bits 6 and 5 are the AX.25 reserved bits. Bit 0 marks the last address.
+    out[6] = 0x60 | (ssid << 1) | u8::from(last);
+    Ok(out)
+}
+
+fn kiss_wrap(payload: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(payload.len() + 3);
+    out.push(FEND);
+    out.push(0x00);
+    for byte in payload {
+        match *byte {
+            FEND => {
+                out.push(FESC);
+                out.push(TFEND);
+            }
+            FESC => {
+                out.push(FESC);
+                out.push(TFESC);
+            }
+            other => out.push(other),
+        }
+    }
+    out.push(FEND);
+    out
+}
+
 pub fn stations_in_range<'a>(
     center: (f64, f64),
     stations: &'a HashMap<String, Station>,
@@ -572,5 +771,43 @@ mod tests {
         let center = map_center(&aprs, &HashMap::new()).unwrap();
         assert!((center.0 - (39.0 + 46.0 / 60.0)).abs() < 1e-9);
         assert!((center.1 - -(86.0 + 9.0 / 60.0)).abs() < 1e-9);
+    }
+
+    #[test]
+    fn beacon_frame_round_trips_the_stored_position() {
+        let aprs = serde_json::json!({
+            "cbB_SiteType": 0,
+            "tB_CallSign": "n0call",
+            "cbB_SSID": 1,
+            "cbB_RadioSymbol": 2,
+            "cbB_RoutingSelect": 1,
+            "tB_CustomMessages": "CPS",
+            "nUD_LatitudeDegree": 39,
+            "nUD_LatitudeMinute": 46,
+            "nUD_LatitudeSecond": 0,
+            "cbB_NorthSouthLatitude": 0,
+            "nUD_LongitudeDegree": 86,
+            "nUD_LongitudeMinute": 9,
+            "nUD_LongitudeSecond": 0,
+            "cbB_EastWestLongitude": 0
+        });
+        let wrapped = beacon_kiss(&aprs, &HashMap::new()).unwrap();
+        assert_eq!(*wrapped.first().unwrap(), FEND);
+        assert_eq!(wrapped[1], 0x00);
+        assert_eq!(*wrapped.last().unwrap(), FEND);
+        let mut buf = Vec::new();
+        let frames = push_kiss(&mut buf, &wrapped);
+        let station = position_from_ax25(&frames[0]).unwrap();
+        assert_eq!(station.call, "N0CALL-1");
+        assert!((station.lat - (39.0 + 46.0 / 60.0)).abs() < 1e-6);
+        assert!((station.lon - -(86.0 + 9.0 / 60.0)).abs() < 1e-6);
+        assert_eq!(station.comment, "CPS");
+        assert!(frames[0].windows(6).any(|w| w == &{
+            let mut wide = [b' ' << 1; 6];
+            for (i, byte) in b"WIDE1".iter().enumerate() {
+                wide[i] = byte << 1;
+            }
+            wide
+        }));
     }
 }

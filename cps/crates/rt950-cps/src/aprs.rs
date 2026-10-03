@@ -134,6 +134,21 @@ fn map_panel(
                 *feed = Some(Feed::start(port, ui.ctx().clone()));
             }
         }
+        if ui.button("Beacon").clicked() {
+            *kiss_status = match feed.as_ref() {
+                None => format!("Listen on {port} first"),
+                Some(open) => match kiss::beacon_kiss(aprs, stations) {
+                    Ok(frame) => {
+                        if open.send_kiss(frame) {
+                            "Wrote one KISS position. Watch the radio for TX. Side-key Beacon TX is the radio's own beacon.".to_string()
+                        } else {
+                            format!("{port} is not listening")
+                        }
+                    }
+                    Err(text) => text,
+                },
+            };
+        }
         ui.label(
             egui::RichText::new(if kiss_status.is_empty() {
                 "USB KISS at 115200. The GPS NMEA stream stays inside the radio.".to_string()
