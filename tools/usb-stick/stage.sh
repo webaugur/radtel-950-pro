@@ -7,18 +7,6 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 REPO=$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)
 DEST=${1:-$REPO/dist/rt950-usb}
-CPS_SRC=${RT950_CPS_EXE:-"$HOME/Applications/Radtel950Pro/drive_c/Program Files (x86)/RT-950PRO_CPS/BT-RT950PRO_CPS.exe"}
-if [ ! -f "$CPS_SRC" ]; then
-    CPS_SRC=$REPO/firmware/RE/cps/extracted/BT-RT950PRO_CPS.exe
-fi
-if [ ! -f "$CPS_SRC" ]; then
-    echo "Cannot find BT-RT950PRO_CPS.exe. Set RT950_CPS_EXE." >&2
-    exit 1
-fi
-# The blank .dat template is not in git. A release still builds without it.
-if [ ! -f "$REPO/RT-950PRO_CPS_NI.dat" ]; then
-    echo "No RT-950PRO_CPS_NI.dat; .dat import template omitted." >&2
-fi
 
 echo "Building release rt950-cps"
 (
@@ -27,23 +15,13 @@ echo "Building release rt950-cps"
 )
 
 rm -rf "$DEST"
-mkdir -p "$DEST/firmware/scripts" "$DEST/cps" "$DEST/codeplugs"
+mkdir -p "$DEST/codeplugs"
 cp "$REPO/cps/target/release/rt950-cps" "$DEST/rt950-cps"
 cp "$SCRIPT_DIR/run.sh" "$DEST/run.sh"
 cp "$SCRIPT_DIR/setup.sh" "$DEST/setup.sh"
 cp "$SCRIPT_DIR/uninstall.sh" "$DEST/uninstall.sh"
 cp "$SCRIPT_DIR/rt950-cps.svg" "$DEST/rt950-cps.svg"
 chmod 755 "$DEST/run.sh" "$DEST/setup.sh" "$DEST/uninstall.sh" "$DEST/rt950-cps"
-# The window does not run radtel_cps.py. It stays on the stick for the
-# terminal flash command and the block read/write shell.
-cp "$REPO/firmware/scripts/radtel_cps.py" \
-   "$REPO/firmware/scripts/radtel_flash.py" \
-   "$REPO/firmware/scripts/RadtelDat.exe" \
-   "$DEST/firmware/scripts/"
-cp "$CPS_SRC" "$DEST/cps/BT-RT950PRO_CPS.exe"
-if [ -f "$REPO/RT-950PRO_CPS_NI.dat" ]; then
-    cp "$REPO/RT-950PRO_CPS_NI.dat" "$DEST/RT-950PRO_CPS_NI.dat"
-fi
 cp "$REPO"/codeplugs/*.dat "$REPO"/codeplugs/*.950pro "$DEST/codeplugs/"
 
 echo "Stick tree is $DEST"
