@@ -2,6 +2,14 @@
 
 _Last updated: 2026-07-11_
 
+## Community alternative (linked)
+
+Day-to-day codeplug editing without OEM CPS:  
+**[cruzerdlc/RT-950-950Pro-Editor](https://github.com/cruzerdlc/RT-950-950Pro-Editor)** — vendored here as submodule [`RT-950-950Pro-Editor/`](RT-950-950Pro-Editor/).  
+Overview: [`community-cps-editor.md`](community-cps-editor.md).
+
+This teardown still documents **OEM** CPS for protocol RE (frame layout / EEPROM map for Linux automation).
+
 ## What CPS is (and is not)
 
 | Software | Role |
@@ -9,6 +17,7 @@ _Last updated: 2026-07-11_
 | **RT-950PRO CPS** (v1.0.5, v1.3.3) | Channel / config programming UI over **serial** |
 | **RT-950 EnCPS** (v1.2.2) | Same family (`BT-9000_CPS.exe`) — English packaging |
 | **RT-950 EnUPDATE** | Separate flasher for **MCU firmware `.BTF`** (not CPS) |
+| **RT-950/950Pro Editor** (community) | Open alternative CPS — see submodule above |
 
 **CPS does not contain MCU firmware images.** No `.BTF` / Cortex-M vector table is embedded. High-entropy blobs inside the EXEs are **Costura-compressed UI DLLs** (`devcomponents.dotnetbar2`), not radio flash.
 

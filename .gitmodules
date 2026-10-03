@@ -1,0 +1,3 @@
+[submodule "docs/RT-950-950Pro-Editor"]
+	path = docs/RT-950-950Pro-Editor
+	url = https://github.com/cruzerdlc/RT-950-950Pro-Editor.git

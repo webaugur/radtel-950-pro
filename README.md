@@ -18,12 +18,15 @@ This repository collects notes, tooling, and extracted firmware artifacts for th
 ```
 .
 ├── docs/                     # Markdown notes, pinout, CPS teardown, function catalogue
+│   └── RT-950-950Pro-Editor/ # submodule: cruzerdlc community CPS editor
 ├── firmware/                 # Decrypted MCU images, RE (radare2/Ghidra), CPS decompile
 ├── reference project/        # Vendor AT32 reference firmware project
 ├── artery_cortex-m4/         # AT32 BSP / SDK manuals
 ```
 
 CPS (channel programming) teardown: **`docs/cps_teardown.md`** and artifacts under **`firmware/RE/cps/`**.
+
+Community CPS alternative (git submodule): **[cruzerdlc/RT-950-950Pro-Editor](https://github.com/cruzerdlc/RT-950-950Pro-Editor)** → **`docs/RT-950-950Pro-Editor/`** — notes in **`docs/community-cps-editor.md`**.
 
 
 ## Hardware Notes
