@@ -15,9 +15,9 @@ if [ ! -f "$CPS_SRC" ]; then
     echo "Cannot find BT-RT950PRO_CPS.exe. Set RT950_CPS_EXE." >&2
     exit 1
 fi
+# The blank .dat template is not in git. A release still builds without it.
 if [ ! -f "$REPO/RT-950PRO_CPS_NI.dat" ]; then
-    echo "Missing $REPO/RT-950PRO_CPS_NI.dat" >&2
-    exit 1
+    echo "No RT-950PRO_CPS_NI.dat; .dat import template omitted." >&2
 fi
 
 echo "Building release rt950-cps"
@@ -41,7 +41,9 @@ cp "$REPO/firmware/scripts/radtel_cps.py" \
    "$REPO/firmware/scripts/RadtelDat.exe" \
    "$DEST/firmware/scripts/"
 cp "$CPS_SRC" "$DEST/cps/BT-RT950PRO_CPS.exe"
-cp "$REPO/RT-950PRO_CPS_NI.dat" "$DEST/RT-950PRO_CPS_NI.dat"
+if [ -f "$REPO/RT-950PRO_CPS_NI.dat" ]; then
+    cp "$REPO/RT-950PRO_CPS_NI.dat" "$DEST/RT-950PRO_CPS_NI.dat"
+fi
 cp "$REPO"/codeplugs/*.dat "$REPO"/codeplugs/*.950pro "$DEST/codeplugs/"
 
 echo "Stick tree is $DEST"

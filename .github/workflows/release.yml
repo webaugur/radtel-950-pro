@@ -1,0 +1,46 @@
+# On every published GitHub release, build the Linux stick tree and attach
+# rt950-cps-{version}.zip. The version is the release tag with a leading v
+# removed, so tag v0.2.0 uploads dist/rt950-cps-0.2.0.zip. The zip contains
+# one directory of that same name.
+
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install build libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libudev-dev zip
+
+      - name: Stage the dist tree
+        run: tools/usb-stick/stage.sh
+
+      - name: Zip rt950-cps-{version}
+        id: pack
+        run: |
+          set -eu
+          version="${GITHUB_REF_NAME#v}"
+          name="rt950-cps-${version}"
+          rm -rf "dist/${name}"
+          mv dist/rt950-usb "dist/${name}"
+          (cd dist && zip -r "${name}.zip" "${name}")
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
+          echo "zip=dist/${name}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Attach the zip to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.pack.outputs.zip }}
