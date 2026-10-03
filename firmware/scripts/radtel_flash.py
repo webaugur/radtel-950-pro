@@ -14,11 +14,13 @@ file. For BTF files we implement the FwCrypt decode (same logic as
 fwcrypt_io.py) to obtain the plaintext firmware before chunking.
 
 Example usage:
-    python radtel_flash.py --port /dev/ttyACM0 firmware.bin
-    python radtel_flash.py --port COM5 firmware.btf
+    python radtel_flash.py --port /dev/ttyUSB0 firmware.btf
+    python radtel_flash.py --port /dev/ttyUSB0 --commit firmware.btf
 
-You need pyserial installed (pip install pyserial) and the radio connected in
-USB update mode. The script reproduces the captured handshake:
+Without --commit the script only checks the image and opens the serial port.
+It does not send PROGRAM, UPDATE, or any 0xAA frame. The radio must be in
+USB update mode before a --commit run. The script then reproduces the
+captured handshake:
     1. ASCII "PROGRAMBT9000U" (expects ACK 0x06)
     2. ASCII "UPDATE" (expects ACK 0x06)
     3. CMD 0x42 (enter binary mode)
@@ -261,6 +263,110 @@ def encode_total_package_field(total_chunks: int) -> bytes:
     return value.to_bytes(2, "big")
 
 
+@dataclass
+class FlashPlan:
+    """Decoded image ready to send. `firmware` is padded to whole chunks."""
+
+    path: Path
+    original_length: int
+    chunk_size: int
+    total_chunks: int
+    metadata: bytes
+    firmware: bytes
+
+
+def prepare_flash(image_path: Path, *, chunk_size: int = DEFAULT_CHUNK_SIZE, treat_as_raw: bool = False) -> FlashPlan:
+    """Decode an image and count chunks. Does not touch a serial port."""
+    if chunk_size <= 0:
+        raise ValueError("chunk size must be positive")
+    if not image_path.is_file():
+        raise ValueError(f"firmware image not found: {image_path}")
+    try:
+        firmware = load_firmware(image_path, treat_as_raw=treat_as_raw)
+    except OSError as exc:
+        raise ValueError(f"read firmware failed: {exc}") from exc
+    original_length = len(firmware)
+    total_chunks = math.ceil(original_length / chunk_size) if original_length else 0
+    padding = (-original_length) % chunk_size
+    if padding:
+        firmware = firmware + (b"\x00" * padding)
+    return FlashPlan(
+        path=image_path,
+        original_length=original_length,
+        chunk_size=chunk_size,
+        total_chunks=total_chunks,
+        metadata=extract_model_metadata(firmware[:original_length]),
+        firmware=firmware,
+    )
+
+
+def probe_port(port: str, baudrate: int, timeout: float = 2.0) -> None:
+    """Open and close the port. Sends nothing."""
+    if serial is None:
+        raise RuntimeError("pyserial is required. Install with 'pip install pyserial'.")
+    try:
+        handle = serial.Serial(port=port, baudrate=baudrate, timeout=timeout, write_timeout=timeout)
+    except Exception as exc:
+        raise RuntimeError(f"open {port} failed: {exc}") from exc
+    try:
+        handle.close()
+    except Exception as exc:
+        raise RuntimeError(f"close {port} failed: {exc}") from exc
+
+
+def flash_prepared(
+    plan: FlashPlan,
+    port: str,
+    baudrate: int,
+    *,
+    timeout: float = 2.0,
+    resume: int = 0,
+    skip_handshake: bool = False,
+    progress=None,
+) -> None:
+    """Send the EnUPDATE sequence. Caller has already decided this is a real flash."""
+    def note(message: str) -> None:
+        if progress is not None:
+            progress(message)
+
+    if resume and not (0 <= resume < plan.total_chunks):
+        raise ValueError(f"resume chunk {resume} is outside 0..{plan.total_chunks - 1}")
+    with CDCFlasher(port, baudrate, timeout) as flasher:
+        if not skip_handshake:
+            note("PROGRAMBT9000U")
+            flasher.send_ascii(ASCII_PROGRAM, "PROGRAM handshake")
+            note("UPDATE")
+            flasher.send_ascii(ASCII_UPDATE, "UPDATE handshake")
+        note("enter binary 0x42")
+        flasher.send_packet(CMD_ENTER_BINARY, 0x0000, b"")
+        note("bootloader version 0x0A")
+        flasher.send_packet(CMD_BOOT_VERSION, 0x0000, BOOT_VERSION_PAYLOAD)
+        note("metadata 0x02")
+        flasher.send_packet(CMD_METADATA, 0x0000, plan.metadata)
+        note("chunk count 0x04")
+        flasher.send_packet(CMD_CONFIG, 0x0000, encode_total_package_field(plan.total_chunks))
+        note(f"data 0x03 x {plan.total_chunks}")
+        for chunk_index in range(resume, plan.total_chunks):
+            start = chunk_index * plan.chunk_size
+            chunk = plan.firmware[start : start + plan.chunk_size]
+            flasher.send_packet(CMD_DATA, chunk_index, chunk)
+            if chunk_index % 10 == 0 or chunk_index == plan.total_chunks - 1:
+                note(f"chunk {chunk_index + 1}/{plan.total_chunks}")
+        note("finalise 0x45")
+        flasher.send_packet(CMD_FINALISE, 0x0000, b"")
+
+
+def describe_plan(plan: FlashPlan) -> str:
+    return "\n".join(
+        (
+            f"image {plan.path}",
+            f"bytes {plan.original_length}",
+            f"chunks {plan.total_chunks} x {plan.chunk_size}",
+            f"metadata {plan.metadata.hex()}",
+        )
+    )
+
+
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Flash RT-950 firmware over USB CDC")
     parser.add_argument("image", type=Path, help="Path to .btf or raw firmware image")
@@ -271,61 +377,44 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     parser.add_argument("--raw", action="store_true", help="Treat the input file as a ready-to-send binary (skip fwcrypt decode)")
     parser.add_argument("--timeout", type=float, default=2.0, help="Serial read/write timeout in seconds")
     parser.add_argument("--resume", type=int, default=0, help="Start chunk index (for manual resume)")
+    parser.add_argument(
+        "--commit",
+        action="store_true",
+        help="Actually flash. Without this flag the image is checked and the port is opened, then closed.",
+    )
 
     args = parser.parse_args(list(argv) if argv is not None else None)
 
-    firmware = load_firmware(args.image, treat_as_raw=args.raw)
-    if args.chunk_size <= 0:
-        parser.error("chunk size must be positive")
-    original_length = len(firmware)
-    total_chunks = math.ceil(original_length / args.chunk_size) if original_length else 0
-    padding = (-original_length) % args.chunk_size
-    if padding:
-        firmware = firmware + (b"\x00" * padding)
-    metadata_payload = extract_model_metadata(firmware[:original_length])
-    package_field = encode_total_package_field(total_chunks)
+    try:
+        plan = prepare_flash(args.image, chunk_size=args.chunk_size, treat_as_raw=args.raw)
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    print(describe_plan(plan))
+    if not args.commit:
+        try:
+            probe_port(args.port, args.baud, args.timeout)
+        except RuntimeError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
+        print(f"port {args.port} open-ok")
+        print("not sent")
+        return 0
 
-    print(f"Loaded firmware: {len(firmware)} bytes ({total_chunks} chunks of {args.chunk_size} bytes)")
-    if args.resume:
-        if not (0 <= args.resume < total_chunks):
-            parser.error("--resume chunk index out of range")
-        print(f"Resuming from chunk {args.resume}")
-
-    with CDCFlasher(args.port, args.baud, args.timeout) as flasher:
-        if not args.skip_handshake:
-            print("[1/6] Sending PROGRAMBT9000U handshake…")
-            flasher.send_ascii(ASCII_PROGRAM, "PROGRAM handshake")
-            print("      Device ACKed")
-            print("[2/6] Sending UPDATE handshake…")
-            flasher.send_ascii(ASCII_UPDATE, "UPDATE handshake")
-            print("      Device ACKed")
-        else:
-            print("Skipping ASCII handshake as requested")
-
-        print("[3/6] Entering binary mode (CMD=0x42)…")
-        flasher.send_packet(CMD_ENTER_BINARY, 0x0000, b"")
-
-        print("[4/6] Sending bootloader info (CMD=0x0A)…")
-        flasher.send_packet(CMD_BOOT_VERSION, 0x0000, BOOT_VERSION_PAYLOAD)
-
-        print("[5/6] Sending metadata (CMD=0x02)…")
-        flasher.send_packet(CMD_METADATA, 0x0000, metadata_payload)
-
-        print("[6/6] Sending package count (CMD=0x04)…")
-        flasher.send_packet(CMD_CONFIG, 0x0000, package_field)
-
-        print("Transmitting firmware chunks…")
-        start_chunk = args.resume
-        for chunk_index in range(start_chunk, total_chunks):
-            chunk = firmware[chunk_index * args.chunk_size : (chunk_index + 1) * args.chunk_size]
-            flasher.send_packet(CMD_DATA, chunk_index, chunk)
-            if chunk_index % 10 == 0 or chunk_index == total_chunks - 1:
-                pct = (chunk_index + 1) * 100 / total_chunks
-                print(f"  Chunk {chunk_index + 1}/{total_chunks} ({pct:.1f}%)")
-
-        print("Finalising (CMD=0x45)…")
-        flasher.send_packet(CMD_FINALISE, 0x0000, b"")
-
+    print(f"commit flash {args.port}", file=sys.stderr)
+    try:
+        flash_prepared(
+            plan,
+            args.port,
+            args.baud,
+            timeout=args.timeout,
+            resume=args.resume,
+            skip_handshake=args.skip_handshake,
+            progress=lambda message: print(message, file=sys.stderr),
+        )
+    except (ProtocolError, RuntimeError, ValueError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
     print("Flash transfer complete. The radio should reboot shortly.")
     return 0
 

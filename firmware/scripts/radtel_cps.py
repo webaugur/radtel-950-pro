@@ -4,7 +4,8 @@
 Reads commands from stdin. Results go to stdout. All errors go to stderr.
 Exceptions are caught per command so a bad line does not kill the shell.
 
-Not the EnUPDATE firmware flasher (see radtel_flash.py). This speaks the
+Codeplug I/O and, with `flash … commit`, the EnUPDATE firmware writer
+in radtel_flash.py. There is no firmware read. This speaks the
 codeplug protocol captured from OEM CPS:
 
   PROGRAMBT9000U -> 0x06
@@ -13,6 +14,7 @@ codeplug protocol captured from OEM CPS:
   SEND + 21 parameter bytes -> 0x06
   Read:  'R' + addr16_be + len   -> echo + payload
   Write: raw stream in 100-byte groups, each ACKed 0x06, then 'E'
+  Boot picture: 'D', then A5 frames (150 × 1024 RGB565) and 'Over'
 
 Interactive prompt is written to stderr so stdout stays machine-readable.
 
@@ -32,7 +34,9 @@ Examples:
 
 from __future__ import annotations
 
+import json
 import os
+import shlex
 import subprocess
 import sys
 import time
@@ -86,6 +90,105 @@ def read_map() -> list[int]:
 
 READ_ADDRS = read_map()
 IMAGE_SIZE = max(a + BLOCK for a in READ_ADDRS)  # 0xD300 == 54016
+
+# Boot picture, from usbmon-bootpic-20261003-050924 (OEM Import Image).
+BOOT_WIDTH = 240
+BOOT_HEIGHT = 320
+BOOT_PAGES = 150
+BOOT_PAGE_BYTES = 1024
+BOOT_PIXELS = BOOT_WIDTH * BOOT_HEIGHT * 2  # 153600, little-endian RGB565
+
+
+def crc16_xmodem(data: bytes) -> int:
+    """CRC-16/XMODEM. The radio covers every byte after the leading 0xA5."""
+    crc = 0
+    for byte in data:
+        crc ^= byte << 8
+        for _ in range(8):
+            if crc & 0x8000:
+                crc = ((crc << 1) ^ 0x1021) & 0xFFFF
+            else:
+                crc = (crc << 1) & 0xFFFF
+    return crc
+
+
+def a5_frame(after_a5: bytes) -> bytes:
+    crc = crc16_xmodem(after_a5)
+    return b"\xa5" + after_a5 + crc.to_bytes(2, "big")
+
+
+# Setup frames the CPS sent before page 0. The 0x4504 field and the
+# 00 00 09 00 / 00 03 payloads were constant in this capture; the radio
+# echoed the field and answered 0x59. A second image is needed before
+# treating them as anything but these bytes.
+BOOT_SETUP = (
+    a5_frame(b"\x02\x00\x00\x00\x07PROGRAM"),
+    a5_frame(b"\x03\x00\x00\x00\x04\x00\x00\x09\x00"),
+    a5_frame(bytes.fromhex("0445040006000009000003")),
+)
+BOOT_OVER = a5_frame(b"\x06\x00\x00\x00\x04Over")
+
+
+def boot_page_frame(index: int, payload: bytes) -> bytes:
+    if not 0 <= index < BOOT_PAGES:
+        raise ShellError(f"boot page out of range: {index}")
+    if len(payload) != BOOT_PAGE_BYTES:
+        raise ShellError(f"boot page must be {BOOT_PAGE_BYTES} bytes, got {len(payload)}")
+    after = b"\x57" + index.to_bytes(2, "big") + BOOT_PAGE_BYTES.to_bytes(2, "big") + payload
+    return a5_frame(after)
+
+
+def bmp_to_rgb565_le(path: Path) -> bytes:
+    """24-bit 240×320 BMP → little-endian RGB565, top row first.
+
+    OEM CPS rejects any other size. A positive BMP height is stored
+    bottom-up; the radio wants the top row first (checked against the
+    wizard capture, 153600/153600 bytes).
+    """
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise ShellError(f"read file failed: {exc}") from exc
+    if len(data) < 54 or data[:2] != b"BM":
+        raise ShellError(f"not a BMP: {path}")
+    pixel_off = int.from_bytes(data[10:14], "little")
+    dib = int.from_bytes(data[14:18], "little")
+    if dib != 40:
+        raise ShellError("boot picture needs a 40-byte BMP info header")
+    width = int.from_bytes(data[18:22], "little", signed=True)
+    height = int.from_bytes(data[22:26], "little", signed=True)
+    planes = int.from_bytes(data[26:28], "little")
+    bpp = int.from_bytes(data[28:30], "little")
+    compression = int.from_bytes(data[30:34], "little")
+    if (
+        width != BOOT_WIDTH
+        or abs(height) != BOOT_HEIGHT
+        or planes != 1
+        or bpp != 24
+        or compression != 0
+    ):
+        raise ShellError(
+            "boot picture must be an uncompressed 24-bit "
+            f"{BOOT_WIDTH}x{BOOT_HEIGHT} BMP, got {width}x{height} {bpp}bpp"
+        )
+    stride = (BOOT_WIDTH * 3 + 3) & ~3
+    need = pixel_off + stride * BOOT_HEIGHT
+    if pixel_off < 54 or len(data) < need:
+        raise ShellError(f"BMP is truncated: {path}")
+    bottom_up = height > 0
+    rows = range(BOOT_HEIGHT - 1, -1, -1) if bottom_up else range(BOOT_HEIGHT)
+    pixels = bytearray()
+    for row_index in rows:
+        start = pixel_off + row_index * stride
+        row = data[start : start + BOOT_WIDTH * 3]
+        for i in range(0, BOOT_WIDTH * 3, 3):
+            blue, green, red = row[i], row[i + 1], row[i + 2]
+            value = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3)
+            pixels.append(value & 0xFF)
+            pixels.append((value >> 8) & 0xFF)
+    if len(pixels) != BOOT_PIXELS:
+        raise ShellError(f"internal: RGB565 length {len(pixels)}")
+    return bytes(pixels)
 
 
 def err(msg: str) -> None:
@@ -282,8 +385,48 @@ class Radio:
                 )
         self.write(b"E")
 
+    def expect_boot_status(self, command: int, field: int) -> None:
+        """A5 status: command, echoed field, length 1, payload 0x59, XMODEM CRC."""
+        resp = self.read_exact(9, timeout_s=3.0)
+        if resp[0] != 0xA5 or crc16_xmodem(resp[1:-2]) != int.from_bytes(resp[-2:], "big"):
+            raise ShellError(f"bad boot-picture reply: {hex_line(resp)}")
+        body = resp[1:-2]
+        got_field = int.from_bytes(body[1:3], "big")
+        if body[0] != command or got_field != field or body[3:6] != b"\x00\x01\x59":
+            raise ShellError(f"boot picture rejected: {hex_line(resp)}")
 
-def run_dat_helper(radio: Radio, args: list[str], timeout_s: float) -> None:
+    def upload_boot_picture(self, pixels: bytes) -> None:
+        """Send one 240×320 picture. Port must already be open.
+
+        Matches the OEM import: PROGRAMBT9000U, 'D', close/reopen, three
+        setup frames, 150 page frames, then 'Over' (no reply expected).
+        """
+        if len(pixels) != BOOT_PIXELS:
+            raise ShellError(f"boot pixels must be {BOOT_PIXELS} bytes, got {len(pixels)}")
+        self.handshake()
+        self.write(b"D")
+        # CPS drops the COM handle after 'D' (usbmon shows the bulk URBs
+        # cancelled) and opens the port again for the A5 session.
+        self.close()
+        self.open()
+        for index, frame in enumerate(BOOT_SETUP):
+            self.write(frame)
+            field = 0 if index < 2 else 0x4504
+            self.expect_boot_status(frame[1], field)
+        for page in range(BOOT_PAGES):
+            start = page * BOOT_PAGE_BYTES
+            self.write(boot_page_frame(page, pixels[start : start + BOOT_PAGE_BYTES]))
+            self.expect_boot_status(0x57, page)
+            if page + 1 in (1, 50, 100, BOOT_PAGES):
+                print(
+                    f"boot picture {page + 1}/{BOOT_PAGES}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+        self.write(BOOT_OVER)
+
+
+def run_dat_helper(radio: Radio, args: list[str], timeout_s: float, capture: bool = False) -> str:
     """Run RadtelDat.exe. OEM .dat I/O uses the CPS assembly's own codec."""
     if not DAT_HELPER.is_file():
         raise ShellError(f"missing {DAT_HELPER} (mcs -sdk:4.5 -out:RadtelDat.exe RadtelDat.cs)")
@@ -305,21 +448,155 @@ def run_dat_helper(radio: Radio, args: list[str], timeout_s: float) -> None:
         raise ShellError(f"dat helper timed out after {timeout_s:.0f}s") from exc
     except OSError as exc:
         raise ShellError(f"failed to run mono: {exc}") from exc
-    if proc.stderr:
-        for line in proc.stderr.splitlines():
-            if line.strip():
-                print(line, file=sys.stderr, flush=True)
     if proc.returncode != 0:
         tail = (proc.stderr or proc.stdout or "").strip().splitlines()
         detail = tail[-1] if tail else f"exit {proc.returncode}"
         if detail.startswith("error:"):
             detail = detail[len("error:") :].strip()
+        # The shell prints this once. Repeating the helper's error line here
+        # made the UI log show the same failure twice.
+        if proc.stderr:
+            for line in proc.stderr.splitlines():
+                stripped = line.strip()
+                if stripped and not stripped.startswith("error:"):
+                    print(stripped, file=sys.stderr, flush=True)
         raise ShellError(detail)
+    if proc.stderr:
+        for line in proc.stderr.splitlines():
+            if line.strip():
+                print(line, file=sys.stderr, flush=True)
+    if capture:
+        return proc.stdout
     if proc.stdout:
         sys.stdout.write(proc.stdout)
         if not proc.stdout.endswith("\n"):
             sys.stdout.write("\n")
         sys.stdout.flush()
+    return ""
+
+
+def normalize_callsign(text: str) -> str:
+    """APRS callsign as the radio stores it: 1–6 ASCII letters or digits.
+
+    SetCallSign_StrToHex copies at most 6 bytes and skips an empty string,
+    which would leave the previous bytes in the packed image.
+    """
+    sign = text.strip().upper()
+    if not sign or len(sign) > 6 or any(not ch.isascii() or not ch.isalnum() for ch in sign):
+        raise ShellError(
+            "callsign must be 1 to 6 letters or digits (the radio stores 6 ASCII bytes)"
+        )
+    return sign
+
+
+def run_callsign(radio: Radio, args: list[str]) -> None:
+    if len(args) not in (1, 2):
+        raise ShellError("usage: callsign <file.dat> [sign]")
+    path = Path(args[0])
+    if not path.is_file():
+        raise ShellError(f"not a file: {path}")
+    raw = run_dat_helper(
+        radio,
+        ["export", str(radio.cps_exe), str(path)],
+        timeout_s=60,
+        capture=True,
+    )
+    try:
+        doc = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ShellError(f"dat export was not JSON: {exc}") from exc
+    aprs = doc.get("aprsData")
+    if not isinstance(aprs, dict) or "tB_CallSign" not in aprs:
+        raise ShellError("codeplug has no aprsData.tB_CallSign")
+    if len(args) == 1:
+        out(f"ok callsign {aprs.get('tB_CallSign')}")
+        return
+    sign = normalize_callsign(args[1])
+    aprs["tB_CallSign"] = sign
+    tmp_json = path.with_name(path.name + ".callsign.json")
+    tmp_dat = path.with_name(path.name + ".callsign.dat")
+    try:
+        tmp_json.write_text(json.dumps(doc), encoding="utf-8")
+        run_dat_helper(
+            radio,
+            ["import", str(radio.cps_exe), str(path), str(tmp_json), str(tmp_dat)],
+            timeout_s=60,
+            capture=True,
+        )
+        if not tmp_dat.is_file() or tmp_dat.stat().st_size == 0:
+            raise ShellError("dat import wrote an empty file")
+        os.replace(tmp_dat, path)
+    finally:
+        tmp_json.unlink(missing_ok=True)
+        tmp_dat.unlink(missing_ok=True)
+    out(f"ok callsign {sign}")
+
+
+def _load_flasher():
+    if str(SCRIPT_DIR) not in sys.path:
+        sys.path.insert(0, str(SCRIPT_DIR))
+    try:
+        import radtel_flash
+    except ImportError as exc:
+        raise ShellError(f"cannot load radtel_flash.py: {exc}") from exc
+    return radtel_flash
+
+
+def run_flash(radio: Radio, args: list[str]) -> str:
+    """Dry-run a firmware image unless the line includes `commit`.
+
+    `commit` is the only token that sends UPDATE and the 0xAA packets.
+    `confirm` is rejected so a codeplug write habit cannot flash the radio.
+    """
+    if not args or len(args) > 3:
+        raise ShellError("usage: flash <image> [raw] [commit]")
+    raw = False
+    commit = False
+    for token in args[1:]:
+        if token.lower() == "raw":
+            if raw:
+                raise ShellError("usage: flash <image> [raw] [commit]")
+            raw = True
+        elif token.lower() == "commit":
+            if commit:
+                raise ShellError("usage: flash <image> [raw] [commit]")
+            commit = True
+        else:
+            raise ShellError("usage: flash <image> [raw] [commit]  (`confirm` does not flash)")
+    flasher = _load_flasher()
+    try:
+        plan = flasher.prepare_flash(Path(args[0]), treat_as_raw=raw)
+    except ValueError as exc:
+        raise ShellError(str(exc)) from exc
+    held = radio.ser is not None and getattr(radio.ser, "is_open", False)
+    if not commit:
+        if held:
+            port_line = f"port {radio.port_name} held by this shell"
+        else:
+            try:
+                flasher.probe_port(radio.port_name, radio.baud)
+            except RuntimeError as exc:
+                raise ShellError(str(exc)) from exc
+            port_line = f"port {radio.port_name} open-ok"
+        return "\n".join(
+            (
+                flasher.describe_plan(plan),
+                port_line,
+                "not sent",
+            )
+        )
+    if held:
+        radio.close()
+    try:
+        flasher.flash_prepared(
+            plan,
+            radio.port_name,
+            radio.baud,
+            progress=lambda message: print(message, file=sys.stderr, flush=True),
+        )
+    except (flasher.ProtocolError, RuntimeError, ValueError) as exc:
+        raise ShellError(f"flash failed: {exc}") from exc
+    return f"ok flash {plan.path} {plan.total_chunks}"
 
 
 HELP = """\
@@ -347,6 +624,14 @@ commands (stdin). stdout = results, stderr = errors / progress.
                              pull radio into an OEM .dat
   write-dat <file.dat> confirm
                              push an OEM .dat (e.g. RT-950PRO_CPS_NI.dat)
+  boot-picture <file.bmp> confirm
+                             24-bit 240x320 BMP -> boot image (open the port first)
+  callsign <file.dat> [sign]
+                             print or set aprsData.tB_CallSign (max 6 letters/digits).
+                             Does not write the radio. Blank is rejected.
+  flash <image.btf> [raw] [commit]
+                             dry-run checks the image and opens the port.
+                             `commit` runs the EnUPDATE flash. `confirm` does not.
   cps-exe <path>             override BT-RT950PRO_CPS.exe location
   end                        send 'E'
   raw <hex> [nbytes]         write hex; if nbytes set, read that many and print
@@ -356,7 +641,7 @@ commands (stdin). stdout = results, stderr = errors / progress.
 
 def dispatch(radio: Radio, line: str) -> bool:
     """Run one command. Return False to exit the shell."""
-    parts = line.split()
+    parts = shlex.split(line, posix=True)
     if not parts:
         return True
     cmd = parts[0].lower()
@@ -465,6 +750,9 @@ def dispatch(radio: Radio, line: str) -> bool:
             raise ShellError(f"not a file: {radio.cps_exe}")
         out(f"ok cps-exe {radio.cps_exe}")
         return True
+    if cmd == "callsign":
+        run_callsign(radio, args)
+        return True
     if cmd == "dat-info":
         if len(args) != 1:
             raise ShellError("usage: dat-info <file.dat>")
@@ -506,6 +794,16 @@ def dispatch(radio: Radio, line: str) -> bool:
             ["write", str(radio.cps_exe), radio.port_name, str(radio.baud), args[0]],
             timeout_s=180,
         )
+        return True
+    if cmd == "boot-picture":
+        if len(args) != 2 or args[1].lower() != "confirm":
+            raise ShellError("usage: boot-picture <file.bmp> confirm")
+        pixels = bmp_to_rgb565_le(Path(args[0]))
+        radio.upload_boot_picture(pixels)
+        out(f"ok boot-picture {args[0]} {BOOT_PAGES}")
+        return True
+    if cmd == "flash":
+        out(run_flash(radio, args))
         return True
     if cmd == "end":
         radio.write(b"E")

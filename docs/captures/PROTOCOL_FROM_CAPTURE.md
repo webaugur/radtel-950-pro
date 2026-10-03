@@ -98,3 +98,55 @@ Then host streams payload with **no** `W`+address header observed:
 
 **Dataset change confirmed:** `codeplug-read-florida.bin` differs from first `codeplug-read.bin` in **11314 / 54016** bytes (not a trivial noop).
 
+## Boot picture (Import Image, 2026-10-03)
+
+**Source:** `usbmon-bootpic-20261003-050924` (CH340 `2:011`, Wine CPS **Import Image** of `boot/wizard-240x320.bmp`).
+
+This is not the codeplug `F` / `M` / `SEND` session. Baud stays **115200 8N1**.
+
+| Step | Host | Radio |
+|------|------|-------|
+| 1 | `PROGRAMBT9000U` | `0x06` |
+| 2 | `D` (`0x44`) | no payload; CPS then closes and reopens the COM port |
+| 3 | three `A5` setup frames | each answered with status `0x59` |
+| 4 | 150 page frames | one status frame per page |
+| 5 | `Over` frame | no further reply in this capture |
+
+Every `A5` frame is `A5` + body + CRC-16/XMODEM (poly `0x1021`, init `0`, no reflection) over the body only. The CRC is big-endian.
+
+Setup bodies (bytes after `A5`), copied from this capture:
+
+```text
+02 00 00 00 07  PROGRAM
+03 00 00 00 04  00 00 09 00
+04 45 04 00 06  00 00 09 00 00 03
+```
+
+The radio echoes the 16-bit field (`00 00`, `00 00`, `45 04`) and replies with length `00 01` and payload `59`.
+
+Page frame body:
+
+```text
+57  <page_be16>  04 00  <1024 bytes>
+```
+
+`04 00` is the payload length, 1024. Page numbers run `0` … `149`. USB delivered each 1032-byte frame as 32-byte packets plus an 8-byte remainder because the CH340 bulk packet is 32 bytes; one serial write of the whole frame is the same bytes.
+
+The 1024-byte payload is the picture: **240×320**, **little-endian RGB565**, top row first. Concatenating all 150 payloads matches `wizard-240x320.bmp` converted that way, **153600 / 153600** bytes.
+
+Status reply (9 bytes), for setup and for each page:
+
+```text
+A5  <cmd>  <field_be16>  00 01  59  <crc16>
+```
+
+`cmd` is `02`, `03`, `04`, or `57`. `field` is the echoed setup field, or the page number.
+
+End body:
+
+```text
+06 00 00 00 04  Over
+```
+
+`0x59` is the only status byte seen. The shell command is `boot-picture <file.bmp> confirm`.
+

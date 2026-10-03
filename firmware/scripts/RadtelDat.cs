@@ -99,7 +99,20 @@ class RadtelDat {
 
     static string Innermost(Exception ex) {
         while (ex.InnerException != null) ex = ex.InnerException;
-        return ex.GetType().Name + ": " + ex.Message;
+        if (!string.IsNullOrEmpty(ex.Message)) return ex.Message;
+        return ex.GetType().Name;
+    }
+
+    // KDH.OPERATION_RESULT: AUTHOK 0, COMMOK 1, MODELERR 2, TOOVER 3, MANCANC 4, EXCABORT 5.
+    static string ResultFailure(bool write, int code, object result) {
+        string what = write ? "Write" : "Read";
+        if (code == 2) return what + " failed: the radio model did not match (MODELERR).";
+        if (code == 3) {
+            return what + " timed out (TOOVER). The radio did not answer. Close any other program using the cable, then try again.";
+        }
+        if (code == 4) return what + " was cancelled (MANCANC).";
+        if (code == 5) return what + " aborted (EXCABORT). The CPS transfer hit an exception.";
+        return what + " failed with result " + result + " (" + code + ").";
     }
 
     static void Error(string msg) {
@@ -193,10 +206,9 @@ class RadtelDat {
             object result = mi.Invoke(rw, new object[0]);
             int code = Convert.ToInt32(result);
             // OPERATION_RESULT: AUTHOK=0 COMMOK=1 are success; others are failures.
+            // DoIt returns these codes. It does not throw, so this has to be checked here.
             if (code != 0 && code != 1) {
-                throw new InvalidOperationException(
-                    (write ? "write" : "read") + " result " + result + " (" + code + ")"
-                );
+                throw new InvalidOperationException(ResultFailure(write, code, result));
             }
             Console.Error.WriteLine("cps DoIt " + (write ? "WRITE" : "READ") + " " + result);
             return data;
@@ -245,6 +257,16 @@ class RadtelDat {
             object next = kv.Value;
             IList list = next as IList;
             if (cur is Array arr && list != null && !(next is string)) {
+                Type elem = arr.GetType().GetElementType();
+                // Zone names are a string[15] in older files. This radio uses 10.
+                if (f.Name == "arrayZoneName" && elem == typeof(string) && arr.Length != list.Count) {
+                    Array neu = Array.CreateInstance(elem, list.Count);
+                    for (int i = 0; i < list.Count; i++) {
+                        neu.SetValue(ConvertValue(list[i], elem), i);
+                    }
+                    f.SetValue(target, neu);
+                    continue;
+                }
                 ApplyArray(arr, list);
                 continue;
             }

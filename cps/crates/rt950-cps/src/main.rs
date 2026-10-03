@@ -1,6 +1,13 @@
 //! RT-950 CPS front end. Radio and .dat I/O go through radtel_cps.py.
 
+mod aprs;
+mod channels;
+mod dtmf;
+mod edit;
+mod radio;
 mod shell;
+mod shortwave;
+mod vfo;
 
 use std::path::{Path, PathBuf};
 
@@ -23,6 +30,132 @@ fn main() -> eframe::Result {
     )
 }
 
+fn is_950pro(path: &Path) -> bool {
+    path.extension()
+        .and_then(|ext| ext.to_str())
+        .is_some_and(|ext| ext.eq_ignore_ascii_case("950pro"))
+}
+
+/// Same directory and file name as the `.dat`, with a `.950pro` extension.
+fn json_beside(dat: &Path) -> PathBuf {
+    let mut json = dat.to_path_buf();
+    json.set_extension("950pro");
+    json
+}
+
+fn dat_beside(json: &Path) -> PathBuf {
+    let mut dat = json.to_path_buf();
+    dat.set_extension("dat");
+    dat
+}
+
+/// OEM `.dat` used when a `.950pro` has no sibling `.dat` to import onto.
+fn bundled_dat_template() -> Option<PathBuf> {
+    let mut starts = Vec::new();
+    if let Ok(cwd) = std::env::current_dir() {
+        starts.push(cwd);
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            starts.push(dir.to_path_buf());
+        }
+    }
+    for start in starts {
+        let mut dir = start;
+        for _ in 0..8 {
+            let candidate = dir.join("RT-950PRO_CPS_NI.dat");
+            if candidate.is_file() {
+                return Some(candidate);
+            }
+            if !dir.pop() {
+                break;
+            }
+        }
+    }
+    None
+}
+
+fn freq_blank(freq: &str) -> bool {
+    !freq.chars().any(|c| c.is_ascii_digit() && c != '0')
+}
+
+/// A radio read stores FM transmit (2) as 0. The OEM read keeps only bit 0,
+/// so memory PTT goes dead while the VFO still transmits. Put transmit back
+/// on every real FM memory. AIS stays receive-only. AM (1) is unchanged.
+fn restore_memory_transmit(doc: &mut Value) -> usize {
+    let Some(list) = doc
+        .pointer_mut("/channelData/channelList")
+        .and_then(|v| v.as_array_mut())
+    else {
+        return 0;
+    };
+    let mut restored = 0;
+    for ch in list {
+        let Some(obj) = ch.as_object_mut() else {
+            continue;
+        };
+        if obj.get("rxModulation").and_then(|v| v.as_i64()) != Some(0) {
+            continue;
+        }
+        let freq = obj.get("rxFreq").and_then(|v| v.as_str()).unwrap_or("");
+        if freq_blank(freq) {
+            continue;
+        }
+        let name = obj.get("chName").and_then(|v| v.as_str()).unwrap_or("");
+        if name.starts_with("AIS") {
+            continue;
+        }
+        obj.insert("rxModulation".to_string(), json!(2));
+        restored += 1;
+    }
+    restored
+}
+
+/// Pretty-printed copy of the in-memory codeplug, next to the `.dat` just saved.
+fn write_codeplug_json(doc: &Value, dat: &Path) -> Result<PathBuf, String> {
+    let json_path = json_beside(dat);
+    let text = serde_json::to_string_pretty(doc)
+        .map_err(|e| format!("{} failed: {e}", json_path.display()))?;
+    std::fs::write(&json_path, format!("{text}\n"))
+        .map_err(|e| format!("{} failed: {e}", json_path.display()))?;
+    Ok(json_path)
+}
+
+/// OEM DoIt codes (TOOVER, MODELERR, EXCABORT, MANCANC) and a shell
+/// timeout mean the radio stopped answering. Tell the operator to power-cycle.
+fn power_cycle_notice(detail: &str) -> bool {
+    let u = detail.to_ascii_uppercase();
+    u.contains("TOOVER")
+        || u.contains("MODELERR")
+        || u.contains("EXCABORT")
+        || u.contains("MANCANC")
+        || u.contains("TIMED OUT")
+        || u.contains("TIMEOUT:")
+}
+
+fn page_from_arg(name: Option<&str>) -> Page {
+    match name {
+        Some("shortwave") => Page::Shortwave,
+        Some("vfo") => Page::Vfo,
+        Some("radio") => Page::Radio,
+        Some("dtmf") => Page::Dtmf,
+        Some("aprs") => Page::Aprs,
+        Some("boot") => Page::Boot,
+        _ => Page::Channels,
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Page {
+    Channels,
+    Shortwave,
+    Vfo,
+    Radio,
+    Dtmf,
+    Aprs,
+    Boot,
+}
+
 struct CpsApp {
     shell: Result<Shell, String>,
     doc: Option<Value>,
@@ -33,8 +166,15 @@ struct CpsApp {
     log: Vec<String>,
     log_open: bool,
     status: String,
+    /// Set when a radio transfer returns TOOVER or another operation code.
+    power_cycle: Option<String>,
     dark: bool,
     confirm_write: bool,
+    confirm_boot: bool,
+    page: Page,
+    sw: shortwave::Band,
+    boot_path: String,
+    pending_open: Option<PathBuf>,
 }
 
 impl CpsApp {
@@ -49,9 +189,15 @@ impl CpsApp {
             port: "/dev/ttyUSB0".into(),
             log: Vec::new(),
             log_open: false,
-            status: "Open a .dat or read the radio.".into(),
+            status: "Open a .dat or .950pro, or read the radio.".into(),
+            power_cycle: None,
             dark,
             confirm_write: false,
+            confirm_boot: false,
+            page: page_from_arg(std::env::args().nth(2).as_deref()),
+            sw: shortwave::Band::Ssb,
+            boot_path: String::new(),
+            pending_open: std::env::args().nth(1).map(PathBuf::from),
         };
         app.apply_theme(&cc.egui_ctx);
         app
@@ -94,9 +240,68 @@ impl CpsApp {
                 .to_string();
             self.log_open = true;
             self.status = detail.clone();
+            if power_cycle_notice(&detail) {
+                self.power_cycle = Some(detail.clone());
+            }
             return Err(detail);
         }
         Ok(result.stdout)
+    }
+
+    fn open_codeplug(&mut self, path: &Path) {
+        if is_950pro(path) {
+            self.load_950pro(path);
+        } else {
+            self.load_dat(path);
+        }
+    }
+
+    fn load_950pro(&mut self, path: &Path) {
+        let text = match std::fs::read_to_string(path) {
+            Ok(text) => text,
+            Err(e) => {
+                self.status = format!("Open {} failed: {e}", path.display());
+                return;
+            }
+        };
+        let doc = match serde_json::from_str::<Value>(&text) {
+            Ok(doc) if doc.get("channelData").is_some() => doc,
+            Ok(_) => {
+                self.status = format!("{} has no channelData", path.display());
+                return;
+            }
+            Err(e) => {
+                self.status = format!("{} is not a codeplug: {e}", path.display());
+                return;
+            }
+        };
+        let sibling = dat_beside(path);
+        self.template = if sibling.is_file() {
+            Some(sibling)
+        } else {
+            bundled_dat_template()
+        };
+        let mut doc = doc;
+        let restored = restore_memory_transmit(&mut doc);
+        self.doc = Some(doc);
+        self.zone = 0;
+        self.selected = Some(0);
+        let restored_note = if restored == 0 {
+            String::new()
+        } else {
+            format!(" Restored FM transmit on {restored} memories.")
+        };
+        self.status = match &self.template {
+            Some(template) => format!(
+                "Opened {} (template {}).{restored_note}",
+                path.display(),
+                template.display()
+            ),
+            None => format!(
+                "Opened {}. Save needs a .dat template.{restored_note}",
+                path.display()
+            ),
+        };
     }
 
     fn load_dat(&mut self, path: &Path) {
@@ -104,11 +309,20 @@ impl CpsApp {
         match self.run(&[line]) {
             Ok(stdout) => match serde_json::from_str::<Value>(stdout.trim()) {
                 Ok(doc) => {
+                    let mut doc = doc;
+                    let restored = restore_memory_transmit(&mut doc);
                     self.doc = Some(doc);
                     self.template = Some(path.to_path_buf());
                     self.zone = 0;
                     self.selected = Some(0);
-                    self.status = format!("Opened {}", path.display());
+                    self.status = if restored == 0 {
+                        format!("Opened {}", path.display())
+                    } else {
+                        format!(
+                            "Opened {}. Restored FM transmit on {restored} memories.",
+                            path.display()
+                        )
+                    };
                 }
                 Err(e) => {
                     self.status = format!("JSON from shell was not a codeplug: {e}");
@@ -143,7 +357,13 @@ impl CpsApp {
         match self.run(&[line]) {
             Ok(_) => {
                 self.template = Some(path.to_path_buf());
-                self.status = format!("Saved {}", path.display());
+                self.status = match self.doc.as_ref().map(|doc| write_codeplug_json(doc, path)) {
+                    Some(Ok(json_path)) => {
+                        format!("Saved {} and {}", path.display(), json_path.display())
+                    }
+                    Some(Err(e)) => format!("Saved {}. {e}", path.display()),
+                    None => format!("Saved {}", path.display()),
+                };
             }
             Err(e) => self.status = e,
         }
@@ -167,9 +387,35 @@ impl CpsApp {
             return;
         }
         self.load_dat(&path);
-        if self.doc.is_some() {
-            self.status = format!("Read {} into {}", self.port, path.display());
+        let Some(doc) = self.doc.clone() else {
+            return;
+        };
+        // The read file still has the stripped flag. Write the restored
+        // document back so foobar.dat and foobar.950pro agree.
+        let scratch = std::env::temp_dir().join("rt950-cps-read.json");
+        if let Err(e) = std::fs::write(&scratch, doc.to_string()) {
+            self.status = format!("Read {} into {}. temp JSON failed: {e}", self.port, path.display());
+            return;
         }
+        let line = format!(
+            "dat-import {} {} {}",
+            shell_quote(&path),
+            shell_quote(&scratch),
+            shell_quote(&path)
+        );
+        if let Err(e) = self.run(&[line]) {
+            self.status = format!("Read {} into {}. {e}", self.port, path.display());
+            return;
+        }
+        self.status = match write_codeplug_json(&doc, &path) {
+            Ok(json_path) => format!(
+                "Read {} into {} and {}",
+                self.port,
+                path.display(),
+                json_path.display()
+            ),
+            Err(e) => format!("Read {} into {}. {e}", self.port, path.display()),
+        };
     }
 
     fn write_radio(&mut self) {
@@ -203,10 +449,34 @@ impl CpsApp {
             Err(e) => self.status = e,
         }
     }
+
+    fn send_boot(&mut self) {
+        let path = PathBuf::from(self.boot_path.trim());
+        if let Err(e) = check_bmp(&path) {
+            self.status = e;
+            return;
+        }
+        let lines = vec![
+            format!("port {}", self.port),
+            "open".into(),
+            format!("boot-picture {} confirm", shell_quote(&path)),
+            "close".into(),
+        ];
+        self.status = format!("Sending boot picture {}…", path.display());
+        match self.run(&lines) {
+            Ok(_) => self.status = format!("Sent boot picture to {}", self.port),
+            Err(e) => self.status = e,
+        }
+    }
 }
 
 impl eframe::App for CpsApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        if let Some(path) = self.pending_open.take() {
+            if path.is_file() {
+                self.open_codeplug(&path);
+            }
+        }
         let ctx = ui.ctx().clone();
         egui::Panel::top("bar").show_inside(ui, |ui| {
             ui.horizontal(|ui| {
@@ -221,10 +491,12 @@ impl eframe::App for CpsApp {
                 ui.separator();
                 if ui.button("Open .dat").clicked() {
                     if let Some(path) = rfd::FileDialog::new()
+                        .add_filter("Codeplug", &["dat", "950pro"])
                         .add_filter("CPS data", &["dat"])
+                        .add_filter("RT-950 JSON", &["950pro"])
                         .pick_file()
                     {
-                        self.load_dat(&path);
+                        self.open_codeplug(&path);
                     }
                 }
                 if ui.button("Save .dat").clicked() {
@@ -236,6 +508,8 @@ impl eframe::App for CpsApp {
                     }
                 }
                 ui.separator();
+                self.ui_callsign(ui);
+                ui.separator();
                 if ui.checkbox(&mut self.dark, "Dark").changed() {
                     self.apply_theme(&ctx);
                 }
@@ -245,8 +519,29 @@ impl eframe::App for CpsApp {
             });
         });
 
+        egui::Panel::top("pages").show_inside(ui, |ui| {
+            ui.horizontal(|ui| {
+                for (page, label) in [
+                    (Page::Channels, "Channels"),
+                    (Page::Shortwave, "Shortwave"),
+                    (Page::Vfo, "VFO"),
+                    (Page::Radio, "Radio"),
+                    (Page::Dtmf, "DTMF"),
+                    (Page::Aprs, "APRS"),
+                    (Page::Boot, "Boot picture"),
+                ] {
+                    if ui
+                        .add(egui::Button::selectable(self.page == page, label))
+                        .clicked()
+                    {
+                        self.page = page;
+                    }
+                }
+            });
+        });
+
         egui::Panel::bottom("status").show_inside(ui, |ui| {
-            let n = self.doc.as_ref().map(channel_count).unwrap_or(0);
+            let n = self.doc.as_ref().map(channels::channel_count).unwrap_or(0);
             ui.horizontal(|ui| {
                 ui.label(format!("{n} channels"));
                 ui.separator();
@@ -275,38 +570,65 @@ impl eframe::App for CpsApp {
                 });
         }
 
-        egui::Panel::left("zones")
-            .resizable(true)
-            .default_size(180.0)
-            .show_inside(ui, |ui| {
-                ui.heading("Zones");
-                let names = zone_names(self.doc.as_ref());
-                if names.is_empty() {
-                    ui.label("No codeplug loaded.");
-                    return;
+        egui::CentralPanel::default().show_inside(ui, |ui| match self.page {
+            Page::Channels => {
+                if let Some(doc) = self.doc.as_mut() {
+                    channels::show(ui, doc, &mut self.zone, &mut self.selected);
+                } else {
+                    ui.label("Open a .dat to edit channels.");
                 }
-                let per = channels_per_zone(self.doc.as_ref());
-                egui::ScrollArea::vertical().show(ui, |ui| {
-                    for (i, name) in names.iter().enumerate() {
-                        let label = format!("{name}  {per}");
-                        if ui.selectable_label(self.zone == i, label).clicked() {
-                            self.zone = i;
-                            self.selected = Some(i * per);
-                        }
+            }
+            Page::Shortwave => {
+                if let Some(doc) = self.doc.as_mut() {
+                    shortwave::show(ui, doc, &mut self.sw);
+                } else {
+                    ui.label("Open a .dat to edit shortwave memories.");
+                }
+            }
+            Page::Vfo => {
+                if let Some(doc) = self.doc.as_mut() {
+                    vfo::show(ui, doc);
+                } else {
+                    ui.label("Open a .dat to edit the VFOs.");
+                }
+            }
+            Page::Radio => {
+                if let Some(doc) = self.doc.as_mut() {
+                    radio::show(ui, doc);
+                } else {
+                    ui.label("Open a .dat to edit radio options.");
+                }
+            }
+            Page::Dtmf => {
+                if let Some(doc) = self.doc.as_mut() {
+                    dtmf::show(ui, doc);
+                } else {
+                    ui.label("Open a .dat to edit DTMF.");
+                }
+            }
+            Page::Aprs => {
+                if let Some(doc) = self.doc.as_mut() {
+                    aprs::show(ui, doc);
+                } else {
+                    ui.label("Open a .dat to edit APRS.");
+                }
+            }
+            Page::Boot => self.ui_boot(ui),
+        });
+
+        if let Some(detail) = self.power_cycle.clone() {
+            egui::Window::new("Power Cycle the Radio")
+                .collapsible(false)
+                .resizable(false)
+                .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
+                .show(ui.ctx(), |ui| {
+                    ui.heading("Power Cycle the Radio");
+                    ui.label(&detail);
+                    if ui.button("OK").clicked() {
+                        self.power_cycle = None;
                     }
                 });
-            });
-
-        egui::Panel::right("inspector")
-            .resizable(true)
-            .default_size(280.0)
-            .show_inside(ui, |ui| {
-                self.ui_inspector(ui);
-            });
-
-        egui::CentralPanel::default().show_inside(ui, |ui| {
-            self.ui_channels(ui);
-        });
+        }
 
         if self.confirm_write {
             egui::Window::new("Write to radio")
@@ -328,179 +650,120 @@ impl eframe::App for CpsApp {
                     });
                 });
         }
+
+        if self.confirm_boot {
+            let path = self.boot_path.clone();
+            let port = self.port.clone();
+            egui::Window::new("Send boot picture")
+                .collapsible(false)
+                .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
+                .show(ui.ctx(), |ui| {
+                    ui.label(format!("Send this picture to {port}?"));
+                    ui.monospace(&path);
+                    ui.label("The radio stores the image. This tool cannot read it back.");
+                    ui.horizontal(|ui| {
+                        if ui.button("Send").clicked() {
+                            self.confirm_boot = false;
+                            self.send_boot();
+                        }
+                        if ui.button("Cancel").clicked() {
+                            self.confirm_boot = false;
+                        }
+                    });
+                });
+        }
     }
 }
 
 impl CpsApp {
-    fn ui_channels(&mut self, ui: &mut egui::Ui) {
-        let names = zone_names(self.doc.as_ref());
-        let title = names
-            .get(self.zone)
-            .cloned()
-            .unwrap_or_else(|| "Channels".into());
-        ui.heading(title);
-        let per = channels_per_zone(self.doc.as_ref());
-        let start = self.zone * per;
-        let total = self.doc.as_ref().map(channel_count).unwrap_or(0);
-        let end = (start + per).min(total);
-        if total == 0 {
-            ui.label("Open a .dat file to see channels.");
-            return;
+    fn ui_callsign(&mut self, ui: &mut egui::Ui) {
+        let mut rejected = false;
+        let mut unset = false;
+        if let Some(doc) = self.doc.as_mut() {
+            if let Some(aprs) = doc.pointer_mut("/aprsData") {
+                if let Some(cur) = aprs.get("tB_CallSign").and_then(|v| v.as_str()) {
+                    unset = cur == "NOCALL" || cur == "N0CALL";
+                    let mut buf = cur.to_string();
+                    ui.label("Callsign");
+                    let response = ui.add(
+                        egui::TextEdit::singleline(&mut buf)
+                            .char_limit(6)
+                            .desired_width(84.0)
+                            .hint_text("N0CALL"),
+                    );
+                    if response.changed() {
+                        let cleaned: String = buf
+                            .chars()
+                            .filter(|c| c.is_ascii_alphanumeric())
+                            .take(6)
+                            .collect::<String>()
+                            .to_uppercase();
+                        if cleaned.is_empty() {
+                            rejected = true;
+                        } else {
+                            unset = cleaned == "NOCALL" || cleaned == "N0CALL";
+                            aprs["tB_CallSign"] = json!(cleaned);
+                        }
+                    }
+                }
+            }
         }
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            for idx in start..end {
-                let selected = self.selected == Some(idx);
-                let summary = channel_summary(self.doc.as_ref(), idx);
-                let response = ui.add(egui::Button::selectable(selected, summary).wrap());
-                if response.clicked() {
-                    self.selected = Some(idx);
+        if unset {
+            ui.label(egui::RichText::new("unset").weak());
+        }
+        if rejected {
+            self.status =
+                "Callsign stays put when blank. The radio keeps the previous 6 bytes.".into();
+        }
+    }
+
+    fn ui_boot(&mut self, ui: &mut egui::Ui) {
+        ui.heading("Boot picture");
+        ui.label("Uncompressed 24-bit BMP, 240×320. Sending needs the cable and a confirm.");
+        ui.label("There is no read-back. Keep the BMP as the backup.");
+        ui.add_space(8.0);
+        ui.horizontal(|ui| {
+            ui.add(
+                egui::TextEdit::singleline(&mut self.boot_path)
+                    .desired_width(420.0)
+                    .hint_text("path to .bmp"),
+            );
+            if ui.button("Choose").clicked() {
+                if let Some(path) = rfd::FileDialog::new()
+                    .add_filter("Bitmap", &["bmp"])
+                    .pick_file()
+                {
+                    self.boot_path = path.display().to_string();
+                }
+            }
+            if ui.button("Send to radio").clicked() {
+                match check_bmp(Path::new(self.boot_path.trim())) {
+                    Ok(()) => self.confirm_boot = true,
+                    Err(e) => self.status = e,
                 }
             }
         });
     }
+}
 
-    fn ui_inspector(&mut self, ui: &mut egui::Ui) {
-        let Some(idx) = self.selected else {
-            ui.label("Select a channel.");
-            return;
-        };
-        ui.heading(format!("Channel {}", idx + 1));
-        let Some(doc) = self.doc.as_mut() else {
-            ui.label("No codeplug.");
-            return;
-        };
-        let Some(ch) = channel_mut(doc, idx) else {
-            ui.label("Channel missing.");
-            return;
-        };
-        edit_str(ui, "Name", ch, "chName");
-        edit_str(ui, "RX", ch, "rxFreq");
-        edit_str(ui, "TX", ch, "txFreq");
-        edit_str(ui, "RX tone", ch, "rxQT");
-        edit_str(ui, "TX tone", ch, "txQT");
-        edit_choice(ui, "Power", ch, "txPower", &[(0, "High"), (1, "Mid"), (2, "Low")]);
-        edit_choice(ui, "Bandwidth", ch, "bandWide", &[(0, "Wide"), (1, "Narrow")]);
-        edit_choice(
-            ui,
-            "Mode",
-            ch,
-            "rxModulation",
-            &[(0, "FM"), (1, "AM"), (2, "SSB")],
-        );
-        edit_choice(ui, "Scan", ch, "scanAdd", &[(0, "Skip"), (1, "Add")]);
-        edit_choice(ui, "PTT ID", ch, "pttId", &[(0, "OFF"), (1, "BOT"), (2, "EOT"), (3, "Both")]);
-        edit_choice(ui, "Scramble", ch, "scram", &[(0, "OFF"), (1, "ON")]);
-        edit_choice(ui, "Learn FHSS", ch, "learnFHSS", &[(0, "OFF"), (1, "ON")]);
-        edit_choice(ui, "Encrypt", ch, "encrypt", &[(0, "OFF"), (1, "ON")]);
-        edit_choice(ui, "Busy lock", ch, "busyLockout", &[(0, "OFF"), (1, "ON")]);
-        edit_str(ui, "FHSS code", ch, "fhssCode");
-        ui.add_space(8.0);
-        ui.label("Signalling group");
-        if let Some(v) = ch.get_mut("signallingGroup").and_then(|v| v.as_i64()) {
-            let mut n = v as i32;
-            if ui.add(egui::DragValue::new(&mut n).range(0..=255)).changed() {
-                ch["signallingGroup"] = json!(n);
-            }
-        }
+fn check_bmp(path: &Path) -> Result<(), String> {
+    if path.as_os_str().is_empty() {
+        return Err("Choose a BMP first.".into());
     }
-}
-
-fn edit_str(ui: &mut egui::Ui, label: &str, ch: &mut Value, key: &str) {
-    let Some(slot) = ch.get_mut(key) else {
-        return;
-    };
-    let Some(text) = slot.as_str() else {
-        return;
-    };
-    let mut buf = text.to_string();
-    ui.label(label);
-    if ui.text_edit_singleline(&mut buf).changed() {
-        *slot = json!(buf);
+    let data = std::fs::read(path).map_err(|e| format!("cannot read image: {e}"))?;
+    if data.len() < 54 || &data[0..2] != b"BM" {
+        return Err("That file is not a BMP.".into());
     }
-}
-
-fn edit_choice(ui: &mut egui::Ui, label: &str, ch: &mut Value, key: &str, choices: &[(i32, &str)]) {
-    let Some(cur) = ch.get(key).and_then(|v| v.as_i64()) else {
-        return;
-    };
-    let cur = cur as i32;
-    let shown = choices
-        .iter()
-        .find(|(n, _)| *n == cur)
-        .map(|(_, name)| *name)
-        .unwrap_or("Other");
-    ui.horizontal(|ui| {
-        ui.label(label);
-        egui::ComboBox::from_id_salt(key)
-            .selected_text(shown)
-            .show_ui(ui, |ui| {
-                for (n, name) in choices {
-                    if ui.selectable_label(cur == *n, *name).clicked() {
-                        ch[key] = json!(*n);
-                    }
-                }
-            });
-    });
-}
-
-fn channel_count(doc: &Value) -> usize {
-    doc.pointer("/channelData/channelList")
-        .and_then(|v| v.as_array())
-        .map(|a| a.len())
-        .unwrap_or(0)
-}
-
-fn zone_names(doc: Option<&Value>) -> Vec<String> {
-    let Some(doc) = doc else {
-        return Vec::new();
-    };
-    doc.pointer("/channelData/arrayZoneName")
-        .and_then(|v| v.as_array())
-        .map(|a| {
-            a.iter()
-                .map(|v| v.as_str().unwrap_or("").to_string())
-                .collect()
-        })
-        .unwrap_or_default()
-}
-
-fn channels_per_zone(doc: Option<&Value>) -> usize {
-    let Some(doc) = doc else {
-        return 0;
-    };
-    let n = channel_count(doc);
-    let z = zone_names(Some(doc)).len().max(1);
-    if n == 0 {
-        0
-    } else {
-        n / z
+    let width = i32::from_le_bytes(data[18..22].try_into().map_err(|_| "short BMP header")?);
+    let height = i32::from_le_bytes(data[22..26].try_into().map_err(|_| "short BMP header")?);
+    let bpp = u16::from_le_bytes(data[28..30].try_into().map_err(|_| "short BMP header")?);
+    let compression = u32::from_le_bytes(data[30..34].try_into().map_err(|_| "short BMP header")?);
+    if width != 240 || height.unsigned_abs() != 320 || bpp != 24 || compression != 0 {
+        return Err(format!(
+            "Need an uncompressed 24-bit 240×320 BMP. This file is {width}×{height}, {bpp}-bit."
+        ));
     }
-}
-
-fn channel_summary(doc: Option<&Value>, idx: usize) -> String {
-    let Some(ch) = doc.and_then(|d| d.pointer(&format!("/channelData/channelList/{idx}"))) else {
-        return format!("{}", idx + 1);
-    };
-    let name = ch.get("chName").and_then(|v| v.as_str()).unwrap_or("");
-    let rx = ch.get("rxFreq").and_then(|v| v.as_str()).unwrap_or("");
-    let tx = ch.get("txFreq").and_then(|v| v.as_str()).unwrap_or("");
-    let mode = choice_name(ch, "rxModulation", &[(0, "FM"), (1, "AM"), (2, "SSB")]);
-    let bw = choice_name(ch, "bandWide", &[(0, "Wide"), (1, "Narrow")]);
-    let pwr = choice_name(ch, "txPower", &[(0, "High"), (1, "Mid"), (2, "Low")]);
-    format!("{:>4}   {name}\n       {rx}  →  {tx}    {mode} · {bw} · {pwr}", idx + 1)
-}
-
-fn choice_name<'a>(ch: &Value, key: &str, choices: &'a [(i32, &str)]) -> &'a str {
-    let cur = ch.get(key).and_then(|v| v.as_i64()).unwrap_or(0) as i32;
-    choices
-        .iter()
-        .find(|(n, _)| *n == cur)
-        .map(|(_, name)| *name)
-        .unwrap_or("?")
-}
-
-fn channel_mut(doc: &mut Value, idx: usize) -> Option<&mut Value> {
-    doc.pointer_mut(&format!("/channelData/channelList/{idx}"))
+    Ok(())
 }
 
 fn shell_quote(path: &Path) -> String {
@@ -509,5 +772,68 @@ fn shell_quote(path: &Path) -> String {
         format!("\"{}\"", s.replace('"', "\\\""))
     } else {
         s
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::{Path, PathBuf};
+
+    use serde_json::json;
+
+    use super::{dat_beside, is_950pro, json_beside, power_cycle_notice, restore_memory_transmit};
+
+    #[test]
+    fn save_writes_950pro_beside_the_dat() {
+        let dat = Path::new("/tmp/indyham-2026-10-03.dat");
+        assert_eq!(
+            json_beside(dat),
+            PathBuf::from("/tmp/indyham-2026-10-03.950pro")
+        );
+        assert!(is_950pro(Path::new("codeplug.950PRO")));
+        assert_eq!(
+            dat_beside(Path::new("/tmp/indyham-2026-10-03.950pro")),
+            PathBuf::from("/tmp/indyham-2026-10-03.dat")
+        );
+    }
+
+
+    #[test]
+    fn radio_read_restores_fm_transmit_and_leaves_ais_receive_only() {
+        let mut doc = json!({
+            "channelData": {
+                "channelList": [
+                    {"chName": "CB 01", "rxFreq": "26.96500", "rxModulation": 0},
+                    {"chName": "MURS 1", "rxFreq": "151.82000", "rxModulation": 0},
+                    {"chName": "FRS 01", "rxFreq": "462.56250", "rxModulation": 0},
+                    {"chName": "GMRS 15R", "rxFreq": "462.55000", "rxModulation": 0},
+                    {"chName": "AIS 1", "rxFreq": "161.97500", "rxModulation": 0},
+                    {"chName": "", "rxFreq": "000.00000", "rxModulation": 0},
+                    {"chName": "CVG TWR", "rxFreq": "118.30000", "rxModulation": 1}
+                ]
+            }
+        });
+        assert_eq!(restore_memory_transmit(&mut doc), 4);
+        let list = &doc["channelData"]["channelList"];
+        assert_eq!(list[0]["rxModulation"], 2);
+        assert_eq!(list[1]["rxModulation"], 2);
+        assert_eq!(list[2]["rxModulation"], 2);
+        assert_eq!(list[3]["rxModulation"], 2);
+        assert_eq!(list[4]["rxModulation"], 0);
+        assert_eq!(list[5]["rxModulation"], 0);
+        assert_eq!(list[6]["rxModulation"], 1);
+    }
+
+    #[test]
+    fn toover_and_other_codes_ask_for_a_power_cycle() {
+        assert!(power_cycle_notice(
+            "error: Read timed out (TOOVER). The radio did not answer."
+        ));
+        assert!(power_cycle_notice(
+            "Write failed: the radio model did not match (MODELERR)."
+        ));
+        assert!(power_cycle_notice("Read aborted (EXCABORT)."));
+        assert!(power_cycle_notice("timeout: wanted 1 bytes, got 0"));
+        assert!(!power_cycle_notice("error: open /dev/ttyUSB0 failed: busy"));
     }
 }
