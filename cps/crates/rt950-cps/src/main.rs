@@ -2,6 +2,7 @@
 
 mod aprs;
 mod channels;
+mod kiss;
 mod dtmf;
 mod edit;
 mod radio;
@@ -10,6 +11,7 @@ mod shell;
 mod shortwave;
 mod vfo;
 
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use eframe::egui;
@@ -173,6 +175,9 @@ struct CpsApp {
     page: Page,
     boot_path: String,
     pending_open: Option<PathBuf>,
+    kiss: Option<kiss::Feed>,
+    stations: HashMap<String, kiss::Station>,
+    kiss_status: String,
 }
 
 impl CpsApp {
@@ -195,6 +200,9 @@ impl CpsApp {
             page: page_from_arg(std::env::args().nth(2).as_deref()),
             boot_path: String::new(),
             pending_open: std::env::args().nth(1).map(PathBuf::from),
+            kiss: None,
+            stations: HashMap::new(),
+            kiss_status: String::new(),
         };
         app.apply_theme(&cc.egui_ctx);
         app
@@ -367,6 +375,7 @@ impl CpsApp {
     }
 
     fn read_radio(&mut self) {
+        self.kiss = None;
         let Some(path) = rfd::FileDialog::new()
             .add_filter("CPS data", &["dat"])
             .set_file_name("RT-950-read.dat")
@@ -416,6 +425,7 @@ impl CpsApp {
     }
 
     fn write_radio(&mut self) {
+        self.kiss = None;
         let Some(template) = self.template.clone() else {
             self.status = "Nothing loaded to write.".into();
             return;
@@ -448,6 +458,7 @@ impl CpsApp {
     }
 
     fn send_boot(&mut self) {
+        self.kiss = None;
         let path = PathBuf::from(self.boot_path.trim());
         if let Err(e) = check_bmp(&path) {
             self.status = e;
@@ -624,7 +635,14 @@ impl eframe::App for CpsApp {
             }
             Page::Aprs => {
                 if let Some(doc) = self.doc.as_mut() {
-                    aprs::show(ui, doc);
+                    aprs::show(
+                        ui,
+                        doc,
+                        &self.port,
+                        &mut self.kiss,
+                        &mut self.stations,
+                        &mut self.kiss_status,
+                    );
                 } else {
                     ui.label("Open a .dat to edit APRS.");
                 }

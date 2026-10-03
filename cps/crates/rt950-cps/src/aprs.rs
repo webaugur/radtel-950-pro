@@ -1,16 +1,48 @@
 //! APRS settings. The callsign is the same `tB_CallSign` field as the top bar.
 
+use std::collections::HashMap;
+
 use eframe::egui;
 use serde_json::Value;
 
 use crate::edit;
+use crate::kiss::{self, Feed, FeedEvent, Station};
 
-pub fn show(ui: &mut egui::Ui, doc: &mut Value) {
+pub fn show(
+    ui: &mut egui::Ui,
+    doc: &mut Value,
+    port: &str,
+    feed: &mut Option<Feed>,
+    stations: &mut HashMap<String, Station>,
+    kiss_status: &mut String,
+) {
     let Some(aprs) = doc.pointer_mut("/aprsData") else {
         edit::missing(ui, "APRS");
         return;
     };
-    egui::ScrollArea::vertical().id_salt("aprs").show(ui, |ui| {
+    let events = feed.as_ref().map(Feed::poll).unwrap_or_default();
+    let mut failed = false;
+    for event in events {
+        match event {
+            FeedEvent::Listening => *kiss_status = format!("Listening on {port}"),
+            FeedEvent::Error(text) => {
+                *kiss_status = text;
+                failed = true;
+            }
+            FeedEvent::Station(station) => {
+                stations.insert(station.call.clone(), station);
+            }
+        }
+    }
+    if failed {
+        *feed = None;
+    }
+    map_panel(ui, aprs, port, feed, stations, kiss_status);
+    ui.add_space(8.0);
+    egui::ScrollArea::vertical()
+        .id_salt("aprs")
+        .auto_shrink([false, false])
+        .show(ui, |ui| {
         ui.heading("APRS");
         ui.label(
             egui::RichText::new(
@@ -77,6 +109,102 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value) {
             edit::drag(ui, "Path 2 SSID", aprs, "cbB_CustomRoutingTwoSSID", 0..=15);
         });
     });
+}
+
+fn map_panel(
+    ui: &mut egui::Ui,
+    aprs: &Value,
+    port: &str,
+    feed: &mut Option<Feed>,
+    stations: &HashMap<String, Station>,
+    kiss_status: &mut String,
+) {
+    let center = kiss::map_center(aprs, stations);
+    let rows = center
+        .map(|center| kiss::stations_in_range(center, stations, 100.0))
+        .unwrap_or_default();
+    ui.horizontal(|ui| {
+        let listening = feed.is_some();
+        if ui.button(if listening { "Stop" } else { "Listen" }).clicked() {
+            if listening {
+                *feed = None;
+                *kiss_status = format!("Stopped {port}");
+            } else {
+                *kiss_status = format!("Opening {port}");
+                *feed = Some(Feed::start(port, ui.ctx().clone()));
+            }
+        }
+        ui.label(
+            egui::RichText::new(if kiss_status.is_empty() {
+                "USB KISS at 115200. The GPS NMEA stream stays inside the radio.".to_string()
+            } else {
+                kiss_status.to_string()
+            })
+            .weak(),
+        );
+    });
+    let (rect, _) = ui.allocate_exact_size(
+        egui::vec2(ui.available_width(), 240.0),
+        egui::Sense::hover(),
+    );
+    let bg = ui.visuals().extreme_bg_color;
+    let frame = ui.visuals().widgets.noninteractive.bg_stroke.color;
+    let text = ui.visuals().text_color();
+    let painter = ui.painter();
+    painter.rect_filled(rect, 4.0, bg);
+    painter.rect_stroke(rect, 4.0, egui::Stroke::new(1.0, frame), egui::StrokeKind::Inside);
+    let plot_center = rect.center();
+    let radius = (rect.width().min(rect.height()) / 2.0) - 18.0;
+    painter.circle_stroke(
+        plot_center,
+        radius,
+        egui::Stroke::new(1.0, egui::Color32::from_gray(90)),
+    );
+    painter.text(
+        egui::pos2(plot_center.x + radius - 36.0, plot_center.y - 8.0),
+        egui::Align2::LEFT_CENTER,
+        "100 mi",
+        egui::FontId::proportional(11.0),
+        egui::Color32::from_gray(140),
+    );
+    if let Some(center) = center {
+        painter.circle_filled(plot_center, 4.0, egui::Color32::from_rgb(214, 168, 72));
+        for (station, _miles) in &rows {
+            let (north, east) = kiss::offset_miles(center, (station.lat, station.lon));
+            let x = plot_center.x + (east / 100.0) as f32 * radius;
+            let y = plot_center.y - (north / 100.0) as f32 * radius;
+            let at = egui::pos2(x, y);
+            painter.circle_filled(at, 4.0, egui::Color32::from_rgb(92, 184, 120));
+            painter.text(
+                at + egui::vec2(6.0, -6.0),
+                egui::Align2::LEFT_BOTTOM,
+                &station.call,
+                egui::FontId::proportional(12.0),
+                text,
+            );
+        }
+    } else {
+        painter.text(
+            plot_center,
+            egui::Align2::CENTER_CENTER,
+            "No map center yet. Fixed coordinates are empty, or this callsign has not reported a GPS position.",
+            egui::FontId::proportional(14.0),
+            egui::Color32::from_gray(160),
+        );
+    }
+    if center.is_none() {
+        return;
+    }
+    if rows.is_empty() {
+        ui.label(egui::RichText::new("No stations inside 100 miles.").weak());
+        return;
+    }
+    for (station, miles) in rows {
+        ui.label(format!(
+            "{}   {:.0} mi   {}",
+            station.call, miles, station.comment
+        ));
+    }
 }
 
 fn section(ui: &mut egui::Ui, title: &str, body: impl FnOnce(&mut egui::Ui)) {
