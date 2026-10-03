@@ -2818,7 +2818,6 @@ dependencies = [
  "eframe",
  "egui",
  "rfd",
- "rt950-protocol",
  "serde",
  "serde_json",
 ]
