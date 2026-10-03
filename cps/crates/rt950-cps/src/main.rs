@@ -5,6 +5,7 @@ mod channels;
 mod dtmf;
 mod edit;
 mod radio;
+mod scope;
 mod shell;
 mod shortwave;
 mod vfo;
@@ -136,6 +137,8 @@ fn power_cycle_notice(detail: &str) -> bool {
 fn page_from_arg(name: Option<&str>) -> Page {
     match name {
         Some("shortwave") => Page::Shortwave,
+        Some("am") => Page::Am,
+        Some("fm") => Page::Fm,
         Some("vfo") => Page::Vfo,
         Some("radio") => Page::Radio,
         Some("dtmf") => Page::Dtmf,
@@ -149,6 +152,8 @@ fn page_from_arg(name: Option<&str>) -> Page {
 enum Page {
     Channels,
     Shortwave,
+    Am,
+    Fm,
     Vfo,
     Radio,
     Dtmf,
@@ -172,7 +177,6 @@ struct CpsApp {
     confirm_write: bool,
     confirm_boot: bool,
     page: Page,
-    sw: shortwave::Band,
     boot_path: String,
     pending_open: Option<PathBuf>,
 }
@@ -195,7 +199,6 @@ impl CpsApp {
             confirm_write: false,
             confirm_boot: false,
             page: page_from_arg(std::env::args().nth(2).as_deref()),
-            sw: shortwave::Band::Ssb,
             boot_path: String::new(),
             pending_open: std::env::args().nth(1).map(PathBuf::from),
         };
@@ -522,13 +525,26 @@ impl eframe::App for CpsApp {
         egui::Panel::top("pages").show_inside(ui, |ui| {
             ui.horizontal(|ui| {
                 for (page, label) in [
-                    (Page::Channels, "Channels"),
-                    (Page::Shortwave, "Shortwave"),
                     (Page::Vfo, "VFO"),
                     (Page::Radio, "Radio"),
                     (Page::Dtmf, "DTMF"),
                     (Page::Aprs, "APRS"),
                     (Page::Boot, "Boot picture"),
+                ] {
+                    if ui
+                        .add(egui::Button::selectable(self.page == page, label))
+                        .clicked()
+                    {
+                        self.page = page;
+                    }
+                }
+            });
+            ui.horizontal(|ui| {
+                for (page, label) in [
+                    (Page::Channels, "Channels"),
+                    (Page::Shortwave, "Shortwave"),
+                    (Page::Am, "AM"),
+                    (Page::Fm, "FM"),
                 ] {
                     if ui
                         .add(egui::Button::selectable(self.page == page, label))
@@ -580,9 +596,23 @@ impl eframe::App for CpsApp {
             }
             Page::Shortwave => {
                 if let Some(doc) = self.doc.as_mut() {
-                    shortwave::show(ui, doc, &mut self.sw);
+                    shortwave::show(ui, doc, shortwave::Band::Ssb);
                 } else {
                     ui.label("Open a .dat to edit shortwave memories.");
+                }
+            }
+            Page::Am => {
+                if let Some(doc) = self.doc.as_mut() {
+                    shortwave::show(ui, doc, shortwave::Band::Am);
+                } else {
+                    ui.label("Open a .dat to edit AM memories.");
+                }
+            }
+            Page::Fm => {
+                if let Some(doc) = self.doc.as_mut() {
+                    shortwave::show(ui, doc, shortwave::Band::Fm);
+                } else {
+                    ui.label("Open a .dat to edit FM memories.");
                 }
             }
             Page::Vfo => {

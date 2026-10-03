@@ -5,9 +5,7 @@ use eframe::egui;
 use serde_json::{json, Value};
 
 use crate::edit;
-
-const FM: egui::Color32 = egui::Color32::from_rgb(92, 184, 120);
-const AM: egui::Color32 = egui::Color32::from_rgb(90, 150, 210);
+use crate::scope;
 
 pub fn show(ui: &mut egui::Ui, doc: &mut Value, zone: &mut usize, selected: &mut Option<usize>) {
     let names = zone_names(doc);
@@ -26,65 +24,117 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, zone: &mut usize, selected: &mut
         *selected = (start < end).then_some(start);
     }
     let cur = selected.unwrap_or(start);
-
-    egui::ScrollArea::horizontal()
-        .id_salt("zone-tabs")
-        .show(ui, |ui| {
-            ui.horizontal(|ui| {
-                for (index, name) in names.iter().enumerate() {
-                    let label = if name.is_empty() {
-                        format!("Zone {}", index + 1)
-                    } else {
-                        name.clone()
-                    };
-                    if ui
-                        .add(egui::Button::selectable(*zone == index, label))
-                        .clicked()
-                    {
-                        *zone = index;
-                        *selected = Some(index * per);
-                    }
-                }
-            });
-        });
-    ui.add_space(6.0);
+    let tuned_idx = cur;
 
     let rx = field_str(doc, cur, "rxFreq");
     let ch_name = field_str(doc, cur, "chName");
-    let (mode, color) = mode_mark(field_i64(doc, cur, "rxModulation"));
+    let tuned = scope::tuned_mhz(&rx);
+    let mark = tuned.map(scope::service_at).unwrap_or(scope::Mark {
+        name: "—",
+        color: scope::OTHER,
+    });
+    let freqs: Vec<f64> = (start..end)
+        .filter_map(|idx| scope::tuned_mhz(&field_str(doc, idx, "rxFreq")))
+        .collect();
+    let (lo, hi) = scope::zone_window(&freqs);
+    let mut clicked: Option<f64> = None;
     egui::Frame::group(ui.style()).show(ui, |ui| {
         ui.horizontal(|ui| {
-            let shown = if rx.is_empty() { "—".to_string() } else { rx };
+            let shown = match tuned {
+                Some(mhz) => format!("{mhz:.3}"),
+                None => "—".to_string(),
+            };
             ui.label(egui::RichText::new(shown).size(40.0).strong());
-            ui.label(egui::RichText::new("MHz").size(16.0));
+            ui.vertical(|ui| {
+                ui.label(egui::RichText::new("MHz").size(16.0));
+                if !rx.is_empty() {
+                    ui.label(egui::RichText::new(rx).weak());
+                }
+            });
             ui.add_space(18.0);
-            ui.label(egui::RichText::new(mode).size(22.0).color(color).strong());
+            ui.label(
+                egui::RichText::new(mark.name)
+                    .size(22.0)
+                    .color(mark.color)
+                    .strong(),
+            );
             ui.add_space(12.0);
             if !ch_name.is_empty() {
                 ui.label(egui::RichText::new(ch_name).size(22.0));
             }
         });
+        ui.add_space(6.0);
+        let spans = scope::channel_spans();
+        clicked = scope::dial(ui, tuned, lo, hi, &spans);
         ui.add_space(4.0);
-        if let Some(slot) = doc.pointer_mut(&format!("/channelData/arrayZoneName/{zone}")) {
-            let mut buf = slot.as_str().unwrap_or("").to_string();
-            ui.horizontal(|ui| {
-                ui.label("Zone name");
-                if ui
-                    .add(
-                        egui::TextEdit::singleline(&mut buf)
-                            .id_salt(("zone-rename", *zone))
-                            .desired_width(220.0)
-                            .hint_text("zone name"),
-                    )
-                    .changed()
+        ui.horizontal(|ui| {
+            for (color, label) in scope::legend(lo, hi) {
+                scope::swatch(ui, color, label);
+                ui.add_space(10.0);
+            }
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                if let Some(slot) = doc.pointer_mut(&format!("/channelData/arrayZoneName/{zone}"))
                 {
-                    *slot = json!(buf);
+                    let mut buf = slot.as_str().unwrap_or("").to_string();
+                    if ui
+                        .add(
+                            egui::TextEdit::singleline(&mut buf)
+                                .id_salt(("zone-rename", *zone))
+                                .desired_width(160.0)
+                                .hint_text("zone name"),
+                        )
+                        .changed()
+                    {
+                        *slot = json!(buf);
+                    }
                 }
+                ui.add_space(8.0);
+                let shown = names
+                    .get(*zone)
+                    .map(|name| {
+                        if name.is_empty() {
+                            format!("Zone {}", *zone + 1)
+                        } else {
+                            format!("{}  {name}", *zone + 1)
+                        }
+                    })
+                    .unwrap_or_else(|| format!("Zone {}", *zone + 1));
+                egui::ComboBox::from_id_salt("channel-zone")
+                    .width(180.0)
+                    .selected_text(shown)
+                    .show_ui(ui, |ui| {
+                        for (index, name) in names.iter().enumerate() {
+                            let text = if name.is_empty() {
+                                format!("Zone {}", index + 1)
+                            } else {
+                                format!("{}  {name}", index + 1)
+                            };
+                            if ui.selectable_label(*zone == index, text).clicked() {
+                                *zone = index;
+                                *selected = Some(index * per);
+                            }
+                        }
+                    });
             });
-        }
+        });
     });
+    if let Some(mhz) = clicked {
+        if let Some(ch) = doc.pointer_mut(&format!("/channelData/channelList/{tuned_idx}")) {
+            let rx_now = ch.get("rxFreq").and_then(|v| v.as_str()).unwrap_or("");
+            let tx_now = ch.get("txFreq").and_then(|v| v.as_str()).unwrap_or("");
+            let (rx_next, tx_next) = scope::tune_pair(rx_now, tx_now, mhz);
+            ch["rxFreq"] = json!(rx_next);
+            ch["txFreq"] = json!(tx_next);
+        }
+    }
 
     ui.add_space(8.0);
+    let start = *zone * per;
+    let end = (start + per).min(total);
+    if selected.is_none_or(|idx| idx < start || idx >= end) {
+        *selected = (start < end).then_some(start);
+    }
+    let cur = selected.unwrap_or(start);
     let width = ui.available_width();
     ui.horizontal_top(|ui| {
         ui.vertical(|ui| {
@@ -158,7 +208,15 @@ fn editor(ui: &mut egui::Ui, doc: &mut Value, idx: usize) {
 fn channel_row(ui: &mut egui::Ui, doc: &Value, idx: usize, cur: usize, local: usize) -> bool {
     let name = field_str(doc, idx, "chName");
     let rx = field_str(doc, idx, "rxFreq");
-    let (mode, color) = mode_mark(field_i64(doc, idx, "rxModulation"));
+    let tuned = scope::tuned_mhz(&rx);
+    let mark = tuned.map(scope::service_at).unwrap_or(scope::Mark {
+        name: "—",
+        color: scope::OTHER,
+    });
+    let freq = match tuned {
+        Some(mhz) => format!("{mhz:7.3}"),
+        None => "      —".to_string(),
+    };
     let slot = format!("{local:>3}");
     let (rect, response) =
         ui.allocate_exact_size(egui::vec2(ui.available_width(), 26.0), egui::Sense::click());
@@ -167,12 +225,12 @@ fn channel_row(ui: &mut egui::Ui, doc: &Value, idx: usize, cur: usize, local: us
         painter.rect_filled(
             rect,
             egui::CornerRadius::same(4),
-            color.gamma_multiply(0.28),
+            mark.color.gamma_multiply(0.28),
         );
     } else if idx % 2 == 1 {
         painter.rect_filled(rect, egui::CornerRadius::ZERO, ui.visuals().faint_bg_color);
     }
-    let text = format!("{slot}   {rx:<12}  {mode:<4}  {name}");
+    let text = format!("{slot}   {freq}   {:<8}   {name}", mark.name);
     painter.text(
         rect.left_center() + egui::vec2(8.0, 0.0),
         egui::Align2::LEFT_CENTER,
@@ -181,13 +239,6 @@ fn channel_row(ui: &mut egui::Ui, doc: &Value, idx: usize, cur: usize, local: us
         ui.visuals().text_color(),
     );
     response.clicked()
-}
-
-fn mode_mark(mode: i64) -> (&'static str, egui::Color32) {
-    match mode {
-        1 | 3 => ("AM", AM),
-        _ => ("FM", FM),
-    }
 }
 
 fn zone_names(doc: &Value) -> Vec<String> {
@@ -224,12 +275,6 @@ fn field_str(doc: &Value, idx: usize, key: &str) -> String {
         .and_then(|v| v.as_str())
         .unwrap_or("")
         .to_string()
-}
-
-fn field_i64(doc: &Value, idx: usize, key: &str) -> i64 {
-    doc.pointer(&format!("/channelData/channelList/{idx}/{key}"))
-        .and_then(|v| v.as_i64())
-        .unwrap_or(0)
 }
 
 #[cfg(test)]

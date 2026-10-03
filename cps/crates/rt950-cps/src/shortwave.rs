@@ -7,6 +7,7 @@ use eframe::egui;
 use serde_json::{json, Value};
 
 use crate::edit;
+use crate::scope::{self, Span};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Band {
@@ -15,66 +16,20 @@ pub enum Band {
     Fm,
 }
 
-struct Mark {
-    name: &'static str,
-    color: egui::Color32,
-}
-
-const HAM: egui::Color32 = egui::Color32::from_rgb(92, 184, 120);
-const BROADCAST: egui::Color32 = egui::Color32::from_rgb(90, 150, 210);
-const AERO: egui::Color32 = egui::Color32::from_rgb(214, 168, 72);
-const OTHER: egui::Color32 = egui::Color32::from_rgb(160, 160, 160);
-
-pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: &mut Band) {
+pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: Band) {
     if doc.pointer("/modulationData/modulationChannels").is_none() {
         edit::missing(ui, "modulation");
         return;
     }
 
-    ui.horizontal(|ui| {
-        for (item, label) in [
-            (Band::Ssb, "Shortwave"),
-            (Band::Am, "AM"),
-            (Band::Fm, "FM broadcast"),
-        ] {
-            if ui
-                .add(egui::Button::selectable(*band == item, label))
-                .clicked()
-            {
-                *band = item;
-            }
-        }
-        ui.separator();
-        if let Some(mod_data) = doc.pointer_mut("/modulationData") {
-            edit::combo(
-                ui,
-                "sw-pub",
-                "Work",
-                mod_data,
-                "cbB_WorkMode",
-                edit::MOD_WORK,
-            );
-            ui.add_space(8.0);
-            edit::combo(
-                ui,
-                "sw-pub",
-                "Mode",
-                mod_data,
-                "cbB_ModulationMode",
-                edit::MOD_MODE,
-            );
-        }
-    });
-    ui.add_space(6.0);
-
-    let (id_key, freq_key, name_key) = keys(*band);
+    let (id_key, freq_key, name_key) = keys(band);
     let cur = current_id(doc, id_key);
     let raw = channel_raw(doc, cur, freq_key);
-    let mhz = to_mhz(*band, raw);
-    let mark = if *band == Band::Fm {
+    let mhz = to_mhz(band, raw);
+    let mark = if band == Band::Fm {
         fm_mark(raw)
     } else {
-        band_for_khz(raw)
+        scope::mark_khz(raw)
     };
 
     let mut tuned: Option<f64> = None;
@@ -83,7 +38,7 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: &mut Band) {
             ui.label(egui::RichText::new(format!("{mhz:.3}")).size(40.0).strong());
             ui.vertical(|ui| {
                 ui.label(egui::RichText::new("MHz").size(16.0));
-                let under = if *band == Band::Fm {
+                let under = if band == Band::Fm {
                     String::new()
                 } else {
                     format!("{raw} kHz")
@@ -101,24 +56,20 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: &mut Band) {
             );
         });
         ui.add_space(6.0);
-        let (lo, hi) = if *band == Band::Fm {
-            (64.0, 108.0)
-        } else {
-            (0.0, 30.0)
-        };
-        tuned = dial(ui, mhz, lo, hi, *band);
+        let (lo, hi, spans) = dial_for(band);
+        tuned = scope::dial(ui, Some(mhz), lo, hi, &spans);
         ui.add_space(4.0);
         ui.horizontal(|ui| {
-            legend(ui, HAM, "Amateur");
+            scope::swatch(ui, scope::HAM, "Amateur");
             ui.add_space(10.0);
-            legend(ui, BROADCAST, "Broadcast");
-            if *band != Band::Fm {
+            scope::swatch(ui, scope::BROADCAST, "Broadcast");
+            if band != Band::Fm {
                 ui.add_space(10.0);
-                legend(ui, AERO, "Aeronautical");
+                scope::swatch(ui, scope::AERO, "Aeronautical");
             }
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if let Some(mod_data) = doc.pointer_mut("/modulationData") {
-                    match *band {
+                    match band {
                         Band::Ssb => {
                             edit::combo(ui, "sw", "Gain", mod_data, "cbB_SSBRxGain", edit::RX_GAIN);
                             ui.add_space(8.0);
@@ -145,12 +96,30 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: &mut Band) {
                         }
                         Band::Fm => {}
                     }
+                    ui.add_space(8.0);
+                    edit::combo(
+                        ui,
+                        "sw-pub",
+                        "Mode",
+                        mod_data,
+                        "cbB_ModulationMode",
+                        edit::MOD_MODE,
+                    );
+                    ui.add_space(8.0);
+                    edit::combo(
+                        ui,
+                        "sw-pub",
+                        "Work",
+                        mod_data,
+                        "cbB_WorkMode",
+                        edit::MOD_WORK,
+                    );
                 }
             });
         });
     });
     if let Some(mhz) = tuned {
-        write_mhz(doc, cur, *band, mhz);
+        write_mhz(doc, cur, band, mhz);
     }
 
     ui.add_space(8.0);
@@ -158,7 +127,7 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: &mut Band) {
     ui.horizontal_top(|ui| {
         ui.vertical(|ui| {
             ui.set_width((width - 300.0).max(280.0));
-            ui.label(egui::RichText::new(heading(*band)).strong());
+            ui.label(egui::RichText::new(heading(band)).strong());
             let height = ui.available_height();
             egui::ScrollArea::vertical()
                 .id_salt("sw-memories")
@@ -166,7 +135,7 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: &mut Band) {
                 .show(ui, |ui| {
                     let count = channel_count(doc).min(16);
                     for index in 0..count {
-                        if memory_row(ui, doc, index, *band) {
+                        if memory_row(ui, doc, index, band) {
                             if let Some(mod_data) = doc.pointer_mut("/modulationData") {
                                 mod_data[id_key] = json!(index);
                             }
@@ -176,7 +145,7 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: &mut Band) {
         });
         ui.vertical(|ui| {
             ui.set_width(290.0);
-            editor(ui, doc, cur, *band, name_key, freq_key);
+            editor(ui, doc, cur, band, name_key, freq_key);
         });
     });
 }
@@ -223,85 +192,22 @@ fn editor(
     });
 }
 
-fn legend(ui: &mut egui::Ui, color: egui::Color32, text: &str) {
-    let (rect, _) = ui.allocate_exact_size(egui::vec2(12.0, 12.0), egui::Sense::hover());
-    ui.painter()
-        .rect_filled(rect, egui::CornerRadius::same(2), color);
-    ui.label(egui::RichText::new(text).weak());
-}
-
-/// Click returns the tuned frequency in MHz.
-fn dial(ui: &mut egui::Ui, mhz: f64, lo: f64, hi: f64, band: Band) -> Option<f64> {
-    let (rect, response) =
-        ui.allocate_exact_size(egui::vec2(ui.available_width(), 46.0), egui::Sense::click());
-    let painter = ui.painter_at(rect);
-    painter.rect_filled(
-        rect,
-        egui::CornerRadius::same(6),
-        ui.visuals().extreme_bg_color,
-    );
-    let span = (hi - lo).max(0.001);
-    let paint_span = |start: f64, end: f64, color: egui::Color32| {
-        let x0 = rect.left() + ((start - lo) / span).clamp(0.0, 1.0) as f32 * rect.width();
-        let x1 = rect.left() + ((end - lo) / span).clamp(0.0, 1.0) as f32 * rect.width();
-        if x1 - x0 < 1.0 {
-            return;
-        }
-        let band_rect = egui::Rect::from_min_max(
-            egui::pos2(x0, rect.top() + 14.0),
-            egui::pos2(x1, rect.bottom() - 12.0),
-        );
-        painter.rect_filled(
-            band_rect,
-            egui::CornerRadius::same(2),
-            color.gamma_multiply(0.85),
-        );
-    };
+fn dial_for(band: Band) -> (f64, f64, Vec<Span>) {
     if band == Band::Fm {
-        paint_span(88.0, 108.0, BROADCAST);
-    } else {
-        for (start, end, _) in BROADCAST_BANDS {
-            paint_span(*start as f64 / 1000.0, *end as f64 / 1000.0, BROADCAST);
-        }
-        for (start, end, _) in AERO_BANDS {
-            paint_span(*start as f64 / 1000.0, *end as f64 / 1000.0, AERO);
-        }
-        for (start, end, _) in HAM_BANDS {
-            paint_span(*start as f64 / 1000.0, *end as f64 / 1000.0, HAM);
-        }
+        return (
+            64.0,
+            108.0,
+            vec![Span {
+                lo: 88.0,
+                hi: 108.0,
+                color: scope::BROADCAST,
+            }],
+        );
     }
-    let t = ((mhz - lo) / span).clamp(0.0, 1.0) as f32;
-    let x = rect.left() + t * rect.width();
-    painter.line_segment(
-        [
-            egui::pos2(x, rect.top() + 4.0),
-            egui::pos2(x, rect.bottom() - 4.0),
-        ],
-        egui::Stroke::new(2.0, ui.visuals().strong_text_color()),
-    );
-    let font = egui::FontId::monospace(11.0);
-    let color = ui.visuals().weak_text_color();
-    painter.text(
-        rect.left_bottom() + egui::vec2(4.0, -1.0),
-        egui::Align2::LEFT_BOTTOM,
-        format!("{lo:.0}"),
-        font.clone(),
-        color,
-    );
-    painter.text(
-        rect.right_bottom() + egui::vec2(-4.0, -1.0),
-        egui::Align2::RIGHT_BOTTOM,
-        format!("{hi:.0}"),
-        font,
-        color,
-    );
-    if response.clicked() {
-        let pos = response.interact_pointer_pos()?;
-        let frac = ((pos.x - rect.left()) / rect.width()).clamp(0.0, 1.0) as f64;
-        Some(lo + frac * span)
-    } else {
-        None
-    }
+    let mut spans = scope::khz_spans(scope::BROADCAST_KHZ, scope::BROADCAST);
+    spans.extend(scope::khz_spans(scope::AERO_KHZ, scope::AERO));
+    spans.extend(scope::khz_spans(scope::HAM_KHZ, scope::HAM));
+    (0.0, 30.0, spans)
 }
 
 fn memory_row(ui: &mut egui::Ui, doc: &Value, index: usize, band: Band) -> bool {
@@ -313,7 +219,7 @@ fn memory_row(ui: &mut egui::Ui, doc: &Value, index: usize, band: Band) -> bool 
     let mark = if band == Band::Fm {
         fm_mark(raw)
     } else {
-        band_for_khz(raw)
+        scope::mark_khz(raw)
     };
     let name = doc
         .pointer(&format!(
@@ -456,108 +362,39 @@ fn edit_fm(ui: &mut egui::Ui, ch: &mut Value) {
     }
 }
 
-fn fm_mark(raw: i64) -> Mark {
+fn fm_mark(raw: i64) -> scope::Mark {
     if (8800..=10800).contains(&raw) {
-        Mark {
+        scope::Mark {
             name: "FM",
-            color: BROADCAST,
+            color: scope::BROADCAST,
         }
     } else if (6400..8800).contains(&raw) {
-        Mark {
+        scope::Mark {
             name: "VHF low",
-            color: OTHER,
+            color: scope::OTHER,
         }
     } else {
-        Mark {
+        scope::Mark {
             name: "—",
-            color: OTHER,
+            color: scope::OTHER,
         }
-    }
-}
-
-const HAM_BANDS: &[(i64, i64, &str)] = &[
-    (1800, 2000, "160 m"),
-    (3500, 4000, "80 m"),
-    (5330, 5410, "60 m"),
-    (7000, 7300, "40 m"),
-    (10100, 10150, "30 m"),
-    (14000, 14350, "20 m"),
-    (18068, 18168, "17 m"),
-    (21000, 21450, "15 m"),
-    (24890, 24990, "12 m"),
-    (28000, 29700, "10 m"),
-];
-
-const AERO_BANDS: &[(i64, i64, &str)] = &[
-    (2850, 3155, "Aero"),
-    (3400, 3500, "Aero"),
-    (4650, 4750, "Aero"),
-    (5450, 5730, "Aero"),
-    (6525, 6765, "Aero"),
-    (8815, 9040, "Aero"),
-    (10005, 10100, "Aero"),
-    (11275, 11400, "Aero"),
-    (13260, 13360, "Aero"),
-    (17900, 18030, "Aero"),
-];
-
-const BROADCAST_BANDS: &[(i64, i64, &str)] = &[
-    (153, 279, "LW"),
-    (520, 1710, "MW"),
-    (2300, 2495, "120 m"),
-    (3200, 3400, "90 m"),
-    (4750, 4995, "60 m BC"),
-    (5900, 6200, "49 m"),
-    (7200, 7600, "41 m"),
-    (9400, 9900, "31 m"),
-    (11600, 12100, "25 m"),
-    (13570, 13870, "22 m"),
-    (15100, 15800, "19 m"),
-    (17480, 17900, "16 m"),
-    (18900, 19020, "15 m BC"),
-    (21450, 21850, "13 m"),
-    (25670, 26100, "11 m"),
-];
-
-fn band_for_khz(khz: i64) -> Mark {
-    for &(lo, hi, name) in HAM_BANDS {
-        if (lo..=hi).contains(&khz) {
-            return Mark { name, color: HAM };
-        }
-    }
-    for &(lo, hi, name) in AERO_BANDS {
-        if (lo..=hi).contains(&khz) {
-            return Mark { name, color: AERO };
-        }
-    }
-    for &(lo, hi, name) in BROADCAST_BANDS {
-        if (lo..=hi).contains(&khz) {
-            return Mark {
-                name,
-                color: BROADCAST,
-            };
-        }
-    }
-    Mark {
-        name: "—",
-        color: OTHER,
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::band_for_khz;
+    use crate::scope::mark_khz;
 
     #[test]
     fn ham_wins_over_overlapping_broadcast() {
-        assert_eq!(band_for_khz(7200).name, "40 m");
-        assert_eq!(band_for_khz(7400).name, "41 m");
-        assert_eq!(band_for_khz(14340).name, "20 m");
+        assert_eq!(mark_khz(7200).name, "40 m");
+        assert_eq!(mark_khz(7400).name, "41 m");
+        assert_eq!(mark_khz(14340).name, "20 m");
     }
 
     #[test]
     fn volmet_is_aeronautical() {
-        assert_eq!(band_for_khz(2872).name, "Aero");
-        assert_eq!(band_for_khz(1000).name, "MW");
+        assert_eq!(mark_khz(2872).name, "Aero");
+        assert_eq!(mark_khz(1000).name, "MW");
     }
 }
