@@ -123,10 +123,14 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: Band) {
     }
 
     ui.add_space(8.0);
-    let width = ui.available_width();
+    let gap = ui.spacing().item_spacing.x;
+    let editor_w = 320.0;
+    let total_w = ui.available_width();
+    let left_w = (total_w - gap - editor_w).max(280.0);
+    let right_w = (total_w - gap - left_w).max(0.0);
     ui.horizontal_top(|ui| {
         ui.vertical(|ui| {
-            ui.set_width((width - 300.0).max(280.0));
+            ui.set_width(left_w);
             ui.label(egui::RichText::new(heading(band)).strong());
             let height = ui.available_height();
             egui::ScrollArea::vertical()
@@ -144,8 +148,8 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, band: Band) {
                 });
         });
         ui.vertical(|ui| {
-            ui.set_width(290.0);
-            editor(ui, doc, cur, band, name_key, freq_key);
+            ui.set_width(right_w);
+            editor(ui, doc, cur, band, name_key, freq_key, right_w);
         });
     });
 }
@@ -165,8 +169,14 @@ fn editor(
     band: Band,
     name_key: &str,
     freq_key: &str,
+    width: f32,
 ) {
-    egui::Frame::group(ui.style()).show(ui, |ui| {
+    let frame = egui::Frame::group(ui.style());
+    let chrome = frame.inner_margin.sum().x
+        + frame.stroke.width * 2.0
+        + frame.outer_margin.sum().x;
+    frame.show(ui, |ui| {
+        ui.set_min_width((width - chrome).max(0.0));
         let slot = if cur == 0 {
             "Now".to_string()
         } else {

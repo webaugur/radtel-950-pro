@@ -72,50 +72,6 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, zone: &mut usize, selected: &mut
                 scope::swatch(ui, color, label);
                 ui.add_space(10.0);
             }
-            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if let Some(slot) = doc.pointer_mut(&format!("/channelData/arrayZoneName/{zone}"))
-                {
-                    let mut buf = slot.as_str().unwrap_or("").to_string();
-                    if ui
-                        .add(
-                            egui::TextEdit::singleline(&mut buf)
-                                .id_salt(("zone-rename", *zone))
-                                .desired_width(160.0)
-                                .hint_text("zone name"),
-                        )
-                        .changed()
-                    {
-                        *slot = json!(buf);
-                    }
-                }
-                ui.add_space(8.0);
-                let shown = names
-                    .get(*zone)
-                    .map(|name| {
-                        if name.is_empty() {
-                            format!("Zone {}", *zone + 1)
-                        } else {
-                            format!("{}  {name}", *zone + 1)
-                        }
-                    })
-                    .unwrap_or_else(|| format!("Zone {}", *zone + 1));
-                egui::ComboBox::from_id_salt("channel-zone")
-                    .width(180.0)
-                    .selected_text(shown)
-                    .show_ui(ui, |ui| {
-                        for (index, name) in names.iter().enumerate() {
-                            let text = if name.is_empty() {
-                                format!("Zone {}", index + 1)
-                            } else {
-                                format!("{}  {name}", index + 1)
-                            };
-                            if ui.selectable_label(*zone == index, text).clicked() {
-                                *zone = index;
-                                *selected = Some(index * per);
-                            }
-                        }
-                    });
-            });
         });
     });
     if let Some(mhz) = clicked {
@@ -129,24 +85,40 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, zone: &mut usize, selected: &mut
     }
 
     ui.add_space(8.0);
-    let start = *zone * per;
-    let end = (start + per).min(total);
-    if selected.is_none_or(|idx| idx < start || idx >= end) {
-        *selected = (start < end).then_some(start);
-    }
-    let cur = selected.unwrap_or(start);
-    let width = ui.available_width();
+    let gap = ui.spacing().item_spacing.x;
+    let editor_w = 320.0;
+    let total_w = ui.available_width();
+    let left_w = (total_w - gap - editor_w).max(280.0);
+    let right_w = (total_w - gap - left_w).max(0.0);
     ui.horizontal_top(|ui| {
         ui.vertical(|ui| {
-            ui.set_width((width - 330.0).max(280.0));
-            let title = names.get(*zone).map(String::as_str).unwrap_or("Zone");
-            ui.label(
-                egui::RichText::new(format!(
-                    "{title}  ·  {} channels",
-                    end.saturating_sub(start)
-                ))
-                .strong(),
-            );
+            ui.set_width(left_w);
+            egui::ScrollArea::horizontal()
+                .id_salt("zone-tabs")
+                .show(ui, |ui| {
+                    ui.horizontal(|ui| {
+                        for (index, name) in names.iter().enumerate() {
+                            let label = if name.is_empty() {
+                                format!("Zone {}", index + 1)
+                            } else {
+                                name.clone()
+                            };
+                            if ui
+                                .add(egui::Button::selectable(*zone == index, label))
+                                .clicked()
+                            {
+                                *zone = index;
+                                *selected = Some(index * per);
+                            }
+                        }
+                    });
+                });
+            let start = *zone * per;
+            let end = (start + per).min(total);
+            if selected.is_none_or(|idx| idx < start || idx >= end) {
+                *selected = (start < end).then_some(start);
+            }
+            let cur = selected.unwrap_or(start);
             let height = ui.available_height();
             egui::ScrollArea::vertical()
                 .id_salt("zone-channels")
@@ -160,18 +132,47 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, zone: &mut usize, selected: &mut
                 });
         });
         ui.vertical(|ui| {
-            ui.set_width(320.0);
+            ui.set_width(right_w);
+            let start = *zone * per;
+            let end = (start + per).min(total);
+            if selected.is_none_or(|idx| idx < start || idx >= end) {
+                *selected = (start < end).then_some(start);
+            }
+            let cur = selected.unwrap_or(start);
             let height = ui.available_height();
             egui::ScrollArea::vertical()
                 .id_salt("channel-editor")
+                .auto_shrink([false, true])
                 .max_height(height)
-                .show(ui, |ui| editor(ui, doc, cur));
+                .show(ui, |ui| editor(ui, doc, cur, *zone, right_w));
         });
     });
 }
 
-fn editor(ui: &mut egui::Ui, doc: &mut Value, idx: usize) {
-    egui::Frame::group(ui.style()).show(ui, |ui| {
+fn editor(ui: &mut egui::Ui, doc: &mut Value, idx: usize, zone: usize, width: f32) {
+    let frame = egui::Frame::group(ui.style());
+    let chrome = frame.inner_margin.sum().x
+        + frame.stroke.width * 2.0
+        + frame.outer_margin.sum().x;
+    let inner = (width - chrome).max(0.0);
+    frame.show(ui, |ui| {
+        ui.set_min_width(inner);
+        if let Some(slot) = doc.pointer_mut(&format!("/channelData/arrayZoneName/{zone}")) {
+            let mut buf = slot.as_str().unwrap_or("").to_string();
+            ui.label("Zone name");
+            if ui
+                .add(
+                    egui::TextEdit::singleline(&mut buf)
+                        .id_salt(("zone-rename", zone))
+                        .desired_width(inner)
+                        .hint_text("zone name"),
+                )
+                .changed()
+            {
+                *slot = json!(buf);
+            }
+            ui.add_space(6.0);
+        }
         ui.label(egui::RichText::new(format!("Channel {}", idx + 1)).strong());
         let Some(ch) = doc.pointer_mut(&format!("/channelData/channelList/{idx}")) else {
             ui.label("Channel missing.");
