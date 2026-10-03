@@ -67,9 +67,17 @@ pub fn show(ui: &mut egui::Ui, doc: &mut Value, zone: &mut usize, selected: &mut
         let spans = scope::channel_spans();
         clicked = scope::dial(ui, tuned, lo, hi, &spans);
         ui.add_space(4.0);
+        // One fixed row. Hidden services keep their width so this frame,
+        // the zone tabs, and the channel list stay put when the zone changes.
         ui.horizontal(|ui| {
-            for (color, label) in scope::legend(lo, hi) {
-                scope::swatch(ui, color, label);
+            ui.set_min_height(18.0);
+            for (color, label, drawn) in scope::legend(lo, hi) {
+                ui.scope(|ui| {
+                    if !drawn {
+                        ui.set_opacity(0.0);
+                    }
+                    scope::swatch(ui, color, label);
+                });
                 ui.add_space(10.0);
             }
         });

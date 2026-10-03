@@ -288,27 +288,29 @@ pub fn channel_spans() -> Vec<Span> {
     spans
 }
 
-pub fn legend(lo: f64, hi: f64) -> Vec<(egui::Color32, &'static str)> {
-    let mut out = Vec::new();
-    for span in channel_spans() {
-        if span.hi < lo || span.lo > hi {
-            continue;
-        }
-        let label = match span.color {
-            c if c == HAM => "Amateur",
-            c if c == BROADCAST => "Broadcast",
-            c if c == AERO => "Aeronautical",
-            c if c == PERSONAL => "Personal",
-            c if c == MARINE => "Marine",
-            c if c == LAND => "Land",
-            _ => continue,
-        };
-        if out.iter().any(|(_, name)| *name == label) {
-            continue;
-        }
-        out.push((span.color, label));
-    }
-    out
+/// Fixed left-to-right order. Every slot is always laid out so the row
+/// under the dial keeps the same height and the labels do not slide.
+const LEGEND: &[(egui::Color32, &str)] = &[
+    (LAND, "Land"),
+    (BROADCAST, "Broadcast"),
+    (AERO, "Aeronautical"),
+    (HAM, "Amateur"),
+    (PERSONAL, "Personal"),
+    (MARINE, "Marine"),
+];
+
+/// `(color, label, drawn)`. A service outside the window stays in the row
+/// and is not painted.
+pub fn legend(lo: f64, hi: f64) -> Vec<(egui::Color32, &'static str, bool)> {
+    LEGEND
+        .iter()
+        .map(|(color, label)| {
+            let drawn = channel_spans().iter().any(|span| {
+                span.color == *color && span.lo <= hi && span.hi >= lo
+            });
+            (*color, *label, drawn)
+        })
+        .collect()
 }
 
 /// Left and right edges for the channels in view. Empty means the VHF window.
@@ -433,7 +435,7 @@ fn edge_label(value: f64, span: f64) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{service_at, tune_pair, zone_window};
+    use super::{legend, service_at, tune_pair, zone_window};
 
     #[test]
     fn window_ignores_nothing_and_pads() {
@@ -451,6 +453,30 @@ mod tests {
     #[test]
     fn empty_zone_is_vhf() {
         assert_eq!(zone_window(&[]), (136.0, 174.0));
+    }
+
+    #[test]
+    fn legend_keeps_every_slot() {
+        let row = legend(761.0, 874.0);
+        assert_eq!(row.len(), 6);
+        assert!(row.iter().all(|(_, _, drawn)| !*drawn));
+        let names: Vec<&str> = row.iter().map(|(_, name, _)| *name).collect();
+        assert_eq!(
+            names,
+            [
+                "Land",
+                "Broadcast",
+                "Aeronautical",
+                "Amateur",
+                "Personal",
+                "Marine",
+            ]
+        );
+        let vhf = legend(136.0, 174.0);
+        let land = vhf.iter().find(|(_, name, _)| *name == "Land").unwrap();
+        let marine = vhf.iter().find(|(_, name, _)| *name == "Marine").unwrap();
+        let personal = vhf.iter().find(|(_, name, _)| *name == "Personal").unwrap();
+        assert!(land.2 && marine.2 && !personal.2);
     }
 
     #[test]
