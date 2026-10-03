@@ -1,6 +1,7 @@
-//! RT-950 CPS front end. `.950pro` is JSON in this process. A `.dat` and a
-//! radio read or write run `mono RadtelDat.exe`. The boot picture is sent
-//! by `rt950-protocol`. `radtel_cps.py` is the terminal tool, not this window.
+//! RT-950 CPS front end. One binary edits a `.950pro` file and sends the boot
+//! picture. A `.dat` or a radio read/write calls `mono RadtelDat.exe` when that
+//! helper is present, and skips the step when it is not. `radtel_cps.py` is
+//! the terminal tool, not this window.
 
 mod aprs;
 mod channels;
@@ -191,7 +192,8 @@ fn dat_helper_path() -> Option<PathBuf> {
     search_up(Path::new("firmware/scripts/RadtelDat.exe"))
 }
 
-/// `None` when a `.dat` can be opened or written. `Some` is the status text.
+/// `None` when a `.dat` or radio transfer can call Mono. `Some` is a status
+/// line. Missing pieces skip that step. The process stays open.
 fn oem_dat_block(mono: bool, helper: bool, exe: bool) -> Option<String> {
     let mut missing = Vec::new();
     if !mono {
@@ -207,7 +209,7 @@ fn oem_dat_block(mono: bool, helper: bool, exe: bool) -> Option<String> {
         return None;
     }
     Some(format!(
-        "Cannot use a .dat file. Missing {}. sh setup.sh installs Mono. A .950pro file opens and saves without the OEM program. BT-RT950PRO_CPS.exe is read from $RT950_CPS_EXE, from cps/ next to this program, or from the Wine copy under the home directory.",
+        "Skipped. {} not found, so this .dat step did nothing. .950pro still opens and saves.",
         missing.join(", ")
     ))
 }
@@ -1041,16 +1043,18 @@ mod tests {
     }
 
     #[test]
-    fn dat_without_oem_explains_how_to_fix_it() {
+    fn dat_without_oem_skips_and_stays_open() {
         let text = oem_dat_block(false, false, false).expect("missing stack");
+        assert!(text.starts_with("Skipped."));
         assert!(text.contains("mono"));
         assert!(text.contains("RadtelDat.exe"));
         assert!(text.contains("BT-RT950PRO_CPS.exe"));
-        assert!(text.contains("setup.sh"));
         assert!(text.contains(".950pro"));
+        assert!(!text.contains("Cannot"));
         assert!(oem_dat_block(true, true, true).is_none());
         let mono_only = oem_dat_block(false, true, true).expect("mono");
-        assert!(mono_only.contains("Missing mono."));
+        assert!(mono_only.contains("mono"));
+        assert!(!mono_only.contains("RadtelDat.exe"));
     }
 
     #[test]

@@ -1,10 +1,11 @@
 # RT-950 / 950Pro CPS (Rust UI)
 
-`eframe` / `egui` front end. A `.950pro` file is JSON in this process. Opening
-or saving a `.dat`, and reading or writing the radio, runs `mono RadtelDat.exe`
-(the OEM `DoIt` path). The boot picture is sent by `rt950-protocol`.
-`firmware/scripts/radtel_cps.py` remains the terminal tool for `flash` and
-the block read/write commands. The window does not start it.
+`eframe` / `egui` front end. One binary opens and saves a `.950pro` file, draws
+the map, and sends the boot picture. A `.dat` file or a radio read/write calls
+`mono RadtelDat.exe` only when that helper and `BT-RT950PRO_CPS.exe` are
+present. If they are not, that step is skipped and the window stays open.
+`firmware/scripts/radtel_cps.py` remains the terminal tool for `flash`. The
+window does not start it.
 
 Layout: zone list, a short channel row (name, RX → TX, mode / bandwidth / power),
 and an inspector for the rest. Not the OEM 16-column grid.
