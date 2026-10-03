@@ -10,10 +10,12 @@
 // stderr: "error: ..." and a non-zero exit on failure
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
 using System.Reflection;
-using System.Text;
+using System.Web.Script.Serialization;
 
 class RadtelDat {
     static Assembly cps;
@@ -52,6 +54,28 @@ class RadtelDat {
                 Console.WriteLine("ok write-dat " + args[4]);
                 return 0;
             }
+            if (cmd == "export") {
+                if (args.Length != 3) { Usage(); return 2; }
+                LoadCps(args[1]);
+                object data = LoadDat(args[2]);
+                var ser = new JavaScriptSerializer();
+                ser.MaxJsonLength = int.MaxValue;
+                Console.WriteLine(ser.Serialize(ToPlain(data)));
+                return 0;
+            }
+            if (cmd == "import") {
+                if (args.Length != 5) { Usage(); return 2; }
+                LoadCps(args[1]);
+                object data = LoadDat(args[2]);
+                string json = File.ReadAllText(args[3]);
+                var ser = new JavaScriptSerializer();
+                ser.MaxJsonLength = int.MaxValue;
+                object plain = ser.DeserializeObject(json);
+                Apply(data, plain);
+                SaveDat(data, args[4]);
+                Console.WriteLine("ok dat-import " + args[4]);
+                return 0;
+            }
             Error("unknown command: " + cmd);
             Usage();
             return 2;
@@ -69,6 +93,8 @@ class RadtelDat {
         Console.Error.WriteLine("  RadtelDat.exe info  <cps.exe> <file.dat>");
         Console.Error.WriteLine("  RadtelDat.exe read  <cps.exe> <port> <baud> <outfile.dat> [template.dat]");
         Console.Error.WriteLine("  RadtelDat.exe write <cps.exe> <port> <baud> <file.dat>");
+        Console.Error.WriteLine("  RadtelDat.exe export <cps.exe> <file.dat>");
+        Console.Error.WriteLine("  RadtelDat.exe import <cps.exe> <template.dat> <file.json> <outfile.dat>");
     }
 
     static string Innermost(Exception ex) {
@@ -175,5 +201,86 @@ class RadtelDat {
             Console.Error.WriteLine("cps DoIt " + (write ? "WRITE" : "READ") + " " + result);
             return data;
         }
+    }
+
+    static bool SkipField(FieldInfo f) {
+        if (f.IsStatic || f.IsLiteral) return true;
+        if (f.Name.Contains("<") || f.Name.Contains(">")) return true;
+        if (typeof(Delegate).IsAssignableFrom(f.FieldType)) return true;
+        return false;
+    }
+
+    static object ToPlain(object obj) {
+        if (obj == null) return null;
+        Type t = obj.GetType();
+        if (t.IsPrimitive || obj is string || obj is decimal) return obj;
+        if (obj is Array arr) {
+            var list = new ArrayList();
+            foreach (object item in arr) list.Add(ToPlain(item));
+            return list;
+        }
+        var dict = new Dictionary<string, object>();
+        const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        foreach (FieldInfo f in t.GetFields(flags)) {
+            if (SkipField(f)) continue;
+            object v = null;
+            try { v = f.GetValue(obj); } catch { continue; }
+            dict[f.Name] = ToPlain(v);
+        }
+        return dict;
+    }
+
+    static void Apply(object target, object plain) {
+        if (target == null || plain == null) return;
+        var dict = plain as IDictionary;
+        if (dict == null) return;
+        const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        foreach (DictionaryEntry kv in dict) {
+            string key = kv.Key as string;
+            if (key == null) continue;
+            FieldInfo f = target.GetType().GetField(key, flags);
+            if (f == null || SkipField(f)) continue;
+            object cur = null;
+            try { cur = f.GetValue(target); } catch { continue; }
+            object next = kv.Value;
+            IList list = next as IList;
+            if (cur is Array arr && list != null && !(next is string)) {
+                ApplyArray(arr, list);
+                continue;
+            }
+            if (cur != null && next is IDictionary && !f.FieldType.IsPrimitive && f.FieldType != typeof(string)) {
+                Apply(cur, next);
+                continue;
+            }
+            try {
+                f.SetValue(target, ConvertValue(next, f.FieldType));
+            } catch (Exception ex) {
+                Console.Error.WriteLine("warning: skip " + f.Name + ": " + ex.Message);
+            }
+        }
+    }
+
+    static void ApplyArray(Array arr, IList list) {
+        int n = Math.Min(arr.Length, list.Count);
+        Type elem = arr.GetType().GetElementType();
+        for (int i = 0; i < n; i++) {
+            object slot = arr.GetValue(i);
+            object src = list[i];
+            IDictionary nested = src as IDictionary;
+            if (slot != null && nested != null) {
+                Apply(slot, src);
+            } else if (elem != null && (elem.IsPrimitive || elem == typeof(string))) {
+                arr.SetValue(ConvertValue(src, elem), i);
+            }
+        }
+    }
+
+    static object ConvertValue(object value, Type type) {
+        if (value == null) return null;
+        Type dest = Nullable.GetUnderlyingType(type) ?? type;
+        if (dest.IsInstanceOfType(value)) return value;
+        if (dest.IsEnum) return Enum.ToObject(dest, Convert.ToInt32(value));
+        if (dest == typeof(string)) return Convert.ToString(value);
+        return Convert.ChangeType(value, dest);
     }
 }

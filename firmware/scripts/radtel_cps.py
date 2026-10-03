@@ -340,6 +340,9 @@ commands (stdin). stdout = results, stderr = errors / progress.
                              session + 100-byte ACK groups + 'E'
                              (file is the packed write blob, NOT the sparse read image)
   dat-info <file.dat>        OEM CPS .dat summary (no radio)
+  dat-export <file.dat>      OEM .dat -> JSON on stdout (UI document)
+  dat-import <template.dat> <file.json> <outfile.dat>
+                             overlay JSON onto template, write OEM .dat
   read-dat <outfile.dat> [template.dat]
                              pull radio into an OEM .dat
   write-dat <file.dat> confirm
@@ -466,6 +469,20 @@ def dispatch(radio: Radio, line: str) -> bool:
         if len(args) != 1:
             raise ShellError("usage: dat-info <file.dat>")
         run_dat_helper(radio, ["info", str(radio.cps_exe), args[0]], timeout_s=60)
+        return True
+    if cmd == "dat-export":
+        if len(args) != 1:
+            raise ShellError("usage: dat-export <file.dat>")
+        run_dat_helper(radio, ["export", str(radio.cps_exe), args[0]], timeout_s=60)
+        return True
+    if cmd == "dat-import":
+        if len(args) != 3:
+            raise ShellError("usage: dat-import <template.dat> <file.json> <outfile.dat>")
+        run_dat_helper(
+            radio,
+            ["import", str(radio.cps_exe), args[0], args[1], args[2]],
+            timeout_s=60,
+        )
         return True
     if cmd == "read-dat":
         if len(args) not in (1, 2):
