@@ -9,3 +9,7 @@ cps/target/
 
 # Staged USB-stick tree (binary and copied CPS exe)
 dist/
+
+# Over GitHub's 50 MB recommendation
+re/cps/RT950_v0.8.40.zip
+re/cps/RT950_v0.8.40/_internal/playwright/driver/node.exe
