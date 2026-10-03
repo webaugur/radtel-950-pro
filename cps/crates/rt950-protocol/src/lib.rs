@@ -5,11 +5,13 @@
 
 mod boot;
 mod codeplug;
+mod crypt;
 mod error;
 mod image;
 mod serial;
 
 pub use boot::{bmp_file_to_rgb565, upload_boot_picture, BOOT_PIXELS};
+pub use crypt::{crypt_payload, session_key, SYMBOLS};
 pub use image::{read_image, IMAGE_SIZE};
 pub use codeplug::{
     empty_codeplug, AprsData, Channel, ChannelData, Codeplug, DtmfData, FreqModeData,
