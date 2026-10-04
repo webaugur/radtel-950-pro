@@ -13,3 +13,8 @@ dist/
 # Over GitHub's 50 MB recommendation
 re/cps/RT950_v0.8.40.zip
 re/cps/RT950_v0.8.40/_internal/playwright/driver/node.exe
+
+# Ghidra project database for the V0.29 decompile. The C export is kept.
+re/firmware/RE/v0.29/ghidra/
+
+firmware/build/

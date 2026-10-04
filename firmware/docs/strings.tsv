@@ -1,0 +1,635 @@
+address	encoding	region	pointers	text
+0x0805c701	gbk	upper		 扰频功能
+0x0805c70d	ascii	upper		 Cross Band Repeat
+0x0805c721	gbk	upper		 AB中转模式
+0x0805c731	ascii	upper		 RPT-Speaker
+0x0805c741	gbk	upper		 中转喇叭
+0x0805c74d	ascii	upper		 Work Band
+0x0805c759	gbk	upper		 工作频段
+0x0805c765	ascii	upper		 Mic Gain
+0x0805c771	gbk	upper		 麦克风增益
+0x0805c781	ascii	upper		 Radio Interrupt
+0x0805c795	gbk	upper		 收音允许打断
+0x0805c7a5	ascii	upper		 Single Ptt Mode
+0x0805c7b9	gbk	upper		 单PTT模式
+0x0805c7c5	ascii	upper		 DTMF PTT Delay
+0x0805c7d9	gbk	upper		 DTMF发码延迟
+0x0805c7e9	ascii	upper		 DTMF On Time
+0x0805c7f9	gbk	upper		 DTMF码持续时间
+0x0805c80d	ascii	upper		 DTMF Off Time
+0x0805c81d	gbk	upper		 DTMF码断续时间
+0x0805c832	ascii	upper		 Zone
+0x0805c83a	gbk	upper		 区域
+0x0805c841	ascii	upper		 Zone Or Channel
+0x0805c855	gbk	upper		 信道工作模式
+0x0805c865	ascii	upper		 Zone Select
+0x0805c875	gbk	upper		 区域选择
+0x0805c881	ascii	upper		 Bluetooth
+0x0805c88d	gbk	upper		 蓝牙写频
+0x0805c89a	ascii	upper		 VFO & CH
+0x0805c8a6	ascii	upper		 CTCSS DCS
+0x0805c8b6	ascii	upper		 VOX
+0x0805c8be	ascii	upper		 Signaling
+0x0805c8ce	ascii	upper		 Setting
+0x0805c8da	ascii	upper		 Bluetooth
+0x0805c8ea	ascii	upper		 APRS Set
+0x0805c8f6	ascii	upper		 Radio Set
+0x0805c906	ascii	upper		 About
+0x0805c910	ascii	upper		Menu
+0x0805c91a	ascii	upper		 User Key
+0x0805c926	gbk	upper		 本机信息
+0x0805c930	gbk	upper		菜单
+0x0805c93a	gbk	upper		 频道模式
+0x0805c946	gbk	upper		 蓝牙
+0x0805c94e	gbk	upper		 APRS 设置
+0x0805c95e	gbk	upper		 对讲设置
+0x0805c96a	gbk	upper		 亚音频设置
+0x0805c97a	gbk	upper		 高级设置
+0x0805c986	gbk	upper		 信令设置
+0x0805c992	gbk	upper		 声控功能
+0x0805c99e	gbk	upper		 按键自定义
+0x0805c9ad	ascii	upper		.Work Band
+0x0805c9b9	gbk	upper		.频段范围
+0x0805c9c5	ascii	upper		.FM Memery-CH
+0x0805c9d5	gbk	upper		.频道保存
+0x0805c9e1	ascii	upper		.Modulation
+0x0805c9f1	gbk	upper		.调制模式
+0x0805c9fd	ascii	upper		.Frequency Step
+0x0805ca11	gbk	upper		.步进频率
+0x0805ca1d	ascii	upper		.Bandwidth
+0x0805ca29	gbk	upper		.接收带宽
+0x0805ca35	ascii	upper		.LNA
+0x0805ca3d	gbk	upper		.接收增益
+0x0805ca49	ascii	upper		.BFO
+0x0805ca51	gbk	upper		.拍频偏移
+0x0805ca5d	ascii	upper		.FM Backlight
+0x0805ca6d	gbk	upper		.收音机背光
+0x0805ca80	gbk	upper		收音机
+0x0805ca89	ascii	upper		 Temp Scan List
+0x0805ca9d	gbk	upper		 扫描临时设置
+0x0805caac	ascii	upper		KISS(BLE)
+0x0805cab8	ascii	upper		House QTH(VHF)
+0x0805cac8	ascii	upper	0x08014d84	KISS(UART)
+0x0805cad4	ascii	upper		Truck(18Wheel)
+0x0805cae4	ascii	upper		X-APRS(Unix)
+0x0805caf4	ascii	upper		CHANNEL NUM.
+0x0805cb04	ascii	upper		UTC-0
+0x0805cb0c	ascii	upper		TONE1200
+0x0805cb18	ascii	upper		UTC+10
+0x0805cb20	ascii	upper		UTC-10
+0x0805cb28	ascii	upper		Level 1
+0x0805cb30	ascii	upper		UTC+1
+0x0805cb38	ascii	upper		WIDE1-1
+0x0805cb40	ascii	upper		WIDE1-1,WIDE2-1
+0x0805cb50	ascii	upper		UTC-1
+0x0805cb58	ascii	upper		UTC+11
+0x0805cb60	ascii	upper		UTC-11
+0x0805cb68	ascii	upper		WIDE1
+0x0805cb70	ascii	upper		PATH1
+0x0805cb78	ascii	upper		Type1
+0x0805cb80	ascii	upper		Level 2
+0x0805cb88	ascii	upper		UTC+2
+0x0805cb90	ascii	upper		UTC-2
+0x0805cb98	ascii	upper		UTC+12
+0x0805cba0	ascii	upper		UTC-12
+0x0805cba8	ascii	upper		WIDE1,WIDE2
+0x0805cbb4	ascii	upper		PATH1,PATH2
+0x0805cbc0	ascii	upper		PATH2
+0x0805cbc8	ascii	upper		Type2
+0x0805cbd0	ascii	upper		Level 3
+0x0805cbd8	ascii	upper		UTC+3
+0x0805cbe0	ascii	upper		UTC-3
+0x0805cbe8	ascii	upper		UTC+13
+0x0805cbf0	ascii	upper		Type3
+0x0805cbf8	ascii	upper		Level 4
+0x0805cc00	ascii	upper		UTC+4
+0x0805cc08	ascii	upper		UTC-4
+0x0805cc10	ascii	upper		UTC+14
+0x0805cc18	ascii	upper		Level 5
+0x0805cc20	ascii	upper		UTC+5
+0x0805cc28	ascii	upper		UTC-5
+0x0805cc30	ascii	upper		Level 6
+0x0805cc38	ascii	upper	0x08014f40	UTC+6
+0x0805cc40	ascii	upper		UTC-6
+0x0805cc48	ascii	upper		Level 7
+0x0805cc50	ascii	upper		UTC+7
+0x0805cc58	ascii	upper		UTC-7
+0x0805cc60	ascii	upper	0x08011234	Level 8
+0x0805cc68	ascii	upper		UTC+8
+0x0805cc70	ascii	upper		UTC-8
+0x0805cc78	ascii	upper		Level 9
+0x0805cc80	ascii	upper		UTC+9
+0x0805cc88	ascii	upper		UTC-9
+0x0805cc90	ascii	upper		CH/VFO A
+0x0805cc9c	ascii	upper		NOAA
+0x0805cca4	ascii	upper		IOTA
+0x0805ccac	ascii	upper		CH/VFO B
+0x0805ccc0	ascii	upper		CH/VFO C
+0x0805ccd0	ascii	upper		PTTC
+0x0805ccd8	ascii	upper		VOLTAGE
+0x0805cce0	ascii	upper		NAME
+0x0805cce8	ascii	upper		NONE
+0x0805ccf0	ascii	upper		PICTURE
+0x0805cd00	ascii	upper		SQUELCH
+0x0805cd08	ascii	upper		SEARCH
+0x0805cd10	ascii	upper		GPS SWITCH
+0x0805cd1c	ascii	upper		APRS SWITCH
+0x0805cd2c	ascii	upper		BOTH
+0x0805cd34	ascii	upper		BLUETOOTH
+0x0805cd40	ascii	upper		Yagi@QTH
+0x0805cd4c	ascii	upper		DT+ANI
+0x0805cd54	ascii	upper		MONI
+0x0805cd5c	ascii	upper		1.0K
+0x0805cd64	ascii	upper		3.0K
+0x0805cd6c	ascii	upper		4.0K
+0x0805cd74	ascii	upper		1000K
+0x0805cd7c	ascii	upper		100K
+0x0805cd84	ascii	upper		500K
+0x0805cd94	ascii	upper		1.2K
+0x0805cd9c	ascii	upper		2.2K
+0x0805cda4	ascii	upper		0.5K
+0x0805cdb0	ascii	upper		MAIL
+0x0805cdc8	ascii	upper		SPECTRUM
+0x0805cdd4	ascii	upper		SCAN
+0x0805cddc	ascii	upper		RX MODULATION
+0x0805cdf4	ascii	upper		RADIO
+0x0805cdfc	ascii	upper		BEEP
+0x0805ce04	ascii	upper		FREQ STEP
+0x0805ce10	ascii	upper		TCP/IP
+0x0805ce18	ascii	upper		DECODER
+0x0805ce20	ascii	upper		ENCODER
+0x0805ce28	ascii	upper		TRANSFER
+0x0805ce34	ascii	upper		ROGER
+0x0805ce3c	ascii	upper		TX POWER
+0x0805ce48	ascii	upper		FREQ DIR
+0x0805ce80	ascii	upper		CTCSS DCS
+0x0805ce90	ascii	upper		MacAPRS
+0x0805ce98	ascii	upper		WinAPRS
+0x0805cea0	ascii	upper		APRS
+0x0805ceac	ascii	upper	0x08025e30	ZONE SELECT
+0x0805ceb8	ascii	upper		STANDBY SET
+0x0805cec4	ascii	upper		FREQ OFFSET
+0x0805ced8	ascii	upper		SCAN QT
+0x0805cee0	ascii	upper		ANI-ST
+0x0805cee8	ascii	upper		DT-ST
+0x0805cef0	ascii	upper		TEMPORARY SCAN LIST
+0x0805cf08	ascii	upper		SSTV
+0x0805cf1c	ascii	upper		TONE TX
+0x0805cf24	ascii	upper		Beacon TX
+0x0805cf30	ascii	upper		EMERGENCY
+0x0805cf3c	ascii	upper		FREQUENCY
+0x0805cf48	ascii	upper		CH-MEMORY
+0x0805cfac	ascii	upper		[/D]
+0x0805cfb4	ascii	upper		[/I]
+0x0805cfbc	ascii	upper		[/J]
+0x0805cfc4	ascii	upper		[/Q]
+0x0805cfcc	ascii	upper		[/q]
+0x0805cfd4	ascii	upper		[/z]
+0x0805cff4	ascii	upper		Dish Antenna
+0x0805d004	ascii	upper		30sec
+0x0805d00c	ascii	upper		15sec
+0x0805d014	ascii	upper		Railroad
+0x0805d024	ascii	upper		USER User-defined
+0x0805d038	ascii	upper		Committed
+0x0805d044	ascii	upper		LW Band
+0x0805d04c	ascii	upper		MW Band
+0x0805d054	ascii	upper		SW Band
+0x0805d05c	ascii	upper		Degrees And Minute And Second
+0x0805d07c	ascii	upper		Send Sound
+0x0805d088	ascii	upper		Campground
+0x0805d094	ascii	upper		Police
+0x0805d09c	ascii	upper		Ambulance
+0x0805d0a8	ascii	upper		Wide
+0x0805d0b0	ascii	upper		Send Code
+0x0805d0bc	ascii	upper		Zone Mode
+0x0805d0c8	ascii	upper		Node
+0x0805d0d0	ascii	upper		[/R] Vehicle
+0x0805d0e0	ascii	upper		Farm Vehicle
+0x0805d0f0	ascii	upper		REC.Vehicle
+0x0805d0fc	ascii	upper		[/b] Bicycle
+0x0805d10c	ascii	upper		Motorcycle
+0x0805d118	ascii	upper		Middle
+0x0805d120	ascii	upper		Triangle
+0x0805d12c	ascii	upper		Sea Mile
+0x0805d138	ascii	upper		Snowmobile
+0x0805d144	ascii	upper		[/[] People
+0x0805d150	ascii	upper		Space Shuttle
+0x0805d160	ascii	upper		Time
+0x0805d168	ascii	upper		None
+0x0805d170	ascii	upper		Phone
+0x0805d178	ascii	upper		Canoe
+0x0805d180	ascii	upper		Grid Square
+0x0805d18c	ascii	upper		Fire
+0x0805d194	ascii	upper		HC Future
+0x0805d1a0	ascii	upper		Horse
+0x0805d1a8	ascii	upper		Delete
+0x0805d1b0	ascii	upper		NWS Site
+0x0805d1bc	ascii	upper		On Site
+0x0805d1c4	ascii	upper		Mobile Satellite
+0x0805d1d8	ascii	upper		Degrees And Minute
+0x0805d1ec	ascii	upper		Enroute
+0x0805d1f4	ascii	upper		Returning
+0x0805d200	ascii	upper		Km/h
+0x0805d208	ascii	upper		Search
+0x0805d210	ascii	upper		High
+0x0805d218	ascii	upper		English
+0x0805d220	ascii	upper		Both
+0x0805d228	ascii	upper		Digi
+0x0805d230	ascii	upper		Fire Truck
+0x0805d23c	ascii	upper		Truck
+0x0805d244	ascii	upper		Special
+0x0805d24c	ascii	upper		Normal
+0x0805d254	ascii	upper		Hospital
+0x0805d260	ascii	upper		Full Channel
+0x0805d270	ascii	upper		Hotel
+0x0805d278	ascii	upper		Call
+0x0805d280	ascii	upper		Eyeball
+0x0805d288	ascii	upper		School
+0x0805d298	ascii	upper		10min
+0x0805d2a0	ascii	upper		20min
+0x0805d2a8	ascii	upper		30min
+0x0805d2b0	ascii	upper		60min
+0x0805d2b8	ascii	upper		1min
+0x0805d2c0	ascii	upper		2min
+0x0805d2c8	ascii	upper		3min
+0x0805d2d0	ascii	upper		15min
+0x0805d2d8	ascii	upper		5min
+0x0805d2e0	ascii	upper		Timing Beacon
+0x0805d2f0	ascii	upper		Manual Beacon
+0x0805d300	ascii	upper		Smart Beacon
+0x0805d310	ascii	upper		NTS Station
+0x0805d31c	ascii	upper		WX Station
+0x0805d328	ascii	upper		Aid Station
+0x0805d334	ascii	upper		Water Station
+0x0805d344	ascii	upper		GPS Position
+0x0805d354	ascii	upper		Fixed Position
+0x0805d364	ascii	upper		Balloon
+0x0805d36c	ascii	upper		Deep
+0x0805d374	ascii	upper		Jeep
+0x0805d37c	ascii	upper		Ship
+0x0805d384	ascii	upper		Truck Stop
+0x0805d390	ascii	upper		Laptop
+0x0805d398	ascii	upper		[/>] Car
+0x0805d3a4	ascii	upper		Glider
+0x0805d3ac	ascii	upper		Carrier
+0x0805d3b4	ascii	upper		Super
+0x0805d3bc	ascii	upper		PC user
+0x0805d3c4	ascii	upper		Repeater
+0x0805d3d0	ascii	upper		Meter
+0x0805d3d8	ascii	upper		Helicopter
+0x0805d3e4	ascii	upper		DX Cluster
+0x0805d3f0	ascii	upper		Rover
+0x0805d3f8	ascii	upper		File Server
+0x0805d404	ascii	upper		Wheelchair
+0x0805d410	ascii	upper		Degrees
+0x0805d418	ascii	upper		1000ms
+0x0805d420	ascii	upper		100ms
+0x0805d428	ascii	upper		200ms
+0x0805d430	ascii	upper		300ms
+0x0805d438	ascii	upper		400ms
+0x0805d440	ascii	upper		500ms
+0x0805d448	ascii	upper		150ms
+0x0805d450	ascii	upper		250ms
+0x0805d458	ascii	upper		750ms
+0x0805d460	ascii	upper		Red Cross
+0x0805d46c	ascii	upper		Boy Scouts
+0x0805d47c	ascii	upper		Plus
+0x0805d484	ascii	upper		Minus
+0x0805d48c	ascii	upper		S-Aricraft
+0x0805d498	ascii	upper		Aircraft
+0x0805d4a4	ascii	upper		Yacht
+0x0805d4ac	ascii	upper		Red Dot
+0x0805d4b4	ascii	upper		Foot
+0x0805d4bc	ascii	upper		Fire dept
+0x0805d4c8	ascii	upper		Command Post
+0x0805d4dc	ascii	upper		Narrow
+0x0805d4ec	ascii	upper		HF Gateway
+0x0805d4f8	ascii	upper		Priority
+0x0805d504	ascii	upper		Off duty
+0x0805d510	ascii	upper		100Hz
+0x0805d518	ascii	upper		500Hz
+0x0805d520	ascii	upper		10Hz
+0x0805d528	ascii	upper		50Hz
+0x0805d530	ascii	upper		100.0 KHz
+0x0805d53c	ascii	upper		10.0 KHz
+0x0805d548	ascii	upper		20.0 KHz
+0x0805d554	ascii	upper		50.0 KHz
+0x0805d560	ascii	upper		25.0 KHz
+0x0805d56c	ascii	upper		5.0 KHz
+0x0805d574	ascii	upper		8.33 KHz
+0x0805d580	ascii	upper		12.5 KHz
+0x0805d58c	ascii	upper		2.5 KHz
+0x0805d594	ascii	upper		6.25 KHz
+0x0805d5a0	ascii	upper		1KHz
+0x0805d5a8	ascii	upper		18-64MHz
+0x0805d5b4	ascii	upper		64-999MHz
+0x0805d5c0	ascii	upper		 1000hz
+0x0805d5c8	ascii	upper		 2100hz
+0x0805d5d0	ascii	upper		 1450hz
+0x0805d5d8	ascii	upper		 1750hz
+0x0805d5e0	gbk	upper		信道存储
+0x0805d5ec	gbk	upper		两者都发
+0x0805d5f8	gbk	upper		天气预报
+0x0805d604	gbk	upper		载波
+0x0805d60c	gbk	upper		预设图片
+0x0805d618	gbk	upper		现场报警
+0x0805d624	gbk	upper		通话
+0x0805d62c	gbk	upper		英里/小时
+0x0805d638	gbk	upper		海里/小时
+0x0805d644	gbk	upper		公里/小时
+0x0805d650	gbk	upper		[/R] 休闲车
+0x0805d65c	gbk	upper		[/b] 自行车
+0x0805d668	gbk	upper		[/>] 汽车
+0x0805d674	gbk	upper		扫频
+0x0805d67c	gbk	upper		蓝牙写频
+0x0805d688	gbk	upper		调频
+0x0805d690	gbk	upper		1级
+0x0805d694	gbk	upper		2级
+0x0805d698	gbk	upper		3级
+0x0805d69c	gbk	upper		4级
+0x0805d6a0	gbk	upper		5级
+0x0805d6a4	gbk	upper		6级
+0x0805d6a8	gbk	upper		7级
+0x0805d6ac	gbk	upper		8级
+0x0805d6b0	gbk	upper		9级
+0x0805d6b4	gbk	upper		静噪等级
+0x0805d6c0	gbk	upper		电池电压
+0x0805d6cc	gbk	upper		全信道模式
+0x0805d6d8	gbk	upper		区域模式
+0x0805d6e4	gbk	upper		调制方式
+0x0805d6f0	gbk	upper		全部
+0x0805d6f8	gbk	upper		扫描临时设置
+0x0805d708	gbk	upper		守候设置
+0x0805d714	gbk	upper		亚音设置
+0x0805d720	gbk	upper		中文
+0x0805d728	gbk	upper		信道号
+0x0805d730	gbk	upper		信道名称
+0x0805d73c	gbk	upper		低功率
+0x0805d744	gbk	upper		中功率
+0x0805d74c	gbk	upper		高功率
+0x0805d754	gbk	upper		发射功率
+0x0805d760	gbk	upper		信道频率
+0x0805d76c	gbk	upper		频差频率
+0x0805d778	gbk	upper		步进频率
+0x0805d784	gbk	upper		[/[] 行人
+0x0805d790	gbk	upper		添加
+0x0805d798	gbk	upper		关闭
+0x0805d7a0	gbk	upper		度分
+0x0805d7ac	gbk	upper		频谱
+0x0805d7b4	gbk	upper		GPS 开关
+0x0805d7c0	gbk	upper		APRS 开关
+0x0805d7cc	gbk	upper		中转开关
+0x0805d7d8	gbk	upper		声控
+0x0805d7e4	gbk	upper		英尺
+0x0805d7ec	gbk	upper		信标发射
+0x0805d7f8	gbk	upper		USER 用户自定义
+0x0805d808	gbk	upper		无定义
+0x0805d810	gbk	upper		低增益
+0x0805d818	gbk	upper		中增益
+0x0805d820	gbk	upper		高增益
+0x0805d828	gbk	upper		普通省电
+0x0805d834	gbk	upper		超级省电
+0x0805d840	gbk	upper		深度省电
+0x0805d84c	gbk	upper		手动信标
+0x0805d858	gbk	upper		定时信标
+0x0805d864	gbk	upper		智能信标
+0x0805d870	gbk	upper		GPS坐标
+0x0805d878	gbk	upper		固定坐标
+0x0805d884	gbk	upper		松开发码
+0x0805d890	gbk	upper		按下发码
+0x0805d89c	gbk	upper		发送报警码
+0x0805d8a8	gbk	upper		按键+身份码
+0x0805d8b4	gbk	upper		身份码
+0x0805d8bc	gbk	upper		编码
+0x0805d8c4	gbk	upper		解码
+0x0805d8cc	gbk	upper		度分秒
+0x0805d8d4	gbk	upper		英里
+0x0805d8dc	gbk	upper		海里
+0x0805d8e4	gbk	upper		公里
+0x0805d8ec	gbk	upper		区域选择
+0x0805d8f8	gbk	upper		反向
+0x0805d900	gbk	upper		频差方向
+0x0805d90c	gbk	upper		正向
+0x0805d914	gbk	upper		开启
+0x0805d91c	gbk	upper		发送单音
+0x0805d928	gbk	upper		发送报警音
+0x0805d934	gbk	upper		远程亚音
+0x0805d940	gbk	upper		按键侧音
+0x0805d94c	gbk	upper		通话结束音
+0x0805d958	gbk	upper		搜索
+0x0805d960	gbk	upper		窄带
+0x0805d968	gbk	upper		宽带
+0x0805d970	gbk	upper		调幅
+0x0805d978	gbk	upper		删除
+0x0805d980	gbk	upper		监听
+0x0805d988	ascii	upper		 1K 
+0x0805d990	ascii	upper		 5K 
+0x0805d998	ascii	upper		 9K 
+0x0805d9a0	ascii	upper		 1M 
+0x0805d9c0	ascii	upper		 10K
+0x0805d9c8	ascii	upper		Devices Empty!
+0x0805d9d8	gbk	upper		没有设备!
+0x0805d9e4	ascii	upper		Ver1.00
+0x0805d9ec	ascii	upper		Ver0.29
+0x0805d9f4	ascii	upper		Hardware:
+0x0805da00	ascii	upper		Software:
+0x0805da0c	ascii	upper		CallSign:
+0x0805da18	gbk	upper		硬件版本:
+0x0805da24	gbk	upper		软件版本:
+0x0805da30	gbk	upper		呼号:
+0x0805da75	gbk	upper		@AAAAA@@@@@@@@@@@@@@@@@@          悙悙悙垐垐垐@
+0x080003dc	ascii	lower		pGpGRT-950      
+0x08000bda	ascii	lower		pGpGpGRT-950      
+0x080028bc	ascii	lower		Invalid Operation
+0x080028d0	ascii	lower		Divide By Zero
+0x080028f8	ascii	lower		Inexact Result
+0x08002908	ascii	lower		SIGFPE: Arithmetic exception: 
+0x08004073	ascii	lower		 Beacon List
+0x080040ab	ascii	lower		 %02d:%02d
+0x0800464b	ascii	lower		 H:%d.%dm
+0x0800468e	ascii	lower		 %02d'%02d"
+0x080046b2	ascii	lower		 %02d'%02d"
+0x08005ba0	ascii	lower		PATH INFO:
+0x08005bc0	ascii	lower		| STATUS TEXT |
+0x08005bd0	ascii	lower		| COMMENT TEXT |
+0x08005be4	ascii	lower		| RAW DATA |
+0x0800adc3	ascii	lower		 All Band Test Mode
+0x0800aea8	ascii	lower		Super Mode
+0x0800b2f0	ascii	lower		VFO Mode    
+0x0800b300	ascii	lower		CH Mode    
+0x0800b30c	ascii	lower		 CH-%03d 
+0x0800b973	ascii	lower		 %02d:%02d
+0x0800be2f	ascii	lower		 Voltage 
+0x0800c140	ascii	lower		  D%03oI
+0x0800c14c	ascii	lower		  D%03oN
+0x0800c158	ascii	lower		  %d.%dHz
+0x0800c2b4	ascii	lower		%d.%05d 
+0x0800d1e0	ascii	lower		 Hardware:BJ9000
+0x0800e703	ascii	lower		 DCS SCAN
+0x0800e713	ascii	lower		 CTCSS SCAN
+0x0800f293	ascii	lower		 Unnamed CH
+0x08010f6f	ascii	lower		 %02d.%03d
+0x080118e3	ascii	lower		 FM Initialization
+0x080118f8	ascii	lower		Please Wait...
+0x08012f57	ascii	lower		 CH-%03d
+0x0801336b	ascii	lower		 CH-%02d  %d
+0x0801337b	ascii	lower		 CH-%02d       
+0x0801338c	ascii	lower		CH-%02d %3d.%02d
+0x0801345b	ascii	lower		 Encryption
+0x08013b87	ascii	lower		 CH-%03d
+0x08013c07	ascii	lower		 Scram%d
+0x080168a7	ascii	lower		 %3d%04d
+0x0801704f	ascii	lower		 %03d%03d
+0x0801748f	ascii	lower		 About Machine
+0x08017827	ascii	lower		 Channel is invalid
+0x080178f3	ascii	lower		 Clear Data OK
+0x08017973	ascii	lower		 Frequency
+0x08017980	ascii	lower		out of range!
+0x08017c27	ascii	lower		 No Available Zone!
+0x08017d03	ascii	lower		 APRS activation of
+0x08017d18	ascii	lower		CDCSS is invalid
+0x08017e97	ascii	lower		 Minute range 0-59
+0x08017eac	ascii	lower		Longitude range
+0x08017ebc	ascii	lower		0-180 degrees
+0x08017edc	ascii	lower		Second range 0-59
+0x08017f00	ascii	lower		Latitude range
+0x08017f10	ascii	lower		0-90 degrees
+0x08017fc7	ascii	lower		 The device will restart
+0x08017fe0	ascii	lower		Please confirm that the
+0x08017ff8	ascii	lower		antenna has been replaced!
+0x080180df	ascii	lower		  Save OK
+0x0801819b	ascii	lower		 Data Error
+0x0801822b	ascii	lower		 FM Initialization
+0x08018240	ascii	lower		Please Wait...
+0x080182e7	ascii	lower		 Channel work mode changed!
+0x08018304	ascii	lower		The device will restart
+0x0801a480	ascii	lower		  D%03oN   
+0x0801a48c	ascii	lower		   %d.%0.1d   
+0x0801a49c	ascii	lower		   NONE   
+0x0801a5a3	ascii	lower		    SCANQT   
+0x0801a5b4	ascii	lower		 RUNNING  
+0x0801a5d0	ascii	lower		   STOP   
+0x0801f7c8	ascii	lower		    %6X    
+0x0801f7d4	ascii	lower		    D%03oN    
+0x0801f7e4	ascii	lower		    %d.%0.1d    
+0x0801f7f8	ascii	lower		     NONE     
+0x08021e33	ascii	lower		 Please Wait...
+0x0802382f	ascii	lower		 WX-%02d
+0x0802e539	ascii	lower		Hello world!
+0x0802e5f8	ascii	lower		   SEEK...   
+0x0805aecc	ascii	lower		Enroute   
+0x0805aed8	ascii	lower		Special   
+0x0805aee4	ascii	lower		Custom-0  
+0x0805aef0	ascii	lower		Custom-1  
+0x0805aefc	ascii	lower		Custom-2  
+0x0805af08	ascii	lower		Custom-3  
+0x0805af14	ascii	lower		Custom-4  
+0x0805af20	ascii	lower		Custom-5  
+0x0805af2c	ascii	lower		Custom-6  
+0x0805af38	ascii	lower		Priority  
+0x0805af44	ascii	lower		Off duty  
+0x0805af78	ascii	lower		Committed 
+0x0805af84	ascii	lower		Returning 
+0x0805af90	ascii	lower		Emergency 
+0x0805b02c	ascii	lower		In Service
+0x0805b8f1	ascii	lower		 Edit Callsign
+0x0805b919	ascii	lower		 Edit Digi1 Path
+0x0805b945	ascii	lower		 Path Choose
+0x0805b961	ascii	lower		 Fixed position
+0x0805b985	ascii	lower		 Degrees
+0x0805b9c1	ascii	lower		 Longitude WE Set
+0x0805b9e5	ascii	lower		 Latitude NS Set
+0x0805ba09	ascii	lower		 Fixed altitude
+0x0805ba29	ascii	lower		 Set Longitude
+0x0805ba39	ascii	lower		 Set Latitude
+0x0805ba61	ascii	lower		 Send Message
+0x0805ba7d	ascii	lower		 Message Edit
+0x0805ba99	ascii	lower		 Stations Symbol
+0x0805baba	ascii	lower		  Slect Icon
+0x0805bad5	ascii	lower		 MIC-E Type
+0x0805bb01	ascii	lower		 Digi1 SSID
+0x0805bb11	ascii	lower		 Digi2 SSID
+0x0805bb39	ascii	lower		 Digi1 Path
+0x0805bb49	ascii	lower		 Digi2 Path
+0x0805bb61	ascii	lower		 Message
+0x0805bb6d	ascii	lower		 User Path
+0x0805bb79	ascii	lower		 Callsign
+0x0805bb85	ascii	lower		 Source Position
+0x0805bb99	ascii	lower		 My Position
+0x0805bba9	ascii	lower		 Custom Icons
+0x0805bc09	ascii	lower		 Beacon Type
+0x0805bc25	ascii	lower		 Timing Time
+0x0805bc41	ascii	lower		 DIGI CH
+0x0805bc5d	ascii	lower		 Routing
+0x0805bc79	ascii	lower		 DIGI Tx Wait
+0x0805bc99	ascii	lower		 APRS CH
+0x0805bcb1	ascii	lower		 APRS Tx Delay
+0x0805bcd1	ascii	lower		 APRS Mute
+0x0805bced	ascii	lower		 APRS Ringer
+0x0805bd0d	ascii	lower		 RX Popup
+0x0805bd29	ascii	lower		 RX Popup Time
+0x0805bd49	ascii	lower		 TNC Type
+0x0805bd65	ascii	lower		 Reporting APP
+0x0805bd86	ascii	lower		 Sure to Reset?
+0x0805bda9	ascii	lower		 Factory Setting
+0x0805bdbd	ascii	lower		 RX Beacon Clear
+0x0805bdf1	ascii	lower		 APRS ON/OFF
+0x0805be21	ascii	lower		 Position
+0x0805be3d	ascii	lower		 Time Zone
+0x0805be55	ascii	lower		 Half Hour Time Zone
+0x0805be7d	ascii	lower		 Distance Unit
+0x0805be99	ascii	lower		 Altitude Unit
+0x0805beb5	ascii	lower		 Speed Unit
+0x0805bed1	ascii	lower		 Advanced
+0x0805bedd	ascii	lower		 Repeater Setting
+0x0805bef1	ascii	lower		 Beacon Setup
+0x0805bf01	ascii	lower		 Beacon List
+0x0805bf4d	ascii	lower		 Language
+0x0805bf64	ascii	lower		Sure to Reset?
+0x0805bf99	ascii	lower		 VFO Mode
+0x0805bfa5	ascii	lower		 Reset All
+0x0805bfc5	ascii	lower		 CH-Edit Name
+0x0805bfe5	ascii	lower		 CH-Memory
+0x0805bffd	ascii	lower		 CH-Delete
+0x0805c071	ascii	lower		 Direction
+0x0805c0a1	ascii	lower		 RX Modulation
+0x0805c0c1	ascii	lower		 VFO Scan Range
+0x0805c0e1	ascii	lower		 Scan Add
+0x0805c0f9	ascii	lower		 RX CTCSS
+0x0805c14d	ascii	lower		 TX CTCSS
+0x0805c169	ascii	lower		 FHSS CODE
+0x0805c181	ascii	lower		 Encryption
+0x0805c1c1	ascii	lower		 Scan Memory
+0x0805c1e1	ascii	lower		 CTCSS DCS
+0x0805c1ed	ascii	lower		 Scan SubCode
+0x0805c231	ascii	lower		 Battery Save
+0x0805c24d	ascii	lower		 Standby Set
+0x0805c269	ascii	lower		 SOS Mode
+0x0805c281	ascii	lower		 Scan Mode
+0x0805c299	ascii	lower		 Back Light
+0x0805c2b5	ascii	lower		 Beep Prompt
+0x0805c2e5	ascii	lower		 Menu OutTime
+0x0805c305	ascii	lower		 Keypad Lock
+0x0805c325	ascii	lower		 Power On Display
+0x0805c345	ascii	lower		 Breath Led
+0x0805c361	ascii	lower		 Power Dly Time
+0x0805c385	ascii	lower		 NOAA Alert
+0x0805c3b5	ascii	lower		 Busy Lockout
+0x0805c3d1	ascii	lower		 Trans Power
+0x0805c3ed	ascii	lower		 Bandwidth
+0x0805c4ed	ascii	lower		 Long Press PF1
+0x0805c521	ascii	lower		 Long Press PF2
+0x0805c551	ascii	lower		 [0] Long Press
+0x0805c575	ascii	lower		 [1] Long Press
+0x0805c599	ascii	lower		 [2] Long Press
+0x0805c5bd	ascii	lower		 [3] Long Press
+0x0805c5e1	ascii	lower		 [4] Long Press
+0x0805c605	ascii	lower		 [5] Long Press
+0x0805c629	ascii	lower		 [6] Long Press
+0x0805c64d	ascii	lower		 [7] Long Press
+0x0805c671	ascii	lower		 [8] Long Press
+0x0805c695	ascii	lower		 [9] Long Press
+0x0805c6a9	ascii	lower		 VOX Delay
+0x0805c6c1	ascii	lower		 VOX Level
+0x0805c6d9	ascii	lower		 VOX Switch
+0x0805c6f5	ascii	lower		 Scramble

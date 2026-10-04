@@ -1,0 +1,1524 @@
+address	function	kinds	targets
+0x08000258	FUN_08000258		
+0x0800027c	FUN_0800027c		
+0x08000280	FUN_08000280		
+0x080003cc	FUN_080003cc		
+0x08000630	FUN_08000630		
+0x080006bc	FUN_080006bc		
+0x080006dc	FUN_080006dc		
+0x08000754	FUN_08000754		
+0x080007cc	FUN_080007cc		
+0x080007dc	FUN_080007dc		
+0x080007de	FUN_080007de		
+0x080007ee	FUN_080007ee		
+0x08000838	FUN_08000838		
+0x08000850	FUN_08000850		
+0x0800087c	FUN_0800087c		
+0x080008a8	FUN_080008a8		
+0x080008ca	FUN_080008ca		
+0x0800091c	FUN_0800091c		
+0x080009e4	FUN_080009e4		
+0x08000a3c	FUN_08000a3c		
+0x08000b74	FUN_08000b74		
+0x08000bb0	FUN_08000bb0		
+0x08000bca	FUN_08000bca		
+0x08000bee	FUN_08000bee		
+0x08000cbc	FUN_08000cbc		
+0x08000d3a	FUN_08000d3a		
+0x08000d54	FUN_08000d54		
+0x08000d78	FUN_08000d78		
+0x08000e06	FUN_08000e06		
+0x08000e5e	FUN_08000e5e		
+0x08000ea6	FUN_08000ea6		
+0x08000ee4	FUN_08000ee4		
+0x08000f6e	FUN_08000f6e		
+0x08000fd2	FUN_08000fd2		
+0x08001016	FUN_08001016		
+0x08001064	FUN_08001064		
+0x080010bc	FUN_080010bc		
+0x080010c4	FUN_080010c4		
+0x080010cc	FUN_080010cc		
+0x080011ba	FUN_080011ba		
+0x080011c4	FUN_080011c4		
+0x080011d0	FUN_080011d0		
+0x08001284	FUN_08001284		
+0x08001430	FUN_08001430		
+0x080016a6	FUN_080016a6		
+0x080016cc	FUN_080016cc		
+0x080016d6	FUN_080016d6		
+0x08001704	FUN_08001704		
+0x08001728	FUN_08001728		
+0x08001744	FUN_08001744		
+0x08001940	FUN_08001940		
+0x08001be8	FUN_08001be8		
+0x08001bf4	FUN_08001bf4		
+0x08001c2a	FUN_08001c2a		
+0x08001c4e	FUN_08001c4e		
+0x08001c54	FUN_08001c54		
+0x08001cc4	FUN_08001cc4	ram	ram+0x10f18
+0x08001ccc	FUN_08001ccc		
+0x08001d58	FUN_08001d58		
+0x08001d88	FUN_08001d88		
+0x08001d9c	FUN_08001d9c		
+0x08001f8c	FUN_08001f8c		
+0x08002190	FUN_08002190		
+0x08002230	FUN_08002230		
+0x0800230c	FUN_0800230c		
+0x080023d8	FUN_080023d8		
+0x080026f8	FUN_080026f8		
+0x0800282c	FUN_0800282c		
+0x0800283e	FUN_0800283e		
+0x0800284c	FUN_0800284c		
+0x0800287c	FUN_0800287c		
+0x08002928	FUN_08002928		
+0x0800295a	FUN_0800295a		
+0x08002a3e	FUN_08002a3e		
+0x08002d78	FUN_08002d78	immediate	imm:double +inf high word
+0x08002dcc	FUN_08002dcc		
+0x08002e92	FUN_08002e92		
+0x08002eba	FUN_08002eba		
+0x08002ee2	FUN_08002ee2		
+0x08002f0a	FUN_08002f0a		
+0x08002f32	FUN_08002f32		
+0x08003176	FUN_08003176		
+0x0800317c	FUN_0800317c		
+0x08003194	FUN_08003194		
+0x080031ac	FUN_080031ac		
+0x080031c4	FUN_080031c4		
+0x080031d2	FUN_080031d2		
+0x080031d8	FUN_080031d8		
+0x080031e6	FUN_080031e6		
+0x080031f4	FUN_080031f4		
+0x0800323c	FUN_0800323c		
+0x080032a0	Reset_Handler		
+0x080032b0	FUN_080032b0		
+0x080032ba	FUN_080032ba		
+0x080032d2	FUN_080032d2		
+0x080032dc	FUN_080032dc		
+0x080032f0	FUN_080032f0	ram	ram+0xdf48,ram+0x0230,ram+0xb2f8,ram+0xbc90,ram+0xbaf8
+0x08003384	FUN_08003384	ram	ram+0xbc8e,ram+0xa9e4
+0x0800339c	FUN_0800339c	ram,register	ram+0xbc8e,ram+0xae24,DMA1_CHANNEL1_BASE+0x0
+0x080033c8	FUN_080033c8	ram,register	ram+0xbc8e,DMA1_CHANNEL1_BASE+0x0
+0x080033d8	FUN_080033d8	register,ram	DMA1_CHANNEL1_BASE+0x0,ADC1_BASE+0x4c,ram+0xbc94
+0x0800352c	FUN_0800352c		
+0x0800354a	FUN_0800354a		
+0x08003570	FUN_08003570	ram	ram+0x0230,ram+0xdc8e,ram+0xbc8e
+0x0800367c	FUN_0800367c	ram	ram+0xb2f8
+0x08003780	FUN_08003780	ram,other	ram+0xe12a,flash+0x30ecc,ram+0x0230
+0x08003808	FUN_08003808	register,ram	TMR6_BASE+0x0,ram+0x0230,ram+0xdfdc,ram+0xae24,ram+0xead0,ram+0xfae8,GPIOC_BASE+0x0,DMA2_CHANNEL3_BASE+0x0,ram+0xeac4
+0x080039f8	FUN_080039f8	ram	ram+0xa31c,ram+0xa8fc,ram+0xa3fc,ram+0xa8a4
+0x08003aec	FUN_08003aec	ram	ram+0xa31c,ram+0xa8fc,ram+0xa3fc
+0x08003b4c	FUN_08003b4c	ram	ram+0xa8fc,ram+0xa3fc,ram+0xa31c,ram+0xb0ba
+0x08003c60	FUN_08003c60	ram	ram+0x019e
+0x08003cb4	FUN_08003cb4		
+0x08003cc6	FUN_08003cc6		
+0x08003d28	FUN_08003d28	ram	ram+0xa9e4,ram+0x0230,ram+0xae24,ram+0xa8fc
+0x080040c0	FUN_080040c0	ram	ram+0xae24,ram+0x10ef4,ram+0xa9e4,ram+0x0bd4
+0x080046c0	FUN_080046c0	ram	ram+0xa8fc,ram+0xa9e4,ram+0x16425,ram+0x10ef4,ram+0xae24,ram+0xacb3
+0x08005d90	FUN_08005d90		
+0x08005dae	thunk_FUN_08005e1c	ram	ram+0x16425
+0x08005db0	FUN_08005db0	ram	ram+0x16425
+0x08005e1c	FUN_08005e1c	ram	ram+0x16425
+0x08006184	FUN_08006184		
+0x080061dc	FUN_080061dc		
+0x0800623c	FUN_0800623c		
+0x08006278	FUN_08006278		
+0x080062a4	FUN_080062a4	ram	ram+0xa9e4,ram+0xa3fc
+0x080062c4	FUN_080062c4	ram	ram+0xa9e4,ram+0x10ef4,ram+0xae24
+0x080064c8	FUN_080064c8	ram	ram+0xa9e4
+0x0800653c	FUN_0800653c	ram	ram+0xa9e4,ram+0xa3fc,ram+0x0215
+0x0800664c	FUN_0800664c	ram,other	ram+0xa9e4,flash+0x310cc,ram+0xae24
+0x08006728	FUN_08006728	ram	ram+0xafc4,ram+0xae24
+0x08006790	FUN_08006790		
+0x080067a4	FUN_080067a4	ram,other	ram+0xa9e4,ram+0xae24,ram+0xad98,ram+0xa3fc,flash+0x310cc
+0x08006814	FUN_08006814	ram	ram+0xa9e4
+0x0800682c	FUN_0800682c	ram,register,other	ram+0xa9e4,GPIOB_BASE+0x0,flash+0x310d8,ram+0xae24,ram+0xaae9,ram+0xa3fc
+0x080068c8	FUN_080068c8	other	flash+0x30ccc
+0x080068e0	FUN_080068e0		
+0x08006950	FUN_08006950	ram	ram+0xaa0b,ram+0xae24
+0x08006a78	FUN_08006a78	ram	ram+0xae24,ram+0xdfdc
+0x08006c6c	FUN_08006c6c	ram	ram+0xb1d4,ram+0x0259
+0x08006cc8	FUN_08006cc8	ram	ram+0xa3a8
+0x08006d24	FUN_08006d24	ram,other	ram+0xe790,ram+0x0c70,flash+0x311a8
+0x08006d54	FUN_08006d54	ram,register,other	ram+0xa3fc,GPIOE_BASE+0x0,flash+0x38864,SCB.AIRCR
+0x08006e2c	FUN_08006e2c	ram	ram+0xa468,ram+0xa3fc,ram+0xa929
+0x08006e90	FUN_08006e90	ram	ram+0xa468,ram+0xa3fc,ram+0xa929
+0x08006ef8	FUN_08006ef8	ram	ram+0xa3fc,ram+0xa328,ram+0xa8fc
+0x08006f84	FUN_08006f84	ram	ram+0xa328
+0x08006ff0	FUN_08006ff0	ram,other	ram+0xa328,flash+0x3093e
+0x0800703c	FUN_0800703c	ram	ram+0xa3fc,ram+0x01d8
+0x080070d4	FUN_080070d4		
+0x08007166	FUN_08007166		
+0x08007194	FUN_08007194	other,ram	flash+0x31208,ram+0xa9e4,ram+0xae24
+0x080071c0	FUN_080071c0	ram	ram+0xae24,ram+0x10ef4
+0x08007394	FUN_08007394		
+0x080073a4	FUN_080073a4	ram	ram+0xa3fc,ram+0xeac4,ram+0xa8fc
+0x080073f8	FUN_080073f8	ram	ram+0xeac4
+0x08007414	FUN_08007414		
+0x08007428	FUN_08007428	ram	ram+0x0c70
+0x08007608	FUN_08007608		
+0x0800763c	FUN_0800763c	ram	ram+0xa9c9,ram+0xafc4,ram+0xa2ae,ram+0xa8fc,ram+0xa91c
+0x080077d0	FUN_080077d0	register	GPIOA_BASE+0x0,USART1_BASE+0x0
+0x08007894	FUN_08007894	register,ram	USART1_BASE+0x0,ram+0xb22c,ram+0xafc4,ram+0xa3fc
+0x08007938	FUN_08007938		
+0x08007952	FUN_08007952		
+0x08007984	FUN_08007984	ram,immediate	ram+0x0c7c,ram+0x011e,imm:100000
+0x08007bf0	FUN_08007bf0	ram	ram+0x0c7c,ram+0x00d4
+0x08007c50	FUN_08007c50	ram	ram+0x0c7c,ram+0x00d4
+0x08007cc4	FUN_08007cc4		
+0x08007dc0	FUN_08007dc0	ram	ram+0xa468
+0x08007e90	FUN_08007e90	ram	ram+0xeac4,ram+0xa8fc
+0x08008000	FUN_08008000	ram	ram+0xeac4,ram+0xa8fc
+0x08008048	FUN_08008048		
+0x08008074	FUN_08008074	ram	ram+0xa3a8
+0x0800808c	FUN_0800808c		
+0x08008160	FUN_08008160	ram	ram+0xa3a8
+0x080081ac	FUN_080081ac		
+0x080081c8	FUN_080081c8	ram	ram+0xa334
+0x08008214	FUN_08008214	ram	ram+0xa334
+0x08008230	FUN_08008230	ram	ram+0xa4e6,ram+0xa8fc
+0x080083cc	FUN_080083cc	ram	ram+0xa56a,ram+0xa3fc
+0x08008404	FUN_08008404	ram	ram+0xa468,ram+0xa3fc,ram+0xa89e,ram+0xa929
+0x08008488	FUN_08008488	ram	ram+0xa468
+0x080084dc	FUN_080084dc	ram	ram+0xa468
+0x080085c8	FUN_080085c8	ram	ram+0xa468,ram+0xa3fc,ram+0xa89e,ram+0xa929
+0x0800864c	FUN_0800864c	ram	ram+0xa468,ram+0xa8fc,ram+0xa91c
+0x08008970	FUN_08008970	ram	ram+0xa562,ram+0xa8c4,ram+0xa3fc
+0x080089e8	FUN_080089e8	ram	ram+0xa8a4,ram+0xa468,ram+0xa3fc,ram+0xa680
+0x08008a48	FUN_08008a48	ram	ram+0xa8a4
+0x08008a94	FUN_08008a94	ram	ram+0x01fa
+0x08008aa8	FUN_08008aa8	ram	ram+0xa31c
+0x08008ab4	FUN_08008ab4	ram	ram+0xa31c
+0x08008ad8	FUN_08008ad8	register	GPIOB_BASE+0x0
+0x08008b5c	FUN_08008b5c	ram	ram+0xa9e4,ram+0xae24
+0x08008bc8	FUN_08008bc8	ram	ram+0xa3fc,ram+0xa8fc
+0x08008c28	FUN_08008c28	ram	ram+0xa468,ram+0xa91c
+0x08008cc8	FUN_08008cc8	ram	ram+0xa3fc,ram+0xa91c,ram+0xa468
+0x08008d1c	FUN_08008d1c	ram	ram+0xa328
+0x08008d30	FUN_08008d30	ram	ram+0xae24,ram+0xa9e4,ram+0xacb3
+0x08008f30	FUN_08008f30	ram	ram+0xa3fc,ram+0xae24,ram+0x10ef4,ram+0xa468,ram+0xa9e4,ram+0xaaf0
+0x080090d8	FUN_080090d8	ram	ram+0x01da
+0x080090ec	FUN_080090ec	ram	ram+0xa468,ram+0xa3fc
+0x08009138	FUN_08009138	ram	ram+0xa3fc
+0x080091dc	FUN_080091dc		
+0x08009214	FUN_08009214		
+0x0800923c	FUN_0800923c	ram	ram+0xa3fc,ram+0xa468,ram+0xa8fc
+0x08009270	FUN_08009270		
+0x080092d4	FUN_080092d4	ram,other	ram+0xa3fc,ram+0xe84c,flash+0x3863e
+0x08009308	FUN_08009308	ram	ram+0xafc4
+0x08009384	FUN_08009384	ram	ram+0xa388,ram+0xa949
+0x080093dc	FUN_080093dc	ram	ram+0xa468,ram+0xa3fc
+0x08009460	FUN_08009460	ram	ram+0xa468
+0x0800948c	FUN_0800948c	ram	ram+0xa3fc,ram+0xa468,ram+0xb074
+0x08009580	FUN_08009580	ram	ram+0xa91c
+0x08009598	FUN_08009598	ram	ram+0xa3fc,ram+0xb074
+0x08009694	FUN_08009694	ram	ram+0xa3fc
+0x080096a0	FUN_080096a0	other,ram	flash+0x2ca58,ram+0xb208
+0x080096dc	FUN_080096dc	other,ram	flash+0x2c94e,ram+0xb208
+0x08009730	FUN_08009730	ram,other	ram+0xe330,uid+0x0,flash+0x2e00,ram+0x0230
+0x080097ac	FUN_080097ac	ram,other	ram+0xafc4,flash+0x30988
+0x08009804	FUN_08009804	ram	ram+0xa3fc
+0x08009810	FUN_08009810	register,ram,other	GPIOE_BASE+0x0,ram+0xa468,ram+0xa929,GPIOC_BASE+0x0,GPIOB_BASE+0x0,GPIOA_BASE+0x0,SCB.AIRCR
+0x080098ec	FUN_080098ec	ram,register	ram+0xafc4,ram+0x0218,ram+0xa3fc,GPIOA_BASE+0x0
+0x08009980	FUN_08009980	ram	ram+0xafc4
+0x0800999c	FUN_0800999c	register,other,ram	GPIOE_BASE+0x0,flash+0x308ca,ram+0xa91c
+0x080099e8	FUN_080099e8	ram	ram+0xa91c,ram+0xa468,ram+0xa3fc
+0x08009ba4	FUN_08009ba4	ram	ram+0xa468,ram+0xa3fc,ram+0xa8a4
+0x08009c20	FUN_08009c20	ram	ram+0x01ad
+0x08009c3c	FUN_08009c3c	ram	ram+0x0c2c,ram+0x10ef4
+0x08009c8c	FUN_08009c8c	ram	ram+0xea74,ram+0xafc4
+0x08009cec	FUN_08009cec	ram,other	ram+0xb138,flash+0x2ca58
+0x08009d74	FUN_08009d74	ram	ram+0xb138
+0x08009dbc	FUN_08009dbc	ram	ram+0x01ec,ram+0xa3fc,ram+0xa9e4,ram+0x10ef4,ram+0xb208,ram+0xb138,ram+0xb0e4,ram+0xa3a8,ram+0xe84c,ram+0xe89c,ram+0x01fa,ram+0xb0ba,ram+0xb22c
+0x08009f48	FUN_08009f48	ram	ram+0xa3fc,ram+0xa91c,ram+0xa8fc,ram+0xa468
+0x0800a07c	FUN_0800a07c	ram	ram+0xa3fc
+0x0800a0c0	FUN_0800a0c0	ram	ram+0xeac4
+0x0800a110	FUN_0800a110	ram	ram+0xa3a8
+0x0800a134	FUN_0800a134	ram	ram+0xb22c
+0x0800a144	FUN_0800a144	ram	ram+0x10ce8
+0x0800a154	FUN_0800a154	ram	ram+0xa3a8,ram+0x0230
+0x0800a178	FUN_0800a178	ram	ram+0xb1d4,ram+0x0259
+0x0800a1a8	FUN_0800a1a8	ram	ram+0xae9d
+0x0800a1c4	FUN_0800a1c4	ram	ram+0xa468
+0x0800a374	FUN_0800a374		
+0x0800a582	FUN_0800a582	ram	ram+0x0230
+0x0800a5a0	FUN_0800a5a0	other	flash+0x5cf6e
+0x0800a624	FUN_0800a624	ram,other	ram+0xa91c,flash+0x308ca,ram+0xa3fc
+0x0800a6d4	FUN_0800a6d4	ram,register	ram+0xb22c,ram+0xafd4,GPIOA_BASE+0x0,ram+0xa3fc
+0x0800a77c	FUN_0800a77c	ram,other,register	ram+0xa3fc,ram+0xa91c,ram+0x0224,ram+0x01fa,ram+0xa334,flash+0x30972,ram+0xa8fc,ram+0xa9e4,ram+0xae24,ram+0xa3a8,GPIOE_BASE+0x0,flash+0x308ca,ram+0xa468,ram+0xeac4,GPIOC_BASE+0x0,ram+0x01de,GPIOB_BASE+0x0,flash+0x30bd2,ram+0x0230
+0x0800a878	FUN_0800a878		
+0x0800a8b6	FUN_0800a8b6		
+0x0800a8c8	FUN_0800a8c8	register	DAC_BASE+0x0
+0x0800a8e8	FUN_0800a8e8	register	DAC_BASE+0x0
+0x0800a908	FUN_0800a908	register	DAC_BASE+0x0
+0x0800a944	FUN_0800a944		
+0x0800a950	FUN_0800a950	ram	ram+0xbc94,ram+0xcc94
+0x0800a994	FUN_0800a994	ram,register	ram+0xead0,DMA2_CHANNEL3_BASE+0x0,ram+0xfae8
+0x0800a9b8	FUN_0800a9b8		
+0x0800a9d4	FUN_0800a9d4	register	DMA2_BASE+0x4,DMA1_BASE+0x0
+0x0800a9ec	FUN_0800a9ec	register	DMA2_BASE+0x4,DMA1_BASE+0x0
+0x0800aa04	FUN_0800aa04		
+0x0800aa20	FUN_0800aa20	register	DMA2_BASE+0x0,DMA1_BASE+0x0
+0x0800aa44	FUN_0800aa44		
+0x0800aa58	FUN_0800aa58		
+0x0800aa94	FUN_0800aa94	register	DMA1_CHANNEL1_BASE+0x0,DMA2_CHANNEL1_BASE+0x0
+0x0800ab8c	FUN_0800ab8c	ram	ram+0x00d4,ram+0x0c7c
+0x0800ad06	FUN_0800ad06		
+0x0800ad22	FUN_0800ad22		
+0x0800ad30	FUN_0800ad30	ram,code,other	ram+0x0c70,code:0x0801ec8c,code:0x0801f494,flash+0x1f374,flash+0x1f440
+0x0800ad60	FUN_0800ad60	ram	ram+0xa8fc
+0x0800aeb4	FUN_0800aeb4		
+0x0800aeb8	FUN_0800aeb8	ram	ram+0x01c4
+0x0800af0c	FUN_0800af0c	ram	ram+0xa328
+0x0800af28	FUN_0800af28	immediate	imm:100000
+0x0800af94	FUN_0800af94	ram	ram+0xa468,ram+0xa3fc,ram+0xa8fc,ram+0x0b08
+0x0800b05c	FUN_0800b05c	ram,other,immediate	ram+0xa468,ram+0xa3fc,flash+0x3dd02,flash+0x3d8f2,flash+0x3e112,flash+0x3e522,flash+0x3ed42,flash+0x3e932,ram+0xa8fc,imm:100000
+0x0800b2e0	FUN_0800b2e0		
+0x0800b328	FUN_0800b328	ram	ram+0xa91c,ram+0xa8fc
+0x0800b448	FUN_0800b448	immediate	imm:100000
+0x0800b4b4	FUN_0800b4b4	ram	ram+0xa468
+0x0800b604	FUN_0800b604	ram	ram+0x0b08,ram+0xa468,ram+0xa8fc
+0x0800b8a0	FUN_0800b8a0	ram	ram+0xa3fc,ram+0xa9e4
+0x0800b8c4	FUN_0800b8c4	ram	ram+0x10ef4,ram+0xae24,ram+0x024c
+0x0800b980	FUN_0800b980	ram	ram+0xa468
+0x0800b9a8	FUN_0800b9a8	ram	ram+0xa3a8,ram+0xa468,ram+0xa3fc
+0x0800ba44	FUN_0800ba44	ram	ram+0xa8fc,ram+0xe8cc,ram+0xa3a8,ram+0x0bf4
+0x0800bac0	FUN_0800bac0	ram	ram+0xa3a8,ram+0xa468
+0x0800bb38	FUN_0800bb38	ram	ram+0xa3a8,ram+0x0bf4
+0x0800bbb4	FUN_0800bbb4	ram	ram+0xa3a8,ram+0xa468,ram+0xa3fc
+0x0800bcbc	FUN_0800bcbc	immediate	imm:100000
+0x0800bd10	FUN_0800bd10	ram	ram+0x4898,ram+0xa8fc
+0x0800be54	FUN_0800be54	other	flash+0x3f152
+0x0800beb4	FUN_0800beb4	ram	ram+0xa3fc,ram+0xa468
+0x0800befc	FUN_0800befc	ram	ram+0x0b08,ram+0xa3fc,ram+0xa468
+0x0800c098	FUN_0800c098	ram	ram+0xa3fc
+0x0800c0d8	FUN_0800c0d8	other	flash+0x2c94e
+0x0800c16c	FUN_0800c16c	ram	ram+0xa468,ram+0xa8fc
+0x0800c26c	FUN_0800c26c		
+0x0800c270	FUN_0800c270	immediate	imm:100000
+0x0800c2c0	FUN_0800c2c0	other,ram	flash+0x5ce58,ram+0xb1e2
+0x0800c35c	FUN_0800c35c	ram,other	ram+0xb1e2,flash+0x30c5e,ram+0x0259
+0x0800c504	FUN_0800c504	ram	ram+0xa3fc
+0x0800c524	FUN_0800c524	ram	ram+0xa3fc,ram+0xa468
+0x0800c570	FUN_0800c570	ram,other	ram+0xa8fc,ram+0xa468,flash+0x4bbe4,flash+0x4c68e,ram+0xa3fc,flash+0x4d138
+0x0800c710	FUN_0800c710	ram,other	ram+0xa3fc,flash+0x3f352,flash+0x3f368,flash+0x3f37e
+0x0800c940	FUN_0800c940	ram	ram+0xa3fc
+0x0800c980	FUN_0800c980	ram	ram+0xa3fc,ram+0xa468
+0x0800c9c0	FUN_0800c9c0	other	flash+0x3f152
+0x0800ca18	FUN_0800ca18	ram,other	ram+0xa91c,flash+0x3a5b4,flash+0x3aa0a,ram+0xae24,flash+0x3b41e,flash+0x3ae60,flash+0x3b9dc,flash+0x3990c,ram+0xa8fc,ram+0xa3fc,flash+0x39f60,ram+0xa468,flash+0x39c36,flash+0x3a28a
+0x0800cb78	FUN_0800cb78	ram,other	ram+0xa3fc,ram+0xa468,flash+0x3c3ea,flash+0x3c324,flash+0x3cbc6,flash+0x3c974,flash+0x3bfb8,flash+0x3bfcc,flash+0x3c0a6,flash+0x3bfe0,flash+0x3c248,flash+0x3c16c,ram+0xae24,flash+0x393b2,flash+0x39210,flash+0x39058,flash+0x38ea0,flash+0x38c4e,flash+0x389fc,flash+0x3c898,flash+0x3c7bc,flash+0x3ce18
+0x0800ced0	FUN_0800ced0		
+0x0800ced4	FUN_0800ced4	ram,other	ram+0xae24,ram+0x10ef4,flash+0x3d492,flash+0x3d6b2
+0x0800cf58	FUN_0800cf58	ram,other	ram+0xa3fc,flash+0x3c4b0,flash+0x3c636
+0x0800cfc0	FUN_0800cfc0	ram	ram+0xa3fc
+0x0800cfe0	FUN_0800cfe0	ram,other	ram+0xa8fc,ram+0xae24,flash+0x39554,ram+0xa91c,flash+0x3d20c,flash+0x3cfca,flash+0x3ce32
+0x0800d088	FUN_0800d088	ram,other	ram+0xa3fc,ram+0xa468,flash+0x389d0,flash+0x389e6,flash+0x389ba
+0x0800d174	FUN_0800d174		
+0x0800d1f4	FUN_0800d1f4	ram	ram+0xa468,ram+0xa3fc,ram+0x0b08
+0x0800d2a4	FUN_0800d2a4		
+0x0800d2a8	FUN_0800d2a8	ram,immediate	ram+0xa468,ram+0xa8fc,imm:100000,ram+0x0b08,ram+0xa3fc,ram+0xa3a8
+0x0800d518	FUN_0800d518	register	DMA2_CHANNEL3_BASE+0x0
+0x0800d544	FUN_0800d544	ram	ram+0xb1d4,ram+0x0259
+0x0800d550	FUN_0800d550	ram	ram+0xb1d4,ram+0x0259
+0x0800d594	FUN_0800d594		
+0x0800d5a8	FUN_0800d5a8	ram	ram+0xa3a8
+0x0800d650	FUN_0800d650	ram,other	ram+0xa8fc,flash+0x30b60,ram+0xa3fc,ram+0xb0ba,ram+0xa468
+0x0800d7f0	FUN_0800d7f0	other	flash+0x30b64
+0x0800d830	FUN_0800d830	ram,other	ram+0xb0b0,ram+0xa8fc,flash+0x30b60
+0x0800d904	FUN_0800d904	other	flash+0x30b60
+0x0800d944	FUN_0800d944	ram	ram+0xa562,ram+0xa3fc
+0x0800da50	FUN_0800da50	ram	ram+0xa3fc
+0x0800da78	FUN_0800da78	ram	ram+0xa425
+0x0800db1c	FUN_0800db1c	ram,register	ram+0x01de,ram+0xa3fc,GPIOB_BASE+0x0
+0x0800dc68	FUN_0800dc68	register,ram	GPIOB_BASE+0x0,ram+0x01de
+0x0800dc8c	FUN_0800dc8c	ram	ram+0x01fa
+0x0800dd30	FUN_0800dd30		
+0x0800dd44	FUN_0800dd44	ram	ram+0xa3fc,ram+0xa9e4
+0x0800de28	FUN_0800de28	ram,register	ram+0xa388,ram+0xa3fc,ram+0xa8fc,GPIOC_BASE+0x0,GPIOA_BASE+0x0,ram+0xa949
+0x0800e0a4	FUN_0800e0a4	ram	ram+0xa3fc,ram+0xe89c
+0x0800e0c4	FUN_0800e0c4	ram	ram+0xa3fc
+0x0800e0dc	FUN_0800e0dc	ram	ram+0xa3fc,ram+0xe89c
+0x0800e174	FUN_0800e174	ram,other	ram+0xa3fc,flash+0x3bcca
+0x0800e1c8	FUN_0800e1c8	ram,other	ram+0xa8a4,ram+0xa3fc,ram+0xb2e8,flash+0x58038
+0x0800e494	FUN_0800e494	ram	ram+0xb138
+0x0800e528	FUN_0800e528	ram	ram+0xb1d4,ram+0xa3a8
+0x0800e5c8	FUN_0800e5c8	ram,other	ram+0xa3a8,ram+0xb138,ram+0xa8fc,ram+0xe8cc,flash+0x2ca58,ram+0xa3fc,ram+0xa91c,ram+0xa468
+0x0800e736	FUN_0800e736		
+0x0800e754	FUN_0800e754	ram	ram+0xa3fc,ram+0xa91c
+0x0800e828	FUN_0800e828	ram	ram+0xa3fc
+0x0800e88c	FUN_0800e88c	ram	ram+0xa3fc,ram+0xa9e4
+0x0800e8d0	FUN_0800e8d0	ram	ram+0xa3fc
+0x0800e95c	FUN_0800e95c	ram	ram+0xa3fc,ram+0xa468,ram+0xa91c,ram+0xe84c,ram+0x0210
+0x0800ea30	FUN_0800ea30	ram,other	ram+0xa3fc,ram+0xa468,flash+0x3b9dc
+0x0800ea60	FUN_0800ea60	ram	ram+0xa3fc
+0x0800ea8c	FUN_0800ea8c	ram	ram+0xa3fc
+0x0800eab8	FUN_0800eab8	ram	ram+0xa3fc
+0x0800eaf0	FUN_0800eaf0	register	FLASH_REG_BASE+0x0
+0x0800eb18	FUN_0800eb18	register	FLASH_REG_BASE+0x0
+0x0800eb40	FUN_0800eb40	register	FLASH_REG_BASE+0x0
+0x0800eb6c	FUN_0800eb6c	register	FLASH_REG_BASE+0x0
+0x0800eb84	FUN_0800eb84	register	FLASH_REG_BASE+0x0
+0x0800ec20	FUN_0800ec20	register	FLASH_REG_BASE+0x0
+0x0800ec3c	FUN_0800ec3c		
+0x0800ec5c	FUN_0800ec5c		
+0x0800ec7c	FUN_0800ec7c		
+0x0800ec9c	FUN_0800ec9c		
+0x0800ecbc	FUN_0800ecbc	ram	ram+0xa388
+0x0800eccc	FUN_0800eccc	register,ram	GPIOC_BASE+0x0,GPIOA_BASE+0x0,ram+0xa949,ram+0x019c
+0x0800ed30	FUN_0800ed30		
+0x0800ed5c	FUN_0800ed5c	ram	ram+0x019e
+0x0800ed80	FUN_0800ed80	ram	ram+0x019e,ram+0xa949,ram+0xa388
+0x0800edd4	FUN_0800edd4	ram	ram+0x019e
+0x0800ee00	FUN_0800ee00	ram	ram+0xa388,ram+0x019e,ram+0xa949
+0x0800ee88	FUN_0800ee88	ram	ram+0x019d,ram+0x019e,ram+0xa949
+0x0800eec0	FUN_0800eec0	ram,other	ram+0xa388,ram+0xa949,flash+0x2cabe
+0x0800ef68	FUN_0800ef68	other,ram	flash+0x2cabe,ram+0xa388
+0x0800ef7c	FUN_0800ef7c	ram	ram+0xa949
+0x0800efa0	FUN_0800efa0	ram	ram+0x019d,ram+0xa949
+0x0800efd0	FUN_0800efd0	ram	ram+0x019c,ram+0xa388
+0x0800eff0	FUN_0800eff0	ram	ram+0x019c
+0x0800f03c	FUN_0800f03c	ram	ram+0x019e,ram+0xa949,ram+0xa388
+0x0800f114	FUN_0800f114	ram,other	ram+0xa3fc,ram+0xe84c,ram+0x030c,ram+0xa91c,flash+0x382e4
+0x0800f1c0	FUN_0800f1c0		
+0x0800f1f2	FUN_0800f1f2		
+0x0800f20e	FUN_0800f20e		
+0x0800f228	FUN_0800f228	ram	ram+0xa8fc
+0x0800f2a8	FUN_0800f2a8	ram	ram+0xa9e4
+0x0800f2c8	FUN_0800f2c8	ram	ram+0xe33c
+0x0800f300	FUN_0800f300	ram	ram+0xa9e4,ram+0xe33c
+0x0800f364	FUN_0800f364		
+0x0800f378	FUN_0800f378		
+0x0800f3c0	FUN_0800f3c0	ram	ram+0x0c98
+0x0800f418	FUN_0800f418	ram,other	ram+0xae24,flash+0x310ea,ram+0xade4,ram+0xa91c
+0x0800f510	FUN_0800f510		
+0x0800f580	FUN_0800f580	ram	ram+0xe33c
+0x0800f5fc	FUN_0800f5fc	ram,other	ram+0x0014,ram+0x0024,ram+0x0034,ram+0x0044,ram+0x0054,ram+0x0064,ram+0x0074,ram+0x0084,ram+0x0094,ram+0x00a4,ram+0x00b4,ram+0x00c4,ram+0x00e4,ram+0x00f1,ram+0x00fe,ram+0x010e,ram+0x0c30,ram+0x0c40,ram+0x011e,ram+0x0c50,ram+0x016c,ram+0x017c,ram+0x018c,ram+0xa3fc,flash+0x309f6,flash+0x308a8,ram+0xb074
+0x0800fa34	FUN_0800fa34	ram	ram+0x0c98,ram+0xa949
+0x0800faf8	FUN_0800faf8	ram	ram+0x0c98,ram+0xa8fc,ram+0xa91c
+0x0800fbc4	FUN_0800fbc4	ram	ram+0xb0e8
+0x0800fc20	FUN_0800fc20	ram	ram+0x02cc
+0x0800fc74	FUN_0800fc74	ram	ram+0xa3fc,ram+0xa388,ram+0xa468,ram+0xa56a
+0x0800fd10	FUN_0800fd10	ram	ram+0xa2ae,ram+0xa738
+0x0800fd8c	FUN_0800fd8c	ram,other	ram+0xae24,flash+0x310ea
+0x0800fda8	FUN_0800fda8	ram,other	ram+0xae24,flash+0x308ac
+0x0800fe58	FUN_0800fe58	ram	ram+0xe33c
+0x0800fee8	FUN_0800fee8		
+0x0800ff30	FUN_0800ff30	other,ram	flash+0x308a8,ram+0xb0b0
+0x0800ff84	FUN_0800ff84	ram,other	ram+0x0c98,ram+0xa949,flash+0x308ac
+0x08010044	FUN_08010044	ram,other	ram+0x0c98,ram+0xa8fc,ram+0xa91c,flash+0x308ac
+0x08010114	FUN_08010114	ram	ram+0xe33c,ram+0xacb3
+0x0801046c	FUN_0801046c	ram,other	ram+0x02cc,flash+0x308ac
+0x08010520	FUN_08010520	ram,other	ram+0xa468,ram+0xa388,ram+0xa445,flash+0x308ac
+0x080105cc	FUN_080105cc	ram,other	ram+0xa2ee,ram+0xa780,flash+0x308ac
+0x080106e4	FUN_080106e4	ram,other	ram+0xa2ae,ram+0xa738,flash+0x308ac
+0x080107cc	FUN_080107cc	ram	ram+0xa949,ram+0xa388
+0x08010810	FUN_08010810	ram	ram+0xa388
+0x080109b0	FUN_080109b0	ram	ram+0xa388,ram+0xa949
+0x08010b84	FUN_08010b84	ram,register	ram+0xa3fc,ram+0xa388,GPIOC_BASE+0x0,GPIOA_BASE+0x0,ram+0xa949
+0x08010cc4	FUN_08010cc4	ram	ram+0xa388,ram+0xa949
+0x08010d40	FUN_08010d40	ram	ram+0xa388,ram+0xa949
+0x08010dc8	FUN_08010dc8	ram,other	ram+0xa949,flash+0x483dc,ram+0xa388
+0x08010e28	FUN_08010e28	ram,other	ram+0xa388,ram+0xa949,ram+0x0b0c,flash+0x4aca4,flash+0x4aeac,flash+0x4b17c
+0x08010fa0	FUN_08010fa0		
+0x0801100c	FUN_0801100c	ram	ram+0xa3a8,ram+0xa949
+0x080110fc	FUN_080110fc	ram,string,other	ram+0xa388,ram+0xa949,ram+0x0b20,str:Level 8,flash+0x49e64,flash+0x4aeac,flash+0x4b17c
+0x08011244	FUN_08011244	other,ram	flash+0x4aca4,flash+0x49abc,flash+0x494bc,flash+0x48f4c,flash+0x48964,ram+0xa949,ram+0x0b2c,ram+0xa388,flash+0x447be
+0x0801160c	FUN_0801160c	ram	ram+0xa949,ram+0xa388,ram+0xa8fc
+0x0801171c	FUN_0801171c	ram,other	ram+0xa388,ram+0xa949,flash+0x44c20,flash+0x48304
+0x08011864	FUN_08011864	ram	ram+0xa8fc
+0x08011928	FUN_08011928	ram,register	ram+0xa3fc,ram+0xa388,GPIOA_BASE+0x0,GPIOC_BASE+0x0
+0x08011990	FUN_08011990	ram,other	ram+0xa388,ram+0xa949,flash+0x30966,flash+0x308a2,flash+0x3089c
+0x08011acc	FUN_08011acc	ram,other	ram+0xa388,ram+0xa949,flash+0x308a2,flash+0x3089c
+0x08011bec	FUN_08011bec	other,ram	flash+0x308a2,ram+0xa388,ram+0xa949,flash+0x3089c,flash+0x30966
+0x08011d3c	FUN_08011d3c	other,ram	flash+0x308a2,ram+0xa388,ram+0xa949,flash+0x3089c,flash+0x30966
+0x08011ff8	FUN_08011ff8	ram,register,other	ram+0xa3a8,ram+0xa388,ram+0xa949,ram+0x0215,ram+0xa8fc,ram+0xa3fc,GPIOA_BASE+0x0,GPIOC_BASE+0x0,ram+0xe84c,flash+0x3863e
+0x08012200	FUN_08012200	ram	ram+0xa388,ram+0xa949
+0x0801232c	FUN_0801232c	ram	ram+0xa388,ram+0xa949
+0x08012438	FUN_08012438	ram,register	ram+0x01f8,ram+0xa388,ram+0xa3fc,GPIOA_BASE+0x0,GPIOC_BASE+0x0
+0x080124f0	FUN_080124f0	ram	ram+0x019e
+0x08012558	FUN_08012558	other	flash+0x3118c
+0x08012578	FUN_08012578	ram	ram+0x00d4
+0x080125d4	FUN_080125d4		
+0x0801267c	FUN_0801267c	register	IOMUX_BASE+0x20
+0x08012ac8	FUN_08012ac8		
+0x08012ace	FUN_08012ace		
+0x08012adc	FUN_08012adc		
+0x08012ae2	FUN_08012ae2		
+0x08012ae6	FUN_08012ae6		
+0x08012aea	FUN_08012aea		
+0x08012afa	FUN_08012afa		
+0x08012afe	FUN_08012afe		
+0x08012b74	FUN_08012b74	ram	ram+0xa3fc,ram+0xa468
+0x08012bcc	FUN_08012bcc		
+0x08012d24	FUN_08012d24	ram	ram+0x0230
+0x08012d30	FUN_08012d30	ram	ram+0xe8b3,ram+0x0980
+0x08012d50	FUN_08012d50	other	flash+0x387ec
+0x08012d60	FUN_08012d60	ram	ram+0xa8fc,ram+0xe8b3,ram+0x0ae8
+0x08012dbc	FUN_08012dbc		
+0x08012dcc	FUN_08012dcc	ram	ram+0xa3fc,ram+0xa468,ram+0xa929
+0x08012e38	FUN_08012e38	ram	ram+0xa3fc,ram+0xa468,ram+0xe8b3,ram+0xa8fc
+0x08012f04	FUN_08012f04		
+0x08012f20	FUN_08012f20	ram	ram+0x0350,ram+0xe8b3
+0x08012f6c	FUN_08012f6c	ram	ram+0xe84c
+0x08012fb8	FUN_08012fb8	ram	ram+0xb074
+0x08012fe8	FUN_08012fe8	ram	ram+0xe84c
+0x08013020	FUN_08013020	ram	ram+0xe84c
+0x0801306c	FUN_0801306c		
+0x0801320c	FUN_0801320c	ram	ram+0xa3fc,ram+0xa3a8
+0x0801328c	FUN_0801328c	ram	ram+0xa3fc
+0x080132a0	FUN_080132a0	ram	ram+0xe8b3
+0x080132d8	FUN_080132d8	ram	ram+0xa949,ram+0xe8b3
+0x080133a0	FUN_080133a0	ram	ram+0xa468,ram+0xa8fc,ram+0xe8b3
+0x08013410	FUN_08013410	ram	ram+0xa8fc,ram+0xe8b3
+0x0801348c	FUN_0801348c	ram	ram+0xe8b3
+0x080134cc	FUN_080134cc	ram	ram+0xa468,ram+0xa3fc
+0x08013548	FUN_08013548	ram	ram+0xa91c
+0x08013560	FUN_08013560	register,other	GPIOE_BASE+0x0,GPIOA_BASE+0x0,GPIOC_BASE+0x0,GPIOD_BASE+0x0,flash+0x3092a
+0x0801362c	FUN_0801362c	ram	ram+0xa310,ram+0x01b8
+0x080136dc	FUN_080136dc	ram	ram+0xe84c,ram+0xa8fc,ram+0xe8cc
+0x080138c8	FUN_080138c8	ram	ram+0xe8b3
+0x080138f8	FUN_080138f8	ram	ram+0xa468,ram+0xa3fc
+0x0801395c	FUN_0801395c	ram,other	ram+0xa8fc,ram+0xe89c,ram+0x0350,flash+0x2ca58
+0x08013a08	FUN_08013a08	ram,other	ram+0xa8fc,ram+0xe8b3,flash+0x2c94e
+0x08013a88	FUN_08013a88	ram	ram+0xa8fc,ram+0xe8b3
+0x08013ae0	FUN_08013ae0	ram	ram+0xe8b3
+0x08013af8	FUN_08013af8	ram	ram+0x0350,ram+0xe8b3
+0x08013b98	FUN_08013b98	other,ram	flash+0x31164,ram+0x02cc
+0x08013bac	FUN_08013bac	ram	ram+0xe8b3
+0x08013bc8	FUN_08013bc8	ram	ram+0xa8fc,ram+0xe8b3
+0x08013c24	FUN_08013c24	ram	ram+0xa949
+0x08013c40	FUN_08013c40	ram	ram+0x02cc
+0x08013c50	FUN_08013c50	ram	ram+0xe8b3,ram+0xa8fc
+0x08013cc8	FUN_08013cc8	ram	ram+0xa468
+0x08013d30	FUN_08013d30	ram	ram+0xa8fc,ram+0xe8b3
+0x08013d88	FUN_08013d88	register	ADC2_BASE+0x0
+0x08013dc4	FUN_08013dc4	register	ADC2_BASE+0x0
+0x08013e00	FUN_08013e00	ram	ram+0xe8b3
+0x08013e30	FUN_08013e30	ram	ram+0xa3fc,ram+0xa468
+0x08013e5c	FUN_08013e5c		
+0x08013e84	FUN_08013e84	register	GPIOA_BASE+0x0,GPIOB_BASE+0x0,GPIOC_BASE+0x0,GPIOD_BASE+0x0,GPIOE_BASE+0x0
+0x08014074	FUN_08014074	ram	ram+0xae24
+0x08014088	FUN_08014088	register	GPIOB_BASE+0x0,USART3_BASE+0x0
+0x08014114	FUN_08014114		
+0x08014120	FUN_08014120		
+0x08014134	FUN_08014134		
+0x08014200	FUN_08014200	ram	ram+0xea74,ram+0xafc4
+0x080143c0	FUN_080143c0	ram	ram+0xea74,ram+0xafc4
+0x08014534	FUN_08014534	ram,register	ram+0xae24,GPIOA_BASE+0x0
+0x08014568	FUN_08014568	register	GPIOB_BASE+0x0,SPI2_BASE+0x0
+0x0801469c	FUN_0801469c	ram	ram+0xa3a8
+0x080146cc	FUN_080146cc		
+0x08014718	FUN_08014718	other,ram	flash+0x308d2,ram+0xa3fc,ram+0x01b8,ram+0x0215
+0x08014854	FUN_08014854	ram,register	ram+0xae24,ram+0xa8fc,GPIOC_BASE+0x0
+0x08014964	FUN_08014964	ram,other	ram+0xa3fc,flash+0x3094e,ram+0xa8fc
+0x08014990	FUN_08014990	ram	ram+0xa8fc,ram+0xa3fc,ram+0xa91c
+0x080149d0	FUN_080149d0	ram,other	ram+0x0bac,flash+0x47d68,flash+0x47e38
+0x08014a70	FUN_08014a70	ram,other	ram+0x0b84,flash+0x45604,flash+0x45544,flash+0x48214,flash+0x45610
+0x08014b60	FUN_08014b60		
+0x08014c68	FUN_08014c68	other,string	flash+0x5ca0c,str:KISS(UART)
+0x08014d88	FUN_08014d88	string	str:UTC+6
+0x08014f44	FUN_08014f44	other	flash+0x3f454
+0x080151c8	thunk_FUN_08027b70		
+0x080151cc	FUN_080151cc	register	GPIOB_BASE+0x0,GPIOC_BASE+0x0
+0x08015218	FUN_08015218	ram	ram+0x0c98
+0x08015284	FUN_08015284		
+0x080152cc	FUN_080152cc	ram	ram+0x0c98
+0x08015324	FUN_08015324		
+0x0801537c	FUN_0801537c		
+0x080153bc	FUN_080153bc	ram	ram+0x0c98,ram+0xa298
+0x0801544c	FUN_0801544c		
+0x0801548c	FUN_0801548c	ram	ram+0xa298
+0x080154a4	FUN_080154a4	ram	ram+0xa298,ram+0x0c98
+0x08015500	FUN_08015500	ram	ram+0xa298
+0x08015530	FUN_08015530	ram	ram+0x0200,ram+0xa3fc,ram+0xae9d,ram+0xe7a8
+0x0801576c	FUN_0801576c	ram	ram+0x0c98
+0x080157a8	FUN_080157a8	ram	ram+0x0c98
+0x080157c0	FUN_080157c0	ram	ram+0xa298,ram+0x0c98
+0x08015824	FUN_08015824	ram,register	ram+0x01de,GPIOC_BASE+0x0
+0x08015868	FUN_08015868	ram,register	ram+0x01de,GPIOC_BASE+0x0
+0x080158ac	FUN_080158ac		
+0x080158ae	FUN_080158ae		
+0x080158b0	FUN_080158b0		
+0x080158d0	FUN_080158d0	ram	ram+0xe89c,ram+0xa8fc,ram+0x04b4
+0x08015910	FUN_08015910	ram	ram+0xe89c,ram+0xae24,ram+0x03c0,ram+0xa8fc
+0x08015964	FUN_08015964	ram	ram+0xe89c,ram+0xae24,ram+0x0920
+0x080159a8	FUN_080159a8	ram	ram+0xe89c,ram+0xae24,ram+0x07a0,ram+0xa8fc
+0x080159f0	FUN_080159f0	ram	ram+0xe89c,ram+0xae24,ram+0x03f0
+0x08015a38	FUN_08015a38	ram	ram+0xae24,ram+0xa3ba
+0x08015aa0	FUN_08015aa0	ram,code	ram+0xe89c,ram+0xae24,code:0x08016464
+0x08015afc	FUN_08015afc	ram	ram+0xe89c,ram+0xae24,ram+0x0914
+0x08015b34	FUN_08015b34	ram	ram+0xe89c,ram+0xae24,ram+0x08e4
+0x08015b70	FUN_08015b70	ram	ram+0xe89c,ram+0xae24,ram+0x08f0
+0x08015ba4	FUN_08015ba4	ram	ram+0xe89c,ram+0xae24,ram+0x03e8
+0x08015bec	FUN_08015bec	ram	ram+0xa3ba,ram+0xae24
+0x08015c34	FUN_08015c34	ram,other	ram+0xe89c,ram+0xa8fc,flash+0x15960
+0x08015c68	FUN_08015c68	ram,code	ram+0xe89c,ram+0xa8fc,code:0x08029ab4
+0x08015c9c	FUN_08015c9c	ram	ram+0xe89c,ram+0xa468,ram+0x0370,ram+0xa8fc
+0x08015cf4	FUN_08015cf4	ram,code	ram+0xe89c,code:FUN_08015a38
+0x08015d2c	FUN_08015d2c	ram	ram+0xe89c,ram+0xa91c,ram+0x03a0,ram+0xa8fc
+0x08015d80	FUN_08015d80	ram	ram+0xe89c,ram+0xae24,ram+0x086c
+0x08015db8	FUN_08015db8	ram	ram+0xe89c,ram+0xae24,ram+0x0854,ram+0xa8fc
+0x08015e00	FUN_08015e00	ram	ram+0xa3a8,ram+0xa388
+0x08015e70	FUN_08015e70	ram	ram+0xa3a8,ram+0xae24
+0x08015ea0	FUN_08015ea0	ram	ram+0xe90c
+0x08015f4c	FUN_08015f4c	ram,code	ram+0xe89c,ram+0xa91c,ram+0x0350,code:0x08015b20
+0x08015f98	FUN_08015f98	ram	ram+0xe89c,ram+0x0350,ram+0xa8fc
+0x08016004	FUN_08016004	ram,other	ram+0xe89c,flash+0x1655c
+0x08016028	FUN_08016028	ram,other	ram+0xb138,ram+0xa468,flash+0x2ca58
+0x08016078	FUN_08016078	ram	ram+0xa3a8,ram+0xa468
+0x080160b8	FUN_080160b8	ram,code	ram+0xe89c,code:0x08016608
+0x0801610c	FUN_0801610c	ram	ram+0xa3a8,ram+0xae24
+0x08016164	FUN_08016164	ram	ram+0xe89c,ram+0xae24,ram+0x08e4
+0x0801619c	FUN_0801619c	ram	ram+0xe89c,ram+0xae24,ram+0x08a8,ram+0xa8fc
+0x080161e4	FUN_080161e4	ram	ram+0xe89c,ram+0xae24,ram+0x08bc
+0x0801621c	FUN_0801621c	ram	ram+0xe89c,ram+0xa468,ram+0x0538,ram+0xa8fc
+0x08016288	FUN_08016288	ram	ram+0xe89c,ram+0xae24,ram+0x0824,ram+0xa8fc
+0x080162d0	FUN_080162d0	ram,code	ram+0xe89c,code:0x08015ddc,ram+0xb0b0
+0x08016310	FUN_08016310	ram,code	ram+0xe89c,code:0x08015ddc,ram+0xb0b0
+0x08016360	FUN_08016360	ram,code	ram+0xe89c,ram+0xa91c,code:FUN_08015ea0
+0x08016394	FUN_08016394	ram,code	ram+0xe89c,ram+0xa468,code:0x08016010
+0x080163fc	FUN_080163fc	ram	ram+0xe89c,ram+0x0624,ram+0xa388
+0x08016438	FUN_08016438	ram,code	ram+0xe89c,code:0x08015ed8
+0x08016474	FUN_08016474	ram,code	ram+0xe89c,code:0x08015fa0
+0x08016498	FUN_08016498	ram	ram+0xa3a8,ram+0xae24
+0x080164d0	FUN_080164d0	ram	ram+0xe89c,ram+0xae24,ram+0x03e0,ram+0xa8fc
+0x08016518	FUN_08016518	ram	ram+0xe89c,ram+0x066c,ram+0xa388
+0x08016568	FUN_08016568	ram,code	ram+0xe89c,ram+0xa388,code:0x0801608c
+0x080165ac	FUN_080165ac	ram	ram+0xe89c,ram+0x0630,ram+0xa949
+0x080165ec	FUN_080165ec	ram	ram+0xe89c,ram+0x0654,ram+0xa949
+0x0801663c	FUN_0801663c	ram	ram+0xe89c,ram+0xa8fc,ram+0x0378
+0x08016670	FUN_08016670	ram	ram+0xa8fc
+0x080166bc	FUN_080166bc	ram	ram+0xe7a8,ram+0xa8fc
+0x08016724	FUN_08016724	ram	ram+0xa3a8,ram+0xae24
+0x08016758	FUN_08016758	ram	ram+0xe89c,ram+0xae24,ram+0x0774
+0x08016790	FUN_08016790	ram	ram+0xe89c,ram+0xa91c,ram+0x0768,ram+0xa8fc
+0x080167e8	FUN_080167e8	ram	ram+0xe89c,ram+0xa468,ram+0x0690,ram+0xa8fc
+0x08016858	FUN_08016858	ram	ram+0xa468,ram+0xa3ba
+0x080168b4	FUN_080168b4	ram	ram+0xe89c,ram+0x0360,ram+0xa8fc
+0x08016900	FUN_08016900	ram,other	ram+0xe89c,flash+0x163f4,ram+0xa8fc
+0x08016934	FUN_08016934	ram	ram+0xe89c,ram+0xae24,ram+0x096c,ram+0xa8fc
+0x0801697c	FUN_0801697c	ram,other	ram+0xe89c,ram+0xa91c,flash+0x164c8
+0x080169c0	FUN_080169c0	ram	ram+0xe89c,ram+0xa8fc,ram+0x05cc
+0x08016a00	FUN_08016a00	ram	ram+0xe89f,ram+0x0390,ram+0xa3fc
+0x08016a40	FUN_08016a40	ram,other	ram+0x0350,ram+0xa468,flash+0x2ca58,ram+0xae24,ram+0xe89c
+0x08016af0	FUN_08016af0	ram	ram+0xa468,ram+0xae24,ram+0xe89c
+0x08016b54	FUN_08016b54	ram	ram+0xe89c,ram+0xa468,ram+0x03b0,ram+0xa8fc
+0x08016ba8	FUN_08016ba8	ram,code	ram+0x0350,ram+0xe89c,ram+0xa91c,ram+0xa468,code:0x080166f8
+0x08016c18	FUN_08016c18	ram	ram+0xe89c,ram+0xa8fc,ram+0x04cc
+0x08016c58	FUN_08016c58	ram	ram+0xe89c,ram+0xa91c,ram+0x0618,ram+0xa8fc
+0x08016ca0	FUN_08016ca0	ram,code	ram+0xe89c,ram+0xa468,code:0x080167c8
+0x08016d24	FUN_08016d24	ram	ram+0xe89c,ram+0xae24,ram+0x083c,ram+0xa8fc
+0x08016d6c	FUN_08016d6c	ram	ram+0xe89c,ram+0xa8fc,ram+0x0420
+0x08016dac	FUN_08016dac	ram	ram+0xe89c,ram+0xae24,ram+0x0944,ram+0xa8fc
+0x08016dfc	FUN_08016dfc	ram	ram+0xe89c,ram+0xae24,ram+0x07ac
+0x08016e30	FUN_08016e30	ram,other	ram+0xe89c,flash+0x16850,ram+0xa468,ram+0xa929
+0x08016e94	FUN_08016e94	ram,other	ram+0x0350,ram+0xa468,flash+0x2ca58,ram+0xe89c
+0x08016f2c	FUN_08016f2c	ram	ram+0xa468,ram+0xe89c
+0x08016f6c	FUN_08016f6c	ram,other	ram+0xe89c,ram+0xa8fc,flash+0x16930
+0x08016fa0	FUN_08016fa0	ram	ram+0xe89c,ram+0xa468,ram+0x04e4,ram+0xa8fc
+0x08016ff8	FUN_08016ff8	ram,code	ram+0xe89c,ram+0xae24,code:0x08015930
+0x08017034	FUN_08017034	ram	ram+0xa3ba,ram+0xa945
+0x08017060	FUN_08017060	ram	ram+0xe89c,ram+0xa468,ram+0x04f0
+0x080170b0	FUN_080170b0	ram,code	ram+0xe89c,ram+0xa91c,code:FUN_08016a00
+0x080170e4	FUN_080170e4	ram	ram+0xe89c,ram+0xa8fc,ram+0x046c
+0x08017124	FUN_08017124		
+0x08017130	FUN_08017130		
+0x08017154	FUN_08017154	ram,register	ram+0xa3fc,GPIOE_BASE+0x0,ram+0xafc4
+0x0801718c	FUN_0801718c		
+0x08017354	FUN_08017354	other,ram	flash+0x5ce5c,ram+0xe8cc,ram+0xa8fc,ram+0x0c14,ram+0xae24
+0x0801750c	FUN_0801750c	ram	ram+0xe90c,ram+0xa3fc,ram+0xa3a8,ram+0x0210,ram+0x0259,ram+0xae9d
+0x08017694	FUN_08017694	other,ram	flash+0x3f946,ram+0xa8fc
+0x08017784	FUN_08017784	other,ram	flash+0x3f946,ram+0xa8fc
+0x0801784c	FUN_0801784c	other,ram	flash+0x3f844,ram+0xa8fc
+0x0801786c	FUN_0801786c	ram	ram+0xa8fc
+0x08017914	FUN_08017914	ram	ram+0xa8fc
+0x080179a0	FUN_080179a0		
+0x08017b8c	FUN_08017b8c	other,ram	flash+0x3f946,ram+0xa8fc
+0x08017d40	FUN_08017d40	other,ram	flash+0x3f946,ram+0xa8fc
+0x08017e5a	FUN_08017e5a		
+0x08017e62	FUN_08017e62		
+0x08017e74	FUN_08017e74		
+0x08017f40	FUN_08017f40	ram	ram+0xa8fc
+0x08018038	FUN_08018038	other,ram	flash+0x3f844,ram+0xa8fc
+0x080180f8	FUN_080180f8	other,ram	flash+0x3f946,ram+0xa8fc
+0x080181b4	FUN_080181b4	ram	ram+0xa8fc
+0x08018270	FUN_08018270	ram	ram+0xa8fc
+0x08018340	FUN_08018340	ram	ram+0xe84c,ram+0xa91c
+0x08018514	FUN_08018514	ram	ram+0xe8cc
+0x0801853c	FUN_0801853c	ram	ram+0xe84c
+0x08018744	FUN_08018744	ram,register,other	ram+0xa3fc,ram+0x0bf4,ram+0xa388,ram+0xe90c,ram+0x0210,ram+0xa8fc,GPIOC_BASE+0x0,GPIOA_BASE+0x0,ram+0xa949,ram+0xa3a8,ram+0xe89c,ram+0xe84c,ram+0x0259,flash+0x3863e,flash+0x3838a,ram+0xa3ba,ram+0x0215,ram+0xe89d
+0x08018cc8	FUN_08018cc8	ram	ram+0xb0e4,ram+0xa3fc,ram+0xa8a4
+0x08018d64	FUN_08018d64	ram,other	ram+0xa3a8,ram+0xa91c,ram+0xa468,ram+0xa8fc,flash+0x30c1e,ram+0x0215
+0x08018df4	FUN_08018df4	ram	ram+0xa91c,ram+0xa688,ram+0xa461
+0x08018e4c	FUN_08018e4c		
+0x08018ed8	FUN_08018ed8	other	SCB.AIRCR
+0x08018f54	FUN_08018f54	other	SCB.AIRCR
+0x08018f68	FUN_08018f68	other	SCB.VTOR,reserved-info:0x1fffff80
+0x08018f7c	FUN_08018f7c	other	SCB.AIRCR
+0x08018fa0	FUN_08018fa0	other	SCB.AIRCR
+0x08018fc4	FUN_08018fc4	other	SCB.AIRCR
+0x08019224	FUN_08019224	ram,register,other	ram+0xa3a8,ram+0xa388,ram+0xa3fc,ram+0xa468,ram+0xa8fc,GPIOC_BASE+0x0,GPIOA_BASE+0x0,ram+0xa949,ram+0xa91c,flash+0x30c1e,ram+0xe84c,flash+0x3838a,ram+0x0215,ram+0xa945,ram+0xb0e4,ram+0xb208,flash+0x536c8,flash+0x3d8d2,ram+0xa8a4,ram+0xb2e8,flash+0x58038,ram+0x02cc,ram+0xe764,ram+0xae24,ram+0xa9e4
+0x080194d4	FUN_080194d4	other,ram	flash+0x30c60,ram+0x0230,ram+0xa3a8,ram+0x0259,ram+0xb1d4
+0x0801958c	FUN_0801958c		
+0x080195bc	FUN_080195bc	register,ram	TMR6_BASE+0x0,DMA2_CHANNEL3_BASE+0x0,DAC_BASE+0x8,ram+0xeae8
+0x0801967c	FUN_0801967c	ram	ram+0xead0,ram+0xfae8
+0x08019710	FUN_08019710	ram,register	ram+0xead0,GPIOA_BASE+0x10,DMA2_CHANNEL3_BASE+0x0,ram+0xa3fc
+0x08019810	FUN_08019810		
+0x08019960	FUN_08019960	register	GPIOC_BASE+0x0,GPIOE_BASE+0x0,GPIOB_BASE+0x0
+0x080199a8	FUN_080199a8	ram,other	ram+0xa468,ram+0xa3fc,ram+0xa8fc,ram+0xae24,flash+0x30940
+0x08019a50	FUN_08019a50	ram	ram+0xa3fc,ram+0x0210,ram+0xa3a8,ram+0xe84c,ram+0xe89c,ram+0xa3ba
+0x08019af0	FUN_08019af0	ram,other	ram+0xe84c,flash+0x3863e,ram+0xa3fc,flash+0x3838a
+0x08019b8c	FUN_08019b8c	ram,other	ram+0xe84c,ram+0xa3fc,flash+0x3838a
+0x08019c8c	FUN_08019c8c	ram	ram+0xafc4
+0x08019c98	FUN_08019c98	ram	ram+0xafc4
+0x08019cac	FUN_08019cac	ram	ram+0xafc4
+0x08019e78	FUN_08019e78	other	flash+0x5cf62
+0x0801a0c0	FUN_0801a0c0	ram	ram+0xafd8
+0x0801a134	FUN_0801a134	ram	ram+0xa3fc,ram+0xa468,ram+0xb0e4,ram+0xa8a4
+0x0801a3a6	FUN_0801a3a6		
+0x0801a3ac	FUN_0801a3ac		
+0x0801a4f0	FUN_0801a4f0	ram	ram+0xa8fc
+0x0801a5dc	FUN_0801a5dc	register	CRM_BASE+0x0
+0x0801a5f4	FUN_0801a5f4	register	CRM_BASE+0x0
+0x0801a610	FUN_0801a610	register	CRM_BASE+0x0
+0x0801a62c	FUN_0801a62c	register	CRM_BASE+0x0
+0x0801a648	FUN_0801a648	register	CRM_BASE+0x0
+0x0801a664	FUN_0801a664	register	CRM_BASE+0x0
+0x0801a680	FUN_0801a680	register,other	CRM_BASE+0x0,flash+0x2c92e
+0x0801a7a0	FUN_0801a7a0	register	CRM_BASE+0x0
+0x0801a7c0	FUN_0801a7c0		
+0x0801a7d2	FUN_0801a7d2		
+0x0801a804	FUN_0801a804		
+0x0801a818	FUN_0801a818	ram	ram+0xa3fc,ram+0xae24,ram+0xa468,ram+0xa8a4,ram+0x01ad
+0x0801a8ac	FUN_0801a8ac	ram	ram+0xa3fc,ram+0xa8a4,ram+0x01ad
+0x0801a904	thunk_FUN_0801bd5c	ram	ram+0x0c7c
+0x0801a908	FUN_0801a908	ram	ram+0x0c70
+0x0801a91c	FUN_0801a91c	ram	ram+0xa8fc,ram+0x0c70
+0x0801a948	FUN_0801a948	ram	ram+0xa8fc,ram+0x0c70
+0x0801a974	FUN_0801a974	ram	ram+0xa3fc,ram+0xa8fc
+0x0801a9a4	FUN_0801a9a4	register,ram	GPIOB_BASE+0x0,GPIOE_BASE+0x0,ram+0xa3fc
+0x0801ab2c	FUN_0801ab2c	ram	ram+0x0c70
+0x0801ab3c	FUN_0801ab3c	ram	ram+0xa468,ram+0xa8a4,ram+0xa3fc,ram+0x0c70
+0x0801aba4	FUN_0801aba4	ram	ram+0x0c70
+0x0801abb4	FUN_0801abb4	ram	ram+0x0c70,ram+0x011e
+0x0801ac14	FUN_0801ac14	ram	ram+0x0c70,ram+0x00d4
+0x0801ac24	FUN_0801ac24		
+0x0801ac2a	thunk_FUN_0801c60c	ram,other	ram+0x0c7c,flash+0x2c94e
+0x0801ac2e	thunk_FUN_0801c4d0	ram	ram+0x0c70
+0x0801ac32	FUN_0801ac32		
+0x0801ac34	FUN_0801ac34		
+0x0801ac54	FUN_0801ac54		
+0x0801ac82	FUN_0801ac82		
+0x0801aca8	FUN_0801aca8	ram	ram+0xa8fc
+0x0801acbc	thunk_FUN_0801c654	ram	ram+0x0c70
+0x0801acc0	FUN_0801acc0		
+0x0801acce	FUN_0801acce		
+0x0801acde	FUN_0801acde		
+0x0801ad0c	FUN_0801ad0c	ram	ram+0xa468,ram+0xa3fc
+0x0801ad58	FUN_0801ad58		
+0x0801ad5a	FUN_0801ad5a		
+0x0801ad60	thunk_FUN_0801c150	ram	ram+0x0c7c
+0x0801ad64	FUN_0801ad64	ram	ram+0x0224,ram+0xa468,ram+0xa91c,ram+0xa3fc,ram+0xa8a4,ram+0xa8fc,ram+0xae24,ram+0xa9e4
+0x0801b20e	FUN_0801b20e	ram	ram+0x01f0,ram+0xa348
+0x0801b218	FUN_0801b218	ram	ram+0xa3fc
+0x0801b244	FUN_0801b244	ram	ram+0xb2e8
+0x0801b2a8	FUN_0801b2a8	ram,other	ram+0xa91c,flash+0x30a74
+0x0801b300	FUN_0801b300	ram	ram+0xa3fc
+0x0801b310	FUN_0801b310	ram	ram+0xa3fc
+0x0801b320	FUN_0801b320	ram	ram+0xa388
+0x0801b334	FUN_0801b334	ram	ram+0xa3a8,ram+0x0bf4
+0x0801b350	FUN_0801b350	ram	ram+0xa3fc
+0x0801b37c	FUN_0801b37c		
+0x0801b394	FUN_0801b394	ram,other	ram+0xa8fc,flash+0x30a0e,ram+0xa91c
+0x0801b3f0	FUN_0801b3f0	ram	ram+0x0224
+0x0801b3fc	FUN_0801b3fc	ram	ram+0xa3fc,ram+0xa8fc
+0x0801b41c	FUN_0801b41c	ram,other	ram+0xa468,ram+0xa3fc,flash+0x30a9c
+0x0801b490	FUN_0801b490	ram,other	ram+0x0c70,flash+0x311a8,ram+0xe790
+0x0801b4c0	FUN_0801b4c0	register,ram	GPIOC_BASE+0x0,GPIOA_BASE+0x0,ram+0xa3fc,ram+0xa8fc,ram+0xa949,ram+0xe84c,ram+0x0210,ram+0xa388
+0x0801b564	FUN_0801b564	ram	ram+0xa468
+0x0801b6c4	FUN_0801b6c4	register	DAC_BASE+0x0
+0x0801b6cc	FUN_0801b6cc	ram	ram+0xa468,ram+0xa3fc
+0x0801b70c	FUN_0801b70c	register,ram	GPIOC_BASE+0x0,ram+0xa3fc,ram+0xa468
+0x0801b754	FUN_0801b754	ram	ram+0xa3fc
+0x0801b790	FUN_0801b790	ram,other	ram+0xa8fc,ram+0xa3fc,flash+0x30b60
+0x0801b880	FUN_0801b880	ram	ram+0xa3fc,ram+0xa468
+0x0801b8a8	FUN_0801b8a8	ram	ram+0xa3fc,ram+0xa468
+0x0801b8d0	FUN_0801b8d0	ram	ram+0x0c70,ram+0x011e,ram+0xa91c
+0x0801b910	FUN_0801b910	ram	ram+0x00d4,ram+0x0c70
+0x0801b9a0	FUN_0801b9a0	register	GPIOE_BASE+0x0
+0x0801b9f0	FUN_0801b9f0	ram	ram+0x0c70
+0x0801baf4	FUN_0801baf4	ram	ram+0x0c70
+0x0801bc50	FUN_0801bc50	ram	ram+0x0c70
+0x0801bd0c	FUN_0801bd0c	ram	ram+0x0c70
+0x0801bd3c	FUN_0801bd3c	ram	ram+0x0c70
+0x0801bd4c	FUN_0801bd4c	ram	ram+0x0c70
+0x0801bd5c	FUN_0801bd5c	ram	ram+0x0c7c
+0x0801bd68	FUN_0801bd68	ram	ram+0x0c70
+0x0801be04	FUN_0801be04	ram	ram+0x0c70
+0x0801be20	FUN_0801be20	ram	ram+0x0c7c
+0x0801be2c	FUN_0801be2c	ram	ram+0x0c70
+0x0801be60	FUN_0801be60	ram,immediate	ram+0x0c7c,imm:100000,ram+0x00d4
+0x0801bf40	FUN_0801bf40	other,ram	flash+0x2ca3c,ram+0x0c70
+0x0801c02c	FUN_0801c02c	ram	ram+0x0c70
+0x0801c03c	FUN_0801c03c	ram	ram+0x0c70
+0x0801c08c	FUN_0801c08c	register	GPIOE_BASE+0x0
+0x0801c150	FUN_0801c150	ram	ram+0x0c7c
+0x0801c1d0	FUN_0801c1d0	ram,immediate	ram+0x00e4,ram+0x0c7c,imm:100000
+0x0801c38c	FUN_0801c38c	ram	ram+0x0c70
+0x0801c3b0	FUN_0801c3b0	ram,other	ram+0x0c70,flash+0x2ca30,ram+0x011e
+0x0801c3e4	FUN_0801c3e4		
+0x0801c40c	thunk_FUN_0801c3e4		
+0x0801c41c	FUN_0801c41c	ram	ram+0x0c70
+0x0801c448	FUN_0801c448	ram,other	ram+0x0c7c,ram+0xae24,ram+0xa468,flash+0x2c94e
+0x0801c4d0	FUN_0801c4d0	ram	ram+0x0c70
+0x0801c4f0	FUN_0801c4f0	ram	ram+0x0c70
+0x0801c548	FUN_0801c548	ram,other	ram+0x0c70,ram+0x00d4,flash+0x2ca20
+0x0801c60c	FUN_0801c60c	ram,other	ram+0x0c7c,flash+0x2c94e
+0x0801c654	FUN_0801c654	ram	ram+0x0c70
+0x0801c674	FUN_0801c674	ram	ram+0x0c70
+0x0801c6a8	FUN_0801c6a8	ram	ram+0x0c70,ram+0x0c7c
+0x0801c6fc	FUN_0801c6fc	ram	ram+0x0c70
+0x0801c73c	FUN_0801c73c	ram	ram+0x0c70
+0x0801c774	FUN_0801c774	register	GPIOE_BASE+0x0
+0x0801c840	FUN_0801c840	register	GPIOE_BASE+0x0
+0x0801c894	FUN_0801c894	register	GPIOE_BASE+0x0
+0x0801c8e0	FUN_0801c8e0	other	flash+0x31170
+0x0801c8fc	FUN_0801c8fc	ram,register	ram+0xa3fc,ram+0xa468,GPIOA_BASE+0x0,ram+0x0224
+0x0801c9a0	FUN_0801c9a0	ram	ram+0xa3fc
+0x0801ca08	FUN_0801ca08		
+0x0801ca20	FUN_0801ca20		
+0x0801ca2e	FUN_0801ca2e		
+0x0801ca32	FUN_0801ca32		
+0x0801ca36	FUN_0801ca36		
+0x0801ca8c	FUN_0801ca8c	ram,code	ram+0xe89c,ram+0xae24,code:0x080166e0
+0x0801caec	FUN_0801caec		
+0x0801cb30	FUN_0801cb30		
+0x0801cb74	FUN_0801cb74		
+0x0801cbe8	FUN_0801cbe8		
+0x0801cc2a	FUN_0801cc2a		
+0x0801cc64	FUN_0801cc64	ram	ram+0xa8fc,ram+0xe89c
+0x0801cc80	FUN_0801cc80	ram	ram+0xa468
+0x0801cce0	FUN_0801cce0	ram	ram+0xae24,ram+0xe89c
+0x0801ccfc	FUN_0801ccfc	ram	ram+0xae24,ram+0xe89c,ram+0xa468
+0x0801cd28	FUN_0801cd28	ram	ram+0xae35,ram+0xa3a8
+0x0801cd54	FUN_0801cd54	ram	ram+0xae24,ram+0xe89c
+0x0801cd70	FUN_0801cd70	ram,register	ram+0xe89c,ram+0xae24,GPIOA_BASE+0x0,ram+0x10ef4
+0x0801cdb4	FUN_0801cdb4	ram	ram+0xae24,ram+0xe89c
+0x0801cdd0	FUN_0801cdd0	ram	ram+0xe89c,ram+0xae24
+0x0801ce00	FUN_0801ce00	ram	ram+0xa3a8,ram+0xae24
+0x0801cea0	FUN_0801cea0	ram	ram+0xae24,ram+0xe89c
+0x0801cebc	FUN_0801cebc	ram	ram+0xae24,ram+0xe89c
+0x0801ced8	FUN_0801ced8	ram	ram+0xae24,ram+0xe89c
+0x0801cef4	FUN_0801cef4	ram	ram+0xae24,ram+0xe89c
+0x0801cf10	FUN_0801cf10	ram	ram+0xa91c,ram+0xae24,ram+0xe89c,ram+0xa468
+0x0801cf58	FUN_0801cf58	ram	ram+0xae24,ram+0xe89c
+0x0801cf74	FUN_0801cf74	ram	ram+0xae24,ram+0xe89c,ram+0xa468
+0x0801cfa0	FUN_0801cfa0	ram	ram+0xae24,ram+0xe89c
+0x0801cfbc	FUN_0801cfbc	ram	ram+0xe89c,ram+0xae24
+0x0801cfec	FUN_0801cfec	ram	ram+0xa3a8,ram+0xae24
+0x0801d08c	FUN_0801d08c	ram	ram+0xa8fc,ram+0xe89c
+0x0801d0ac	FUN_0801d0ac	ram	ram+0xa8fc,ram+0xe89c
+0x0801d0c8	FUN_0801d0c8	ram	ram+0xa468,ram+0xe89c
+0x0801d15c	FUN_0801d15c	ram	ram+0xae24,ram+0xe89c
+0x0801d17c	FUN_0801d17c	ram	ram+0xae24,ram+0xe89c
+0x0801d19c	FUN_0801d19c	ram	ram+0xa3a8,ram+0xa388,ram+0xa949
+0x0801d20c	FUN_0801d20c	ram	ram+0xa8fc,ram+0xe89c
+0x0801d228	FUN_0801d228	ram,register	ram+0xe89c,ram+0xa8fc,GPIOB_BASE+0x0
+0x0801d26c	FUN_0801d26c	ram	ram+0xa91c,ram+0xe89c
+0x0801d288	FUN_0801d288	ram	ram+0xa468,ram+0xe89c
+0x0801d308	FUN_0801d308	ram	ram+0xa8fc,ram+0xe89c
+0x0801d328	FUN_0801d328	ram	ram+0xa8fc,ram+0xe89c
+0x0801d348	FUN_0801d348	ram	ram+0xa8fc,ram+0xe89c
+0x0801d368	FUN_0801d368	ram	ram+0x0350,ram+0xa91c,ram+0xe89c,ram+0xa8fc,ram+0xa468,ram+0xa3fc,ram+0xa8a0,ram+0xa568
+0x0801d77c	FUN_0801d77c	ram	ram+0x0350,ram+0xa91c,ram+0xa468,ram+0xe89c,ram+0xa8fc,ram+0xa3fc
+0x0801dc7c	FUN_0801dc7c	ram	ram+0xa468,ram+0xa91c,ram+0x0350,ram+0xa3fc,ram+0xe89c,ram+0xa7a6,ram+0xa568
+0x0801dd90	FUN_0801dd90	ram	ram+0xa468,ram+0xa3a8
+0x0801dde8	FUN_0801dde8	ram	ram+0xae24,ram+0xe89c
+0x0801de04	FUN_0801de04	ram	ram+0xae24,ram+0xe89c
+0x0801de20	FUN_0801de20	ram	ram+0xae24,ram+0xe89c
+0x0801de3c	FUN_0801de3c	ram	ram+0xae4f,ram+0xa3a8
+0x0801de70	FUN_0801de70	ram	ram+0xae24,ram+0xa3a8
+0x0801dea8	FUN_0801dea8	ram	ram+0xae24,ram+0xe89c
+0x0801dec4	FUN_0801dec4	ram	ram+0xb0b0,ram+0xe89c
+0x0801deec	FUN_0801deec	ram	ram+0xb0b0,ram+0xe89c
+0x0801df14	FUN_0801df14	ram	ram+0xa8fc,ram+0xe89c
+0x0801df34	FUN_0801df34	ram	ram+0xa8fc,ram+0xe89c
+0x0801df58	FUN_0801df58	ram	ram+0xa468,ram+0xe89c
+0x0801dffc	FUN_0801dffc	ram	ram+0xa91c,ram+0xe89c
+0x0801e018	FUN_0801e018	ram	ram+0xa388,ram+0xe89c
+0x0801e038	FUN_0801e038	ram	ram+0xa388,ram+0xa949,ram+0xe89c
+0x0801e090	FUN_0801e090	ram	ram+0xa3a8,ram+0xae24
+0x0801e0d0	FUN_0801e0d0	ram	ram+0xae24,ram+0xe89c
+0x0801e0ec	FUN_0801e0ec	ram	ram+0xe89c,ram+0xa388,ram+0xa949
+0x0801e12c	FUN_0801e12c	ram	ram+0xa91c,ram+0xe89c
+0x0801e148	FUN_0801e148	ram	ram+0xe89c,ram+0xa949,ram+0xa388
+0x0801e180	FUN_0801e180	ram	ram+0xa949,ram+0xe89c
+0x0801e1b4	FUN_0801e1b4	ram	ram+0xa949,ram+0xe89c
+0x0801e1d0	FUN_0801e1d0	ram	ram+0xae24,ram+0xe89c
+0x0801e228	FUN_0801e228	ram	ram+0xa91c,ram+0xe89c
+0x0801e244	FUN_0801e244		
+0x0801e250	FUN_0801e250		
+0x0801e25c	FUN_0801e25c	ram	ram+0xa8fc,ram+0xe89c
+0x0801e27c	FUN_0801e27c	ram	ram+0xa91c,ram+0xe89c
+0x0801e298	FUN_0801e298	ram	ram+0xae73,ram+0xa3a8
+0x0801e2c0	FUN_0801e2c0	ram	ram+0xae24,ram+0xe89c
+0x0801e2dc	FUN_0801e2dc	ram	ram+0xa91c,ram+0xe89c
+0x0801e2f8	FUN_0801e2f8	ram	ram+0xa468,ram+0xe89c
+0x0801e374	FUN_0801e374	ram	ram+0xa91c,ram+0xe89c
+0x0801e390	FUN_0801e390	ram	ram+0xa8fc,ram+0xe89c
+0x0801e3ac	FUN_0801e3ac	ram	ram+0xae24,ram+0xe89c
+0x0801e3c8	FUN_0801e3c8	ram	ram+0xa8fc,ram+0xe89c
+0x0801e3e4	FUN_0801e3e4	ram	ram+0xa91c,ram+0xe89c
+0x0801e400	FUN_0801e400	ram	ram+0xa8fc,ram+0xe89c
+0x0801e420	FUN_0801e420	ram	ram+0xa468,ram+0xe89c,ram+0xa8fc
+0x0801e478	FUN_0801e478	ram	ram+0xa8fc,ram+0xe89c
+0x0801e498	FUN_0801e498	ram	ram+0xa468,ram+0xb2e8,ram+0xa91c
+0x0801e6cc	FUN_0801e6cc	ram	ram+0xa8fc,ram+0xe89c
+0x0801e6e8	FUN_0801e6e8	ram	ram+0xa8fc,ram+0xe89c
+0x0801e774	FUN_0801e774	ram	ram+0xe89c
+0x0801e78c	FUN_0801e78c	ram,other	ram+0xa468,ram+0xae24,flash+0x3f946,ram+0xa8fc
+0x0801e820	FUN_0801e820		
+0x0801e82c	FUN_0801e82c	ram	ram+0xa468,ram+0xe89c,ram+0xa568,ram+0xa91c,ram+0xa3fc,ram+0xa7a6
+0x0801e940	FUN_0801e940	ram,other	ram+0xb138,flash+0x2ca58
+0x0801e968	FUN_0801e968	ram	ram+0xa8fc,ram+0xe89c
+0x0801e984	FUN_0801e984	ram	ram+0xa91c,ram+0xe89c
+0x0801e9a0	FUN_0801e9a0	ram	ram+0xa468,ram+0xe89c
+0x0801ea4c	FUN_0801ea4c	ram	ram+0xa468,ram+0xe89c
+0x0801ead8	FUN_0801ead8	ram	ram+0xa3fc,ram+0xa468,ram+0xe89c,ram+0xa929
+0x0801eb78	FUN_0801eb78	ram	ram+0xa91c,ram+0xe89c
+0x0801eb94	FUN_0801eb94	ram	ram+0xa91c,ram+0xe89c
+0x0801ebb0	FUN_0801ebb0	ram	ram+0xa91c,ram+0xe89c
+0x0801ebcc	FUN_0801ebcc	ram	ram+0xa91c,ram+0xe89c
+0x0801ebe8	FUN_0801ebe8	ram	ram+0xa8fc,ram+0xe89c
+0x0801ec04	FUN_0801ec04	ram	ram+0xae24,ram+0xe89c
+0x0801ec20	FUN_0801ec20	ram	ram+0xa8fc,ram+0xe89c
+0x0801ec3c	FUN_0801ec3c	ram	ram+0xae24,ram+0xe89c
+0x0801ec58	FUN_0801ec58	ram	ram+0xae24,ram+0xe89c
+0x0801ec74	FUN_0801ec74	ram	ram+0xa91c,ram+0xe89c,ram+0xae24
+0x0801ec9c	FUN_0801ec9c	ram	ram+0xa91c,ram+0xe89c
+0x0801ed2c	FUN_0801ed2c	ram	ram+0xe89c
+0x0801ed44	FUN_0801ed44	ram	ram+0xa468
+0x0801edbc	FUN_0801edbc	ram	ram+0xa8fc,ram+0xe89c
+0x0801edd8	FUN_0801edd8	ram	ram+0xa8fc,ram+0xe89c
+0x0801edf4	FUN_0801edf4	ram	ram+0xa468,ram+0xe89c
+0x0801ee70	FUN_0801ee70	ram	ram+0xae24,ram+0xe89c
+0x0801eea8	FUN_0801eea8	ram	ram+0xa468,ram+0xe89c
+0x0801ef20	FUN_0801ef20	ram,other	ram+0xa3a8,ram+0xa468,flash+0x387cc
+0x0801efbc	FUN_0801efbc	ram	ram+0xa3a8,ram+0xa945
+0x0801f034	FUN_0801f034	ram	ram+0xa468,ram+0xe89c
+0x0801f05c	FUN_0801f05c	ram	ram+0xa8fc,ram+0xe89c
+0x0801f078	FUN_0801f078	ram	ram+0xa91c,ram+0xe89c
+0x0801f094	FUN_0801f094	ram	ram+0xa8fc,ram+0xe89c
+0x0801f0b0	FUN_0801f0b0	ram	ram+0xa91c,ram+0xe89c
+0x0801f0d4	FUN_0801f0d4	ram	ram+0xa8fc,ram+0xe89c
+0x0801f0f0	FUN_0801f0f0	ram,other	ram+0xb0e4,ram+0xb0e8,flash+0x308ac
+0x0801f118	FUN_0801f118	ram	ram+0xa91c,ram+0xa468
+0x0801f150	FUN_0801f150	ram	ram+0xa91c,ram+0xa468
+0x0801f188	FUN_0801f188	ram	ram+0xb0e4
+0x0801f1ac	FUN_0801f1ac	ram,other	ram+0xb0e4,ram+0xb0e8,flash+0x308ac
+0x0801f1c8	FUN_0801f1c8	ram	ram+0xb138,ram+0xa3fc
+0x0801f1e4	FUN_0801f1e4	ram,other	ram+0xb138,flash+0x2ca58
+0x0801f274	FUN_0801f274	ram	ram+0xa3fc
+0x0801f2f8	FUN_0801f2f8	ram	ram+0xb0e4,ram+0xa468
+0x0801f458	FUN_0801f458	ram	ram+0x022d,ram+0xa8fc,ram+0xa8a4,ram+0xb0e4,ram+0xa3fc
+0x0801f600	FUN_0801f600	ram	ram+0xb208
+0x0801f664	FUN_0801f664	ram,other	ram+0xb208,flash+0x3f394,flash+0x3f3f4,flash+0x3f424,flash+0x3f3c4
+0x0801f6f8	FUN_0801f6f8		
+0x0801f808	FUN_0801f808	other,ram	flash+0x311a8,ram+0xb208
+0x0801f862	FUN_0801f862		
+0x0801f898	FUN_0801f898	ram,other	ram+0xb208,ram+0xa3fc,ram+0xe84c,flash+0x37708
+0x0801f910	FUN_0801f910	ram,immediate	ram+0xa8a4,ram+0xb208,ram+0xa3fc,imm:100000
+0x0801fb48	FUN_0801fb48		
+0x0801fc70	FUN_0801fc70	ram,other	ram+0x0259,ram+0xb1d4,flash+0x30c98
+0x0801fdfc	FUN_0801fdfc	ram	ram+0x0350,ram+0xe89c,ram+0xb208,ram+0xa468,ram+0xa929
+0x0801ff68	FUN_0801ff68	ram	ram+0xa91c,ram+0xa468
+0x0801ffdc	FUN_0801ffdc	ram	ram+0xa91c,ram+0xa468
+0x0802004c	FUN_0802004c		
+0x0802007e	FUN_0802007e		
+0x080200b0	FUN_080200b0	ram	ram+0xb1d4
+0x080200f8	FUN_080200f8	ram	ram+0xb1d4
+0x08020144	FUN_08020144	ram	ram+0xb1d4
+0x08020174	FUN_08020174	ram	ram+0xa3fc,ram+0xa8fc
+0x080201e8	FUN_080201e8	ram	ram+0xa31c,ram+0xa8fc,ram+0xa3fc
+0x08020224	FUN_08020224	ram	ram+0x0350,ram+0xe89c
+0x0802025c	FUN_0802025c	ram	ram+0x0220
+0x0802029c	FUN_0802029c	ram	ram+0x01b0
+0x080202b0	FUN_080202b0	ram,other	ram+0x0218,flash+0x30992
+0x08020324	FUN_08020324	ram	ram+0xb1d4
+0x08020330	FUN_08020330	ram	ram+0xa3a8,ram+0xa3fc
+0x08020354	FUN_08020354	ram	ram+0xa3a8,ram+0xa3fc
+0x08020378	FUN_08020378	ram	ram+0xa3a8,ram+0xa3fc
+0x080203a0	FUN_080203a0	ram	ram+0xa3a8,ram+0xa3fc
+0x080203e4	FUN_080203e4	ram	ram+0x0200
+0x08020404	FUN_08020404	ram	ram+0xa3a8
+0x08020418	FUN_08020418	ram,other	ram+0xb138,flash+0x2ca58
+0x08020440	FUN_08020440	register	CRM_BASE+0x0
+0x080207ec	FUN_080207ec	ram,register	ram+0x01e6,GPIOB_BASE+0x0,GPIOE_BASE+0x0,ram+0xa3fc,GPIOC_BASE+0x0,ram+0xa91c
+0x08020944	FUN_08020944	ram,other	ram+0xa3fc,ram+0xa468,flash+0x30c1e,ram+0xe764
+0x08020a24	FUN_08020a24	ram	ram+0x02cc
+0x08020a40	FUN_08020a40	other	flash+0x31234
+0x08020ae0	FUN_08020ae0	other	flash+0x31228
+0x08020b48	FUN_08020b48		
+0x08020b74	FUN_08020b74	ram	ram+0xe764,ram+0x02cc
+0x08020bbc	FUN_08020bbc	other	flash+0x311e4
+0x08020ce8	FUN_08020ce8		
+0x08020d14	FUN_08020d14		
+0x08020da8	FUN_08020da8	immediate	imm:100000
+0x08020e3c	FUN_08020e3c	ram	ram+0xa3a8
+0x08020eb0	FUN_08020eb0	ram,other	ram+0x02cc,ram+0xe764,ram+0xa3a8,flash+0x30c28
+0x08021074	FUN_08021074	ram	ram+0x0c70
+0x08021104	FUN_08021104	ram	ram+0xa3fc
+0x08021140	FUN_08021140		
+0x0802115c	FUN_0802115c	ram	ram+0x0c70
+0x08021170	FUN_08021170	ram	ram+0x0c70
+0x08021184	FUN_08021184	ram	ram+0xe764,ram+0x02cc
+0x080211dc	FUN_080211dc	ram	ram+0xe764,ram+0x02cc
+0x08021228	FUN_08021228	ram	ram+0xe764,ram+0xa3a8
+0x08021290	FUN_08021290	ram	ram+0xe764,ram+0x02cc
+0x080212c0	FUN_080212c0	ram	ram+0x02cc
+0x080212e4	FUN_080212e4	ram	ram+0xe764
+0x080213b4	FUN_080213b4	ram	ram+0x0c70
+0x080213d8	FUN_080213d8	ram	ram+0xa3fc,ram+0xa562
+0x0802142c	FUN_0802142c	ram	ram+0xa468,ram+0xe764
+0x0802156c	FUN_0802156c	ram	ram+0xe764,ram+0xe3a1
+0x080215ec	FUN_080215ec	ram	ram+0x02cc
+0x08021610	FUN_08021610		
+0x08021624	FUN_08021624	register	GPIOB_BASE+0x0
+0x08021694	FUN_08021694	register	GPIOB_BASE+0x0
+0x08021708	FUN_08021708	register	GPIOB_BASE+0x0
+0x08021764	FUN_08021764	register	GPIOB_BASE+0x0
+0x080217d0	FUN_080217d0	register	SPI2_BASE+0x0
+0x08021824	FUN_08021824	register	GPIOB_BASE+0x0
+0x0802188c	FUN_0802188c	register	GPIOB_BASE+0x0
+0x080218d8	FUN_080218d8	register	SPI2_BASE+0x0
+0x08021934	FUN_08021934	register	GPIOB_BASE+0x0
+0x080219b8	FUN_080219b8		
+0x08021a20	FUN_08021a20	register	GPIOB_BASE+0x0
+0x08021a54	FUN_08021a54	ram	ram+0xea74,ram+0xafc4
+0x08021ab0	FUN_08021ab0	ram	ram+0x0c70
+0x08021ac0	FUN_08021ac0		
+0x08021adc	FUN_08021adc		
+0x08021b10	FUN_08021b10	register	USART1_BASE+0x0
+0x08021b60	FUN_08021b60		
+0x08021b78	FUN_08021b78	ram	ram+0xa468,ram+0xa8fc,ram+0xa3fc
+0x08021c04	FUN_08021c04	ram	ram+0xa468,ram+0xa8fc,ram+0xa8a4,ram+0xa3fc
+0x08021d40	FUN_08021d40	ram	ram+0xa468,ram+0xa3fc
+0x08021d94	FUN_08021d94	ram,other	ram+0x0000,SCB.SHP+0xb
+0x08021dd4	FUN_08021dd4		
+0x08021e54	FUN_08021e54	ram	ram+0xa3fc
+0x08021e8c	FUN_08021e8c	other,register	SCB.CPACR,CRM_BASE+0x0
+0x08021ef8	FUN_08021ef8	ram,register	ram+0xa3fc,ram+0xa8fc,ram+0xae24,ram+0xb0b0,ram+0xa468,ram+0xb0ba,GPIOE_BASE+0x0,ram+0xa91c,ram+0xb0e4,ram+0xa31c,ram+0xb138,GPIOB_BASE+0x0
+0x080220a0	FUN_080220a0	ram	ram+0x0259,ram+0xb1d4
+0x080220ec	FUN_080220ec		
+0x08022102	FUN_08022102		
+0x0802211a	FUN_0802211a		
+0x08022120	FUN_08022120		
+0x08022194	FUN_08022194	register	TMR1_BASE+0x0,TMR3_BASE+0x0,TMR4_BASE+0x0,TMR5_BASE+0x0,TMR6_BASE+0x0,TMR7_BASE+0x0,TMR8_BASE+0x0,TMR9_BASE+0x0,TMR10_BASE+0x0,TMR11_BASE+0x0
+0x080222e8	FUN_080222e8		
+0x080222f8	FUN_080222f8		
+0x080222fc	FUN_080222fc	register	TMR1_BASE+0x0,TMR4_BASE+0x0,TMR5_BASE+0x0,TMR8_BASE+0x0,TMR3_BASE+0x0
+0x0802235c	FUN_0802235c	ram,register,other	ram+0xa91c,ram+0xa468,ram+0xa8fc,ram+0xa8a4,ram+0xa3fc,GPIOB_BASE+0x0,GPIOA_BASE+0x0,ram+0xb0b0,GPIOE_BASE+0x0,ram+0xb0ba,flash+0x308ca,ram+0xa9e4,ram+0x0224,ram+0xeac4
+0x08022658	FUN_08022658	ram,immediate	ram+0x0230,ram+0xb2e8,ram+0xa3fc,imm:100000
+0x08022758	FUN_08022758	ram	ram+0x10ef4,ram+0xae24
+0x08022780	FUN_08022780	ram	ram+0xa91c,ram+0xa3fc
+0x080227d8	FUN_080227d8	ram	ram+0xa3fc,ram+0x0230,ram+0xe764
+0x08022818	FUN_08022818	ram	ram+0xa3fc,ram+0xa91c
+0x0802287c	FUN_0802287c	ram	ram+0x0224,ram+0xa3fc,ram+0xa8fc,ram+0xa468
+0x08022908	FUN_08022908		
+0x08022954	FUN_08022954	ram,register	ram+0xa3fc,ram+0xa8fc,GPIOB_BASE+0x0
+0x080229a0	FUN_080229a0	ram	ram+0xa3fc
+0x080229c8	FUN_080229c8	ram	ram+0xa468
+0x08022a68	FUN_08022a68	register	UART4_BASE+0x0
+0x08022a9c	FUN_08022a9c	ram,other	ram+0x10ce8,ram+0x10ef4,ram+0xae24,ram+0x10ae8,flash+0x5cf62
+0x08022adc	FUN_08022adc		
+0x08022af4	FUN_08022af4		
+0x08022b34	FUN_08022b34	register,ram	USART3_BASE+0x0,ram+0x10ce8,ram+0xae24
+0x08022b84	FUN_08022b84	ram	ram+0x10ce8
+0x08022ba8	FUN_08022ba8		
+0x08022be0	FUN_08022be0	register	USART1_BASE+0x0
+0x08022c9c	FUN_08022c9c		
+0x08022ca4	FUN_08022ca4	register	USART1_BASE+0x0,USART2_BASE+0x0,USART3_BASE+0x0,UART4_BASE+0x0,UART5_BASE+0x0,USART6_BASE+0x0,UART7_BASE+0x0,UART8_BASE+0x0
+0x08022da8	FUN_08022da8		
+0x08022dbe	FUN_08022dbe		
+0x08022dd6	FUN_08022dd6		
+0x08022df0	FUN_08022df0	ram	ram+0xe84c
+0x08022e54	FUN_08022e54	ram	ram+0xae9d
+0x08022eac	FUN_08022eac	register	GPIOB_BASE+0x0
+0x08022ee0	FUN_08022ee0	register	GPIOB_BASE+0x0
+0x08022f0c	FUN_08022f0c	register	GPIOC_BASE+0x0,UART4_BASE+0x0
+0x08022f80	FUN_08022f80	register	ADC2_BASE+0x0
+0x08023004	FUN_08023004	ram	ram+0xa3fc,ram+0xb074
+0x08023084	FUN_08023084	ram,other	ram+0xa468,flash+0x30c00,ram+0xa3fc,ram+0xb074,ram+0xa91c
+0x080231e8	FUN_080231e8	ram	ram+0xa468
+0x08023308	FUN_08023308	ram,other,immediate	ram+0xa468,flash+0x30c00,ram+0xa3fc,ram+0xb074,ram+0xa91c,imm:100000
+0x08023444	FUN_08023444		
+0x0802348c	FUN_0802348c		
+0x080234ac	FUN_080234ac	ram	ram+0xeac4,ram+0xa8fc
+0x080234dc	FUN_080234dc	ram	ram+0xeac4
+0x080234f8	FUN_080234f8	ram	ram+0xa8fc
+0x08023510	FUN_08023510	ram	ram+0xa8fc
+0x08023548	FUN_08023548	ram	ram+0xeac4,ram+0xa3fc,ram+0x0c28
+0x08023650	FUN_08023650	ram	ram+0xa91c
+0x08023678	FUN_08023678	ram,register,other	ram+0x01da,GPIOE_BASE+0x0,flash+0x308ca,ram+0xa91c
+0x08023754	FUN_08023754	ram	ram+0xa91c,ram+0xa3fc
+0x08023790	FUN_08023790	ram	ram+0xa91c,ram+0xa3fc
+0x080237cc	FUN_080237cc	ram	ram+0xa91c
+0x08023838	FUN_08023838	other	flash+0x3fa66
+0x0802387c	FUN_0802387c	other	flash+0x30ca4
+0x08023888	FUN_08023888	other,ram	flash+0x30ca4,ram+0xa8fc
+0x080238bc	FUN_080238bc	ram	ram+0xb0e4,ram+0xa3fc
+0x08023964	FUN_08023964	ram	ram+0xb0e4
+0x080239e0	FUN_080239e0	ram	ram+0x0230,ram+0xa8fc,ram+0xb0e4,ram+0xa3fc
+0x08023aa0	FUN_08023aa0	ram	ram+0x01f0,ram+0xa348
+0x08023aa8	FUN_08023aa8		
+0x08023abc	FUN_08023abc		
+0x08023aec	FUN_08023aec		
+0x08023b18	FUN_08023b18	immediate	imm:double +inf high word
+0x08023df0	FUN_08023df0	immediate	imm:double +inf high word
+0x08023fe0	FUN_08023fe0		
+0x08024230	FUN_08024230	immediate	imm:double +inf high word
+0x080242f8	FUN_080242f8		
+0x080244e0	FUN_080244e0		
+0x080245e8	FUN_080245e8		
+0x080246b8	FUN_080246b8	immediate	imm:double +inf high word
+0x08024990	FUN_08024990		
+0x08024a8c	FUN_08024a8c		
+0x08024ad6	thunk_FUN_08024bf2		
+0x08024b50	FUN_08024b50		
+0x08024bf2	FUN_08024bf2		
+0x08025308	FUN_08025308	immediate	imm:double +inf high word
+0x080253d0	FUN_080253d0		
+0x08025668	FUN_08025668		
+0x08025690	FUN_08025690		
+0x08025694	FUN_08025694		
+0x08025696	FUN_08025696		
+0x08025808	FUN_08025808		
+0x08025978	FUN_08025978		
+0x08025a70	FUN_08025a70		
+0x08025aa8	FUN_08025aa8		
+0x08025ba0	FUN_08025ba0		
+0x08025bd0	FUN_08025bd0		
+0x08025bf8	FUN_08025bf8		
+0x08025c18	FUN_08025c18		
+0x08025c38	FUN_08025c38		
+0x08025c74	FUN_08025c74		
+0x08025c88	FUN_08025c88	immediate	imm:float +inf
+0x08025d40	FUN_08025d40		
+0x08025d54	FUN_08025d54		
+0x08025d64	thunk_FUN_08027588		
+0x08025d68	FUN_08025d68		
+0x08025e38	FUN_08025e38		
+0x08025e48	FUN_08025e48		
+0x08025e58	FUN_08025e58		
+0x08025e70	FUN_08025e70		
+0x08025e84	FUN_08025e84		
+0x08025f24	FUN_08025f24		
+0x08025f34	FUN_08025f34		
+0x08025f44	FUN_08025f44		
+0x08025f60	FUN_08025f60		
+0x08025ff2	FUN_08025ff2		
+0x08026002	FUN_08026002		
+0x0802601a	FUN_0802601a		
+0x080260aa	FUN_080260aa		
+0x080260e0	FUN_080260e0	ram	ram+0x02ac
+0x08026824	FUN_08026824		
+0x080268f0	FUN_080268f0		
+0x0802697c	FUN_0802697c		
+0x080269ec	FUN_080269ec		
+0x08026a0c	FUN_08026a0c		
+0x08026a6c	FUN_08026a6c		
+0x08026ad8	FUN_08026ad8		
+0x08026af8	FUN_08026af8		
+0x08026b70	FUN_08026b70		
+0x08026bac	FUN_08026bac		
+0x08026c74	FUN_08026c74		
+0x08026db8	FUN_08026db8		
+0x08026e58	FUN_08026e58		
+0x08026e7c	FUN_08026e7c		
+0x08026e8a	FUN_08026e8a		
+0x08026ea6	FUN_08026ea6		
+0x08026eb4	FUN_08026eb4		
+0x08026f20	FUN_08026f20	ram	ram+0xe89c
+0x08026f68	FUN_08026f68	ram	ram+0xe89c
+0x08026f80	FUN_08026f80	ram	ram+0xe89c
+0x08026fa8	FUN_08026fa8	ram	ram+0xe89c
+0x08026fe8	FUN_08026fe8	ram	ram+0xe89c
+0x08027064	FUN_08027064	ram	ram+0xe89c
+0x080270ac	FUN_080270ac	ram	ram+0xe89c
+0x080270ec	FUN_080270ec	ram	ram+0xe89c
+0x08027144	FUN_08027144	ram	ram+0xe89c
+0x08027188	FUN_08027188	ram	ram+0xe89c
+0x080271bc	FUN_080271bc	ram	ram+0xe89c
+0x080271f0	FUN_080271f0	ram	ram+0xe89c
+0x08027224	FUN_08027224	ram	ram+0xe89c
+0x08027270	FUN_08027270	ram	ram+0xe89c
+0x080272c4	FUN_080272c4	ram	ram+0xe89c
+0x08027314	FUN_08027314	ram	ram+0xe89c
+0x08027380	FUN_08027380		
+0x080273a8	FUN_080273a8		
+0x08027402	FUN_08027402		
+0x08027418	FUN_08027418		
+0x08027490	FUN_08027490		
+0x080274f0	FUN_080274f0		
+0x08027524	FUN_08027524		
+0x08027558	FUN_08027558		
+0x08027588	FUN_08027588		
+0x08027600	FUN_08027600		
+0x0802767c	FUN_0802767c		
+0x0802770c	FUN_0802770c		
+0x08027734	FUN_08027734		
+0x0802773e	FUN_0802773e		
+0x0802775a	FUN_0802775a		
+0x0802776c	FUN_0802776c		
+0x080277a0	FUN_080277a0		
+0x080277c6	FUN_080277c6		
+0x080277ec	FUN_080277ec		
+0x08027810	FUN_08027810		
+0x08027820	FUN_08027820		
+0x08027848	FUN_08027848		
+0x08027872	FUN_08027872		
+0x08027990	FUN_08027990		
+0x080279d4	FUN_080279d4	register	GPIOD_BASE+0x0
+0x08027a34	FUN_08027a34	register	GPIOD_BASE+0x0
+0x08027a68	FUN_08027a68		
+0x08027a94	FUN_08027a94		
+0x08027b14	FUN_08027b14		
+0x08027b68	FUN_08027b68		
+0x08027b70	FUN_08027b70		
+0x08027d40	FUN_08027d40		
+0x08027e18	FUN_08027e18		
+0x08027e2c	FUN_08027e2c		
+0x08027e68	FUN_08027e68		
+0x08027e94	FUN_08027e94		
+0x08027ec0	FUN_08027ec0		
+0x08027ed8	FUN_08027ed8	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x0802819c	FUN_0802819c	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x080283e8	FUN_080283e8	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x08028404	FUN_08028404		
+0x0802841c	FUN_0802841c	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x08028798	FUN_08028798		
+0x0802880c	FUN_0802880c	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x080288d4	FUN_080288d4	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x080289b0	FUN_080289b0		
+0x080289f8	FUN_080289f8		
+0x08028a20	FUN_08028a20		
+0x08028a98	FUN_08028a98	register,immediate	TMR2_BASE+0x13,imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x08028c58	FUN_08028c58	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x08028d5c	FUN_08028d5c	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x08028ec0	FUN_08028ec0		
+0x08028f2a	FUN_08028f2a		
+0x08028f3c	FUN_08028f3c		
+0x08028fa0	FUN_08028fa0	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x08028ff0	FUN_08028ff0	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x080291f8	FUN_080291f8	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x08029568	FUN_08029568	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x080295ce	FUN_080295ce		
+0x080297fc	FUN_080297fc		
+0x08029876	FUN_08029876	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x0802997c	FUN_0802997c	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:float +inf
+0x08029a7a	FUN_08029a7a		
+0x08029ab8	FUN_08029ab8		
+0x08029adc	FUN_08029adc		
+0x08029b90	FUN_08029b90	immediate	imm:float NaN,imm:double NaN high word,imm:float max finite,imm:double max finite high word,imm:float +inf,imm:double +inf high word
+0x08029ca4	thunk_FUN_08001940		
+0x08029ca8	thunk_FUN_080023d8		
+0x08029cac	thunk_FUN_080026f8		
+0x0802a058	FUN_0802a058		
+0x0802a25e	FUN_0802a25e		
+0x0802a318	FUN_0802a318		
+0x0802a5ac	FUN_0802a5ac		
+0x0802a5f8	FUN_0802a5f8		
+0x0802a73a	FUN_0802a73a		
+0x0802a9f6	FUN_0802a9f6		
+0x0802a9fe	thunk_FUN_0802b10e		
+0x0802ad0e	FUN_0802ad0e		
+0x0802ad90	FUN_0802ad90		
+0x0802ae7a	FUN_0802ae7a		
+0x0802b108	FUN_0802b108		
+0x0802b10e	FUN_0802b10e		
+0x0802b1be	FUN_0802b1be		
+0x0802b6a6	FUN_0802b6a6		
+0x0802b6cc	FUN_0802b6cc		
+0x0802b7a8	FUN_0802b7a8		
+0x0802b912	FUN_0802b912		
+0x0802b9ba	FUN_0802b9ba		
+0x0802bc22	FUN_0802bc22		
+0x0802bf26	FUN_0802bf26		
+0x0802c068	FUN_0802c068		
+0x0802c2ae	FUN_0802c2ae		
+0x0802c2fe	FUN_0802c2fe		
+0x0802c42c	FUN_0802c42c		
+0x0802c596	FUN_0802c596		
+0x0802c640	FUN_0802c640		
+0x0802c8c0	FUN_0802c8c0		
+0x0802cb04	FUN_0802cb04		
+0x0802cc0c	FUN_0802cc0c		
+0x0802cde2	FUN_0802cde2		
+0x0802cf90	FUN_0802cf90		
+0x0802cfe4	FUN_0802cfe4		
+0x0802d17c	FUN_0802d17c		
+0x0802d248	FUN_0802d248		
+0x0802d45e	FUN_0802d45e		
+0x0802d664	FUN_0802d664		
+0x0802d6da	FUN_0802d6da		
+0x0802d70a	FUN_0802d70a		
+0x0802d852	FUN_0802d852		
+0x0802dc1a	FUN_0802dc1a		
+0x0802e22c	FUN_0802e22c		
+0x0802e7cc	FUN_0802e7cc		
+0x0802e894	FUN_0802e894		
+0x0802ed96	FUN_0802ed96		
+0x0802ede8	FUN_0802ede8		
+0x0802ee26	FUN_0802ee26		
+0x0802ee50	FUN_0802ee50		
+0x0802eea2	FUN_0802eea2		
+0x0802eef2	FUN_0802eef2		
+0x0802f1d8	FUN_0802f1d8		
+0x0802f4a4	FUN_0802f4a4		
+0x0802f55a	FUN_0802f55a		
+0x0802f88c	FUN_0802f88c		
+0x0802fa08	FUN_0802fa08		
+0x0802fa6a	FUN_0802fa6a		
+0x0802fa86	FUN_0802fa86		
+0x0802faba	FUN_0802faba		
+0x0802fae0	FUN_0802fae0		
+0x0802fc32	FUN_0802fc32		
+0x0802fcc8	FUN_0802fcc8		
+0x0802fdae	FUN_0802fdae		
+0x0802fdb6	FUN_0802fdb6		
+0x0802ffc0	FUN_0802ffc0		
+0x08030040	FUN_08030040		
+0x08030052	FUN_08030052		
+0x08030060	FUN_08030060		
+0x080300b6	FUN_080300b6		
+0x08030238	FUN_08030238		
+0x0803028e	FUN_0803028e		
+0x080303d6	FUN_080303d6		
+0x08030418	FUN_08030418		
+0x0803051a	FUN_0803051a		
+0x08030544	FUN_08030544		
+0x080306f0	FUN_080306f0		
+0x08030de8	FUN_08030de8		
+0x08030e2e	FUN_08030e2e		
+0x08030e60	FUN_08030e60		
+0x08030f76	FUN_08030f76		
+0x08031056	FUN_08031056		
+0x080310ea	FUN_080310ea		
+0x080311cc	FUN_080311cc		
+0x0803121e	FUN_0803121e		
+0x0803146e	FUN_0803146e		
+0x080314ee	FUN_080314ee		
+0x08031646	FUN_08031646		
+0x08031950	FUN_08031950		
+0x0803196e	FUN_0803196e		
+0x08032224	FUN_08032224		
+0x08032452	FUN_08032452		
+0x08033db0	FUN_08033db0		
+0x08034458	FUN_08034458		
+0x0803449a	FUN_0803449a		
+0x08035eb0	FUN_08035eb0		
+0x08035f74	FUN_08035f74		
+0x08035f88	FUN_08035f88		
+0x08036040	FUN_08036040		
+0x08036102	FUN_08036102		
+0x080361c6	FUN_080361c6		
+0x080361da	FUN_080361da		
+0x08036292	FUN_08036292		
+0x080362f0	FUN_080362f0		
+0x080363e0	FUN_080363e0		
+0x080364a8	FUN_080364a8		
+0x08036598	FUN_08036598		
+0x0803663c	FUN_0803663c		
+0x0803668e	FUN_0803668e		
+0x080366e6	FUN_080366e6		
+0x08036702	FUN_08036702		
+0x0803675c	FUN_0803675c		
+0x080367de	FUN_080367de		
+0x08036830	FUN_08036830		
+0x08036888	FUN_08036888		
+0x0803688c	FUN_0803688c		
+0x080368a4	FUN_080368a4		
+0x080368fe	FUN_080368fe		
+0x080370ec	FUN_080370ec		
+0x08037206	FUN_08037206		
+0x08037240	FUN_08037240		
+0x0803729c	FUN_0803729c		
+0x080372c8	FUN_080372c8		
+0x08037316	FUN_08037316		
+0x0803785a	FUN_0803785a		
+0x08037894	FUN_08037894		
+0x0803796a	FUN_0803796a		
+0x08037e2a	FUN_08037e2a		
+0x08037ec2	FUN_08037ec2		
+0x08037f02	FUN_08037f02		
+0x08037f16	FUN_08037f16		
+0x08038050	FUN_08038050		
+0x08038064	FUN_08038064		
+0x0803812a	FUN_0803812a		
+0x08038152	FUN_08038152		
+0x08038160	FUN_08038160		
+0x08038166	FUN_08038166		
+0x080381a6	FUN_080381a6		
+0x080381d4	FUN_080381d4		
+0x08038236	FUN_08038236		
+0x0803887a	FUN_0803887a		
+0x080388d0	FUN_080388d0		
+0x08038992	FUN_08038992		
+0x08038a0e	FUN_08038a0e		
+0x08038a1a	FUN_08038a1a		
+0x08038a9a	FUN_08038a9a		
+0x08038ac4	FUN_08038ac4		
+0x08038b42	FUN_08038b42		
+0x08038b8e	FUN_08038b8e		
+0x08038bce	FUN_08038bce		
+0x08038c94	FUN_08038c94		
+0x08038d0e	FUN_08038d0e		
+0x08038d5a	FUN_08038d5a		
+0x080390ec	FUN_080390ec		
+0x08039154	FUN_08039154		
+0x0803917c	FUN_0803917c		
+0x08039190	FUN_08039190		
+0x0803922e	FUN_0803922e		
+0x0803923a	FUN_0803923a		
+0x08039294	FUN_08039294		
+0x0803929c	FUN_0803929c		
+0x080392fa	FUN_080392fa		
+0x0803930c	FUN_0803930c		
+0x0803931a	FUN_0803931a		
+0x08039320	FUN_08039320		
+0x08039348	FUN_08039348		
+0x080393a8	FUN_080393a8		
+0x08039a62	FUN_08039a62		
+0x08039c48	FUN_08039c48		
+0x08039c7e	FUN_08039c7e		
+0x08039d24	FUN_08039d24		
+0x08039d5a	FUN_08039d5a		
+0x08039e1a	FUN_08039e1a		
+0x08039ee8	FUN_08039ee8		
+0x08039f00	FUN_08039f00		
+0x08039f68	FUN_08039f68		
+0x0803a06c	FUN_0803a06c		
+0x0803a13a	FUN_0803a13a		
+0x0803a152	FUN_0803a152		
+0x0803a1ba	FUN_0803a1ba		
+0x0803a286	FUN_0803a286		
+0x0803a428	FUN_0803a428		
+0x0803a492	FUN_0803a492		
+0x0803a53c	FUN_0803a53c		
+0x0803a562	FUN_0803a562		
+0x0803a58e	FUN_0803a58e		
+0x0803a616	FUN_0803a616		
+0x0803a67c	FUN_0803a67c		
+0x0803a704	FUN_0803a704		
+0x0803a798	FUN_0803a798		
+0x0803a820	FUN_0803a820		
+0x0803a886	FUN_0803a886		
+0x0803adc8	FUN_0803adc8		
+0x0803add2	FUN_0803add2		
+0x0803ae3e	FUN_0803ae3e		
+0x0803ae4c	FUN_0803ae4c		
+0x0803aeb4	FUN_0803aeb4		
+0x0803aeba	FUN_0803aeba		
+0x0803aec6	FUN_0803aec6		
+0x0803af2a	FUN_0803af2a		
+0x0803af30	FUN_0803af30		
+0x0803af40	FUN_0803af40		
+0x0803afa0	FUN_0803afa0		
+0x0803afba	FUN_0803afba		
+0x0803b034	FUN_0803b034		
+0x0803b74e	FUN_0803b74e		
+0x0803cd80	FUN_0803cd80		
+0x0803e844	FUN_0803e844		
+0x0803ea86	FUN_0803ea86		
+0x0803eb48	FUN_0803eb48		
+0x0803ec50	FUN_0803ec50		
+0x0803ee00	FUN_0803ee00		
+0x0803f030	FUN_0803f030		
+0x0803f1c8	FUN_0803f1c8		
+0x0803f430	FUN_0803f430		
+0x0803f73c	FUN_0803f73c		
+0x08041e38	FUN_08041e38		
+0x080424f8	FUN_080424f8		
+0x08042524	FUN_08042524		
+0x0804273e	FUN_0804273e		
+0x08043a1e	FUN_08043a1e		
+0x08043b30	FUN_08043b30		
+0x080441d6	FUN_080441d6		
+0x080446dc	FUN_080446dc		
+0x08044920	FUN_08044920		
+0x0804492a	FUN_0804492a		
+0x08045146	FUN_08045146		
+0x0804567c	FUN_0804567c		
+0x08045776	FUN_08045776		
+0x080457b6	FUN_080457b6		
+0x080457d6	FUN_080457d6		
+0x0804581a	FUN_0804581a		
+0x08045976	FUN_08045976		
+0x0804597e	FUN_0804597e		
+0x08045d24	FUN_08045d24		
+0x08045d5c	FUN_08045d5c		
+0x08045ed6	FUN_08045ed6		
+0x08046004	FUN_08046004		
+0x080464ce	FUN_080464ce		
+0x0804650a	FUN_0804650a		
+0x0804658a	FUN_0804658a		
+0x08046906	FUN_08046906		
+0x08046a0c	FUN_08046a0c		
+0x08046aee	FUN_08046aee		
+0x0804718a	FUN_0804718a		
+0x08047222	FUN_08047222		
+0x080472ba	FUN_080472ba		
+0x080472de	FUN_080472de		
+0x080473ac	FUN_080473ac		
+0x08047498	FUN_08047498		
+0x080475f2	FUN_080475f2		
+0x08047740	FUN_08047740		
+0x08047c3a	FUN_08047c3a		
+0x08047cfa	FUN_08047cfa		
+0x08047d2a	FUN_08047d2a		
+0x08047e2a	FUN_08047e2a		
+0x08048010	FUN_08048010		
+0x0804809e	FUN_0804809e		
+0x0804844c	FUN_0804844c		
+0x080484fc	FUN_080484fc		
+0x080486ac	FUN_080486ac		
+0x08048718	FUN_08048718		
+0x080487c8	FUN_080487c8		
+0x08048998	FUN_08048998		
+0x080489b6	FUN_080489b6		
+0x080489e0	FUN_080489e0		
+0x08048a44	FUN_08048a44		
+0x08048aac	FUN_08048aac		
+0x08048b2c	FUN_08048b2c		
+0x08048b70	FUN_08048b70		
+0x08048c46	FUN_08048c46		
+0x08048cda	FUN_08048cda		
+0x08048d1c	FUN_08048d1c		
+0x08048d82	FUN_08048d82		
+0x08048e5c	FUN_08048e5c		
+0x08048f30	FUN_08048f30		
+0x0804ba82	FUN_0804ba82		
+0x0804c06a	FUN_0804c06a		
+0x0804c59c	FUN_0804c59c		
+0x0804c694	FUN_0804c694		
+0x0804c730	FUN_0804c730		
+0x0804c83a	FUN_0804c83a		
+0x0804c9d6	FUN_0804c9d6		
+0x0804cce8	FUN_0804cce8		
+0x0804cd36	FUN_0804cd36		
+0x0804cf16	FUN_0804cf16		
+0x0804d0b0	FUN_0804d0b0		
+0x0804d3c8	FUN_0804d3c8		
+0x0804d55e	FUN_0804d55e		
+0x0804db5c	FUN_0804db5c		
+0x0804dcaa	FUN_0804dcaa		
+0x0804dd26	FUN_0804dd26		
+0x0804dec0	FUN_0804dec0		
+0x0804df98	FUN_0804df98		
+0x0804dffa	FUN_0804dffa		
+0x0804e1d8	FUN_0804e1d8		
+0x0804e36e	FUN_0804e36e		
+0x0804f276	FUN_0804f276		
+0x0804f2a8	FUN_0804f2a8		
+0x0804f5c0	FUN_0804f5c0		
+0x0804fd8c	FUN_0804fd8c		

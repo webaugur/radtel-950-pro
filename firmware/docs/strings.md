@@ -1,0 +1,658 @@
+# V0.29 strings
+
+Addresses are in `decrypted_v0.29.bin` loaded at `0x08000000`. A row is a NUL-terminated run outside every decompiled function. ASCII is printable bytes with a letter. GBK is the same run when it is not ASCII and decodes as GBK. The bytes are copied as stored, including a leading space.
+
+An absolute pointer is a 4-byte-aligned little-endian word in the image whose value falls inside the string. Three pool slots do that. The other strings in this file have no such word. Code can still reach them with a PC-relative `ADR` or a base plus an index. This file does not invent those references.
+
+## Pool references
+
+| String | String address | Pool slot | Function |
+| --- | --- | --- | --- |
+| `Level 8` | `0x0805cc60` | `0x08011234` | `FUN_080110fc` |
+| `KISS(UART)` | `0x0805cac8` | `0x08014d84` | `FUN_08014c68` |
+| `UTC+6` | `0x0805cc38` | `0x08014f40` | `FUN_08014d88` |
+
+## Lower image
+
+These are ASCII runs of at least 8 bytes that contain a space and sit below `0x0805C700`, outside functions. `Invalid Operation`, `Divide By Zero`, and `SIGFPE` are the usual soft-float and libgcc phrases.
+
+- `0x080003dc` `pGpGRT-950      `
+- `0x08000bda` `pGpGpGRT-950      `
+- `0x080028bc` `Invalid Operation`
+- `0x080028d0` `Divide By Zero`
+- `0x080028f8` `Inexact Result`
+- `0x08002908` `SIGFPE: Arithmetic exception: `
+- `0x08004073` ` Beacon List`
+- `0x080040ab` ` %02d:%02d`
+- `0x0800464b` ` H:%d.%dm`
+- `0x0800468e` ` %02d'%02d"`
+- `0x080046b2` ` %02d'%02d"`
+- `0x08005ba0` `PATH INFO:`
+- `0x08005bc0` `| STATUS TEXT |`
+- `0x08005bd0` `| COMMENT TEXT |`
+- `0x08005be4` `| RAW DATA |`
+- `0x0800adc3` ` All Band Test Mode`
+- `0x0800aea8` `Super Mode`
+- `0x0800b2f0` `VFO Mode    `
+- `0x0800b300` `CH Mode    `
+- `0x0800b30c` ` CH-%03d `
+- `0x0800b973` ` %02d:%02d`
+- `0x0800be2f` ` Voltage `
+- `0x0800c140` `  D%03oI`
+- `0x0800c14c` `  D%03oN`
+- `0x0800c158` `  %d.%dHz`
+- `0x0800c2b4` `%d.%05d `
+- `0x0800d1e0` ` Hardware:BJ9000`
+- `0x0800e703` ` DCS SCAN`
+- `0x0800e713` ` CTCSS SCAN`
+- `0x0800f293` ` Unnamed CH`
+- `0x08010f6f` ` %02d.%03d`
+- `0x080118e3` ` FM Initialization`
+- `0x080118f8` `Please Wait...`
+- `0x08012f57` ` CH-%03d`
+- `0x0801336b` ` CH-%02d  %d`
+- `0x0801337b` ` CH-%02d       `
+- `0x0801338c` `CH-%02d %3d.%02d`
+- `0x0801345b` ` Encryption`
+- `0x08013b87` ` CH-%03d`
+- `0x08013c07` ` Scram%d`
+- `0x080168a7` ` %3d%04d`
+- `0x0801704f` ` %03d%03d`
+- `0x0801748f` ` About Machine`
+- `0x08017827` ` Channel is invalid`
+- `0x080178f3` ` Clear Data OK`
+- `0x08017973` ` Frequency`
+- `0x08017980` `out of range!`
+- `0x08017c27` ` No Available Zone!`
+- `0x08017d03` ` APRS activation of`
+- `0x08017d18` `CDCSS is invalid`
+- `0x08017e97` ` Minute range 0-59`
+- `0x08017eac` `Longitude range`
+- `0x08017ebc` `0-180 degrees`
+- `0x08017edc` `Second range 0-59`
+- `0x08017f00` `Latitude range`
+- `0x08017f10` `0-90 degrees`
+- `0x08017fc7` ` The device will restart`
+- `0x08017fe0` `Please confirm that the`
+- `0x08017ff8` `antenna has been replaced!`
+- `0x080180df` `  Save OK`
+- `0x0801819b` ` Data Error`
+- `0x0801822b` ` FM Initialization`
+- `0x08018240` `Please Wait...`
+- `0x080182e7` ` Channel work mode changed!`
+- `0x08018304` `The device will restart`
+- `0x0801a480` `  D%03oN   `
+- `0x0801a48c` `   %d.%0.1d   `
+- `0x0801a49c` `   NONE   `
+- `0x0801a5a3` `    SCANQT   `
+- `0x0801a5b4` ` RUNNING  `
+- `0x0801a5d0` `   STOP   `
+- `0x0801f7c8` `    %6X    `
+- `0x0801f7d4` `    D%03oN    `
+- `0x0801f7e4` `    %d.%0.1d    `
+- `0x0801f7f8` `     NONE     `
+- `0x08021e33` ` Please Wait...`
+- `0x0802382f` ` WX-%02d`
+- `0x0802e539` `Hello world!`
+- `0x0802e5f8` `   SEEK...   `
+- `0x0805aecc` `Enroute   `
+- `0x0805aed8` `Special   `
+- `0x0805aee4` `Custom-0  `
+- `0x0805aef0` `Custom-1  `
+- `0x0805aefc` `Custom-2  `
+- `0x0805af08` `Custom-3  `
+- `0x0805af14` `Custom-4  `
+- `0x0805af20` `Custom-5  `
+- `0x0805af2c` `Custom-6  `
+- `0x0805af38` `Priority  `
+- `0x0805af44` `Off duty  `
+- `0x0805af78` `Committed `
+- `0x0805af84` `Returning `
+- `0x0805af90` `Emergency `
+- `0x0805b02c` `In Service`
+- `0x0805b8f1` ` Edit Callsign`
+- `0x0805b919` ` Edit Digi1 Path`
+- `0x0805b945` ` Path Choose`
+- `0x0805b961` ` Fixed position`
+- `0x0805b985` ` Degrees`
+- `0x0805b9c1` ` Longitude WE Set`
+- `0x0805b9e5` ` Latitude NS Set`
+- `0x0805ba09` ` Fixed altitude`
+- `0x0805ba29` ` Set Longitude`
+- `0x0805ba39` ` Set Latitude`
+- `0x0805ba61` ` Send Message`
+- `0x0805ba7d` ` Message Edit`
+- `0x0805ba99` ` Stations Symbol`
+- `0x0805baba` `  Slect Icon`
+- `0x0805bad5` ` MIC-E Type`
+- `0x0805bb01` ` Digi1 SSID`
+- `0x0805bb11` ` Digi2 SSID`
+- `0x0805bb39` ` Digi1 Path`
+- `0x0805bb49` ` Digi2 Path`
+- `0x0805bb61` ` Message`
+- `0x0805bb6d` ` User Path`
+- `0x0805bb79` ` Callsign`
+- `0x0805bb85` ` Source Position`
+- `0x0805bb99` ` My Position`
+- `0x0805bba9` ` Custom Icons`
+- `0x0805bc09` ` Beacon Type`
+- `0x0805bc25` ` Timing Time`
+- `0x0805bc41` ` DIGI CH`
+- `0x0805bc5d` ` Routing`
+- `0x0805bc79` ` DIGI Tx Wait`
+- `0x0805bc99` ` APRS CH`
+- `0x0805bcb1` ` APRS Tx Delay`
+- `0x0805bcd1` ` APRS Mute`
+- `0x0805bced` ` APRS Ringer`
+- `0x0805bd0d` ` RX Popup`
+- `0x0805bd29` ` RX Popup Time`
+- `0x0805bd49` ` TNC Type`
+- `0x0805bd65` ` Reporting APP`
+- `0x0805bd86` ` Sure to Reset?`
+- `0x0805bda9` ` Factory Setting`
+- `0x0805bdbd` ` RX Beacon Clear`
+- `0x0805bdf1` ` APRS ON/OFF`
+- `0x0805be21` ` Position`
+- `0x0805be3d` ` Time Zone`
+- `0x0805be55` ` Half Hour Time Zone`
+- `0x0805be7d` ` Distance Unit`
+- `0x0805be99` ` Altitude Unit`
+- `0x0805beb5` ` Speed Unit`
+- `0x0805bed1` ` Advanced`
+- `0x0805bedd` ` Repeater Setting`
+- `0x0805bef1` ` Beacon Setup`
+- `0x0805bf01` ` Beacon List`
+- `0x0805bf4d` ` Language`
+- `0x0805bf64` `Sure to Reset?`
+- `0x0805bf99` ` VFO Mode`
+- `0x0805bfa5` ` Reset All`
+- `0x0805bfc5` ` CH-Edit Name`
+- `0x0805bfe5` ` CH-Memory`
+- `0x0805bffd` ` CH-Delete`
+- `0x0805c071` ` Direction`
+- `0x0805c0a1` ` RX Modulation`
+- `0x0805c0c1` ` VFO Scan Range`
+- `0x0805c0e1` ` Scan Add`
+- `0x0805c0f9` ` RX CTCSS`
+- `0x0805c14d` ` TX CTCSS`
+- `0x0805c169` ` FHSS CODE`
+- `0x0805c181` ` Encryption`
+- `0x0805c1c1` ` Scan Memory`
+- `0x0805c1e1` ` CTCSS DCS`
+- `0x0805c1ed` ` Scan SubCode`
+- `0x0805c231` ` Battery Save`
+- `0x0805c24d` ` Standby Set`
+- `0x0805c269` ` SOS Mode`
+- `0x0805c281` ` Scan Mode`
+- `0x0805c299` ` Back Light`
+- `0x0805c2b5` ` Beep Prompt`
+- `0x0805c2e5` ` Menu OutTime`
+- `0x0805c305` ` Keypad Lock`
+- `0x0805c325` ` Power On Display`
+- `0x0805c345` ` Breath Led`
+- `0x0805c361` ` Power Dly Time`
+- `0x0805c385` ` NOAA Alert`
+- `0x0805c3b5` ` Busy Lockout`
+- `0x0805c3d1` ` Trans Power`
+- `0x0805c3ed` ` Bandwidth`
+- `0x0805c4ed` ` Long Press PF1`
+- `0x0805c521` ` Long Press PF2`
+- `0x0805c551` ` [0] Long Press`
+- `0x0805c575` ` [1] Long Press`
+- `0x0805c599` ` [2] Long Press`
+- `0x0805c5bd` ` [3] Long Press`
+- `0x0805c5e1` ` [4] Long Press`
+- `0x0805c605` ` [5] Long Press`
+- `0x0805c629` ` [6] Long Press`
+- `0x0805c64d` ` [7] Long Press`
+- `0x0805c671` ` [8] Long Press`
+- `0x0805c695` ` [9] Long Press`
+- `0x0805c6a9` ` VOX Delay`
+- `0x0805c6c1` ` VOX Level`
+- `0x0805c6d9` ` VOX Switch`
+- `0x0805c6f5` ` Scramble`
+
+## Upper table
+
+`0x0805C700` through the end of the image. 439 strings. The same rows are in `firmware/docs/strings.tsv`.
+
+- `0x0805c701` gbk ` 扰频功能`
+- `0x0805c70d` ascii ` Cross Band Repeat`
+- `0x0805c721` gbk ` AB中转模式`
+- `0x0805c731` ascii ` RPT-Speaker`
+- `0x0805c741` gbk ` 中转喇叭`
+- `0x0805c74d` ascii ` Work Band`
+- `0x0805c759` gbk ` 工作频段`
+- `0x0805c765` ascii ` Mic Gain`
+- `0x0805c771` gbk ` 麦克风增益`
+- `0x0805c781` ascii ` Radio Interrupt`
+- `0x0805c795` gbk ` 收音允许打断`
+- `0x0805c7a5` ascii ` Single Ptt Mode`
+- `0x0805c7b9` gbk ` 单PTT模式`
+- `0x0805c7c5` ascii ` DTMF PTT Delay`
+- `0x0805c7d9` gbk ` DTMF发码延迟`
+- `0x0805c7e9` ascii ` DTMF On Time`
+- `0x0805c7f9` gbk ` DTMF码持续时间`
+- `0x0805c80d` ascii ` DTMF Off Time`
+- `0x0805c81d` gbk ` DTMF码断续时间`
+- `0x0805c832` ascii ` Zone`
+- `0x0805c83a` gbk ` 区域`
+- `0x0805c841` ascii ` Zone Or Channel`
+- `0x0805c855` gbk ` 信道工作模式`
+- `0x0805c865` ascii ` Zone Select`
+- `0x0805c875` gbk ` 区域选择`
+- `0x0805c881` ascii ` Bluetooth`
+- `0x0805c88d` gbk ` 蓝牙写频`
+- `0x0805c89a` ascii ` VFO & CH`
+- `0x0805c8a6` ascii ` CTCSS DCS`
+- `0x0805c8b6` ascii ` VOX`
+- `0x0805c8be` ascii ` Signaling`
+- `0x0805c8ce` ascii ` Setting`
+- `0x0805c8da` ascii ` Bluetooth`
+- `0x0805c8ea` ascii ` APRS Set`
+- `0x0805c8f6` ascii ` Radio Set`
+- `0x0805c906` ascii ` About`
+- `0x0805c910` ascii `Menu`
+- `0x0805c91a` ascii ` User Key`
+- `0x0805c926` gbk ` 本机信息`
+- `0x0805c930` gbk `菜单`
+- `0x0805c93a` gbk ` 频道模式`
+- `0x0805c946` gbk ` 蓝牙`
+- `0x0805c94e` gbk ` APRS 设置`
+- `0x0805c95e` gbk ` 对讲设置`
+- `0x0805c96a` gbk ` 亚音频设置`
+- `0x0805c97a` gbk ` 高级设置`
+- `0x0805c986` gbk ` 信令设置`
+- `0x0805c992` gbk ` 声控功能`
+- `0x0805c99e` gbk ` 按键自定义`
+- `0x0805c9ad` ascii `.Work Band`
+- `0x0805c9b9` gbk `.频段范围`
+- `0x0805c9c5` ascii `.FM Memery-CH`
+- `0x0805c9d5` gbk `.频道保存`
+- `0x0805c9e1` ascii `.Modulation`
+- `0x0805c9f1` gbk `.调制模式`
+- `0x0805c9fd` ascii `.Frequency Step`
+- `0x0805ca11` gbk `.步进频率`
+- `0x0805ca1d` ascii `.Bandwidth`
+- `0x0805ca29` gbk `.接收带宽`
+- `0x0805ca35` ascii `.LNA`
+- `0x0805ca3d` gbk `.接收增益`
+- `0x0805ca49` ascii `.BFO`
+- `0x0805ca51` gbk `.拍频偏移`
+- `0x0805ca5d` ascii `.FM Backlight`
+- `0x0805ca6d` gbk `.收音机背光`
+- `0x0805ca80` gbk `收音机`
+- `0x0805ca89` ascii ` Temp Scan List`
+- `0x0805ca9d` gbk ` 扫描临时设置`
+- `0x0805caac` ascii `KISS(BLE)`
+- `0x0805cab8` ascii `House QTH(VHF)`
+- `0x0805cac8` ascii `KISS(UART)` pointers `0x08014d84`
+- `0x0805cad4` ascii `Truck(18Wheel)`
+- `0x0805cae4` ascii `X-APRS(Unix)`
+- `0x0805caf4` ascii `CHANNEL NUM.`
+- `0x0805cb04` ascii `UTC-0`
+- `0x0805cb0c` ascii `TONE1200`
+- `0x0805cb18` ascii `UTC+10`
+- `0x0805cb20` ascii `UTC-10`
+- `0x0805cb28` ascii `Level 1`
+- `0x0805cb30` ascii `UTC+1`
+- `0x0805cb38` ascii `WIDE1-1`
+- `0x0805cb40` ascii `WIDE1-1,WIDE2-1`
+- `0x0805cb50` ascii `UTC-1`
+- `0x0805cb58` ascii `UTC+11`
+- `0x0805cb60` ascii `UTC-11`
+- `0x0805cb68` ascii `WIDE1`
+- `0x0805cb70` ascii `PATH1`
+- `0x0805cb78` ascii `Type1`
+- `0x0805cb80` ascii `Level 2`
+- `0x0805cb88` ascii `UTC+2`
+- `0x0805cb90` ascii `UTC-2`
+- `0x0805cb98` ascii `UTC+12`
+- `0x0805cba0` ascii `UTC-12`
+- `0x0805cba8` ascii `WIDE1,WIDE2`
+- `0x0805cbb4` ascii `PATH1,PATH2`
+- `0x0805cbc0` ascii `PATH2`
+- `0x0805cbc8` ascii `Type2`
+- `0x0805cbd0` ascii `Level 3`
+- `0x0805cbd8` ascii `UTC+3`
+- `0x0805cbe0` ascii `UTC-3`
+- `0x0805cbe8` ascii `UTC+13`
+- `0x0805cbf0` ascii `Type3`
+- `0x0805cbf8` ascii `Level 4`
+- `0x0805cc00` ascii `UTC+4`
+- `0x0805cc08` ascii `UTC-4`
+- `0x0805cc10` ascii `UTC+14`
+- `0x0805cc18` ascii `Level 5`
+- `0x0805cc20` ascii `UTC+5`
+- `0x0805cc28` ascii `UTC-5`
+- `0x0805cc30` ascii `Level 6`
+- `0x0805cc38` ascii `UTC+6` pointers `0x08014f40`
+- `0x0805cc40` ascii `UTC-6`
+- `0x0805cc48` ascii `Level 7`
+- `0x0805cc50` ascii `UTC+7`
+- `0x0805cc58` ascii `UTC-7`
+- `0x0805cc60` ascii `Level 8` pointers `0x08011234`
+- `0x0805cc68` ascii `UTC+8`
+- `0x0805cc70` ascii `UTC-8`
+- `0x0805cc78` ascii `Level 9`
+- `0x0805cc80` ascii `UTC+9`
+- `0x0805cc88` ascii `UTC-9`
+- `0x0805cc90` ascii `CH/VFO A`
+- `0x0805cc9c` ascii `NOAA`
+- `0x0805cca4` ascii `IOTA`
+- `0x0805ccac` ascii `CH/VFO B`
+- `0x0805ccc0` ascii `CH/VFO C`
+- `0x0805ccd0` ascii `PTTC`
+- `0x0805ccd8` ascii `VOLTAGE`
+- `0x0805cce0` ascii `NAME`
+- `0x0805cce8` ascii `NONE`
+- `0x0805ccf0` ascii `PICTURE`
+- `0x0805cd00` ascii `SQUELCH`
+- `0x0805cd08` ascii `SEARCH`
+- `0x0805cd10` ascii `GPS SWITCH`
+- `0x0805cd1c` ascii `APRS SWITCH`
+- `0x0805cd2c` ascii `BOTH`
+- `0x0805cd34` ascii `BLUETOOTH`
+- `0x0805cd40` ascii `Yagi@QTH`
+- `0x0805cd4c` ascii `DT+ANI`
+- `0x0805cd54` ascii `MONI`
+- `0x0805cd5c` ascii `1.0K`
+- `0x0805cd64` ascii `3.0K`
+- `0x0805cd6c` ascii `4.0K`
+- `0x0805cd74` ascii `1000K`
+- `0x0805cd7c` ascii `100K`
+- `0x0805cd84` ascii `500K`
+- `0x0805cd94` ascii `1.2K`
+- `0x0805cd9c` ascii `2.2K`
+- `0x0805cda4` ascii `0.5K`
+- `0x0805cdb0` ascii `MAIL`
+- `0x0805cdc8` ascii `SPECTRUM`
+- `0x0805cdd4` ascii `SCAN`
+- `0x0805cddc` ascii `RX MODULATION`
+- `0x0805cdf4` ascii `RADIO`
+- `0x0805cdfc` ascii `BEEP`
+- `0x0805ce04` ascii `FREQ STEP`
+- `0x0805ce10` ascii `TCP/IP`
+- `0x0805ce18` ascii `DECODER`
+- `0x0805ce20` ascii `ENCODER`
+- `0x0805ce28` ascii `TRANSFER`
+- `0x0805ce34` ascii `ROGER`
+- `0x0805ce3c` ascii `TX POWER`
+- `0x0805ce48` ascii `FREQ DIR`
+- `0x0805ce80` ascii `CTCSS DCS`
+- `0x0805ce90` ascii `MacAPRS`
+- `0x0805ce98` ascii `WinAPRS`
+- `0x0805cea0` ascii `APRS`
+- `0x0805ceac` ascii `ZONE SELECT` pointers `0x08025e30`
+- `0x0805ceb8` ascii `STANDBY SET`
+- `0x0805cec4` ascii `FREQ OFFSET`
+- `0x0805ced8` ascii `SCAN QT`
+- `0x0805cee0` ascii `ANI-ST`
+- `0x0805cee8` ascii `DT-ST`
+- `0x0805cef0` ascii `TEMPORARY SCAN LIST`
+- `0x0805cf08` ascii `SSTV`
+- `0x0805cf1c` ascii `TONE TX`
+- `0x0805cf24` ascii `Beacon TX`
+- `0x0805cf30` ascii `EMERGENCY`
+- `0x0805cf3c` ascii `FREQUENCY`
+- `0x0805cf48` ascii `CH-MEMORY`
+- `0x0805cfac` ascii `[/D]`
+- `0x0805cfb4` ascii `[/I]`
+- `0x0805cfbc` ascii `[/J]`
+- `0x0805cfc4` ascii `[/Q]`
+- `0x0805cfcc` ascii `[/q]`
+- `0x0805cfd4` ascii `[/z]`
+- `0x0805cff4` ascii `Dish Antenna`
+- `0x0805d004` ascii `30sec`
+- `0x0805d00c` ascii `15sec`
+- `0x0805d014` ascii `Railroad`
+- `0x0805d024` ascii `USER User-defined`
+- `0x0805d038` ascii `Committed`
+- `0x0805d044` ascii `LW Band`
+- `0x0805d04c` ascii `MW Band`
+- `0x0805d054` ascii `SW Band`
+- `0x0805d05c` ascii `Degrees And Minute And Second`
+- `0x0805d07c` ascii `Send Sound`
+- `0x0805d088` ascii `Campground`
+- `0x0805d094` ascii `Police`
+- `0x0805d09c` ascii `Ambulance`
+- `0x0805d0a8` ascii `Wide`
+- `0x0805d0b0` ascii `Send Code`
+- `0x0805d0bc` ascii `Zone Mode`
+- `0x0805d0c8` ascii `Node`
+- `0x0805d0d0` ascii `[/R] Vehicle`
+- `0x0805d0e0` ascii `Farm Vehicle`
+- `0x0805d0f0` ascii `REC.Vehicle`
+- `0x0805d0fc` ascii `[/b] Bicycle`
+- `0x0805d10c` ascii `Motorcycle`
+- `0x0805d118` ascii `Middle`
+- `0x0805d120` ascii `Triangle`
+- `0x0805d12c` ascii `Sea Mile`
+- `0x0805d138` ascii `Snowmobile`
+- `0x0805d144` ascii `[/[] People`
+- `0x0805d150` ascii `Space Shuttle`
+- `0x0805d160` ascii `Time`
+- `0x0805d168` ascii `None`
+- `0x0805d170` ascii `Phone`
+- `0x0805d178` ascii `Canoe`
+- `0x0805d180` ascii `Grid Square`
+- `0x0805d18c` ascii `Fire`
+- `0x0805d194` ascii `HC Future`
+- `0x0805d1a0` ascii `Horse`
+- `0x0805d1a8` ascii `Delete`
+- `0x0805d1b0` ascii `NWS Site`
+- `0x0805d1bc` ascii `On Site`
+- `0x0805d1c4` ascii `Mobile Satellite`
+- `0x0805d1d8` ascii `Degrees And Minute`
+- `0x0805d1ec` ascii `Enroute`
+- `0x0805d1f4` ascii `Returning`
+- `0x0805d200` ascii `Km/h`
+- `0x0805d208` ascii `Search`
+- `0x0805d210` ascii `High`
+- `0x0805d218` ascii `English`
+- `0x0805d220` ascii `Both`
+- `0x0805d228` ascii `Digi`
+- `0x0805d230` ascii `Fire Truck`
+- `0x0805d23c` ascii `Truck`
+- `0x0805d244` ascii `Special`
+- `0x0805d24c` ascii `Normal`
+- `0x0805d254` ascii `Hospital`
+- `0x0805d260` ascii `Full Channel`
+- `0x0805d270` ascii `Hotel`
+- `0x0805d278` ascii `Call`
+- `0x0805d280` ascii `Eyeball`
+- `0x0805d288` ascii `School`
+- `0x0805d298` ascii `10min`
+- `0x0805d2a0` ascii `20min`
+- `0x0805d2a8` ascii `30min`
+- `0x0805d2b0` ascii `60min`
+- `0x0805d2b8` ascii `1min`
+- `0x0805d2c0` ascii `2min`
+- `0x0805d2c8` ascii `3min`
+- `0x0805d2d0` ascii `15min`
+- `0x0805d2d8` ascii `5min`
+- `0x0805d2e0` ascii `Timing Beacon`
+- `0x0805d2f0` ascii `Manual Beacon`
+- `0x0805d300` ascii `Smart Beacon`
+- `0x0805d310` ascii `NTS Station`
+- `0x0805d31c` ascii `WX Station`
+- `0x0805d328` ascii `Aid Station`
+- `0x0805d334` ascii `Water Station`
+- `0x0805d344` ascii `GPS Position`
+- `0x0805d354` ascii `Fixed Position`
+- `0x0805d364` ascii `Balloon`
+- `0x0805d36c` ascii `Deep`
+- `0x0805d374` ascii `Jeep`
+- `0x0805d37c` ascii `Ship`
+- `0x0805d384` ascii `Truck Stop`
+- `0x0805d390` ascii `Laptop`
+- `0x0805d398` ascii `[/>] Car`
+- `0x0805d3a4` ascii `Glider`
+- `0x0805d3ac` ascii `Carrier`
+- `0x0805d3b4` ascii `Super`
+- `0x0805d3bc` ascii `PC user`
+- `0x0805d3c4` ascii `Repeater`
+- `0x0805d3d0` ascii `Meter`
+- `0x0805d3d8` ascii `Helicopter`
+- `0x0805d3e4` ascii `DX Cluster`
+- `0x0805d3f0` ascii `Rover`
+- `0x0805d3f8` ascii `File Server`
+- `0x0805d404` ascii `Wheelchair`
+- `0x0805d410` ascii `Degrees`
+- `0x0805d418` ascii `1000ms`
+- `0x0805d420` ascii `100ms`
+- `0x0805d428` ascii `200ms`
+- `0x0805d430` ascii `300ms`
+- `0x0805d438` ascii `400ms`
+- `0x0805d440` ascii `500ms`
+- `0x0805d448` ascii `150ms`
+- `0x0805d450` ascii `250ms`
+- `0x0805d458` ascii `750ms`
+- `0x0805d460` ascii `Red Cross`
+- `0x0805d46c` ascii `Boy Scouts`
+- `0x0805d47c` ascii `Plus`
+- `0x0805d484` ascii `Minus`
+- `0x0805d48c` ascii `S-Aricraft`
+- `0x0805d498` ascii `Aircraft`
+- `0x0805d4a4` ascii `Yacht`
+- `0x0805d4ac` ascii `Red Dot`
+- `0x0805d4b4` ascii `Foot`
+- `0x0805d4bc` ascii `Fire dept`
+- `0x0805d4c8` ascii `Command Post`
+- `0x0805d4dc` ascii `Narrow`
+- `0x0805d4ec` ascii `HF Gateway`
+- `0x0805d4f8` ascii `Priority`
+- `0x0805d504` ascii `Off duty`
+- `0x0805d510` ascii `100Hz`
+- `0x0805d518` ascii `500Hz`
+- `0x0805d520` ascii `10Hz`
+- `0x0805d528` ascii `50Hz`
+- `0x0805d530` ascii `100.0 KHz`
+- `0x0805d53c` ascii `10.0 KHz`
+- `0x0805d548` ascii `20.0 KHz`
+- `0x0805d554` ascii `50.0 KHz`
+- `0x0805d560` ascii `25.0 KHz`
+- `0x0805d56c` ascii `5.0 KHz`
+- `0x0805d574` ascii `8.33 KHz`
+- `0x0805d580` ascii `12.5 KHz`
+- `0x0805d58c` ascii `2.5 KHz`
+- `0x0805d594` ascii `6.25 KHz`
+- `0x0805d5a0` ascii `1KHz`
+- `0x0805d5a8` ascii `18-64MHz`
+- `0x0805d5b4` ascii `64-999MHz`
+- `0x0805d5c0` ascii ` 1000hz`
+- `0x0805d5c8` ascii ` 2100hz`
+- `0x0805d5d0` ascii ` 1450hz`
+- `0x0805d5d8` ascii ` 1750hz`
+- `0x0805d5e0` gbk `信道存储`
+- `0x0805d5ec` gbk `两者都发`
+- `0x0805d5f8` gbk `天气预报`
+- `0x0805d604` gbk `载波`
+- `0x0805d60c` gbk `预设图片`
+- `0x0805d618` gbk `现场报警`
+- `0x0805d624` gbk `通话`
+- `0x0805d62c` gbk `英里/小时`
+- `0x0805d638` gbk `海里/小时`
+- `0x0805d644` gbk `公里/小时`
+- `0x0805d650` gbk `[/R] 休闲车`
+- `0x0805d65c` gbk `[/b] 自行车`
+- `0x0805d668` gbk `[/>] 汽车`
+- `0x0805d674` gbk `扫频`
+- `0x0805d67c` gbk `蓝牙写频`
+- `0x0805d688` gbk `调频`
+- `0x0805d690` gbk `1级`
+- `0x0805d694` gbk `2级`
+- `0x0805d698` gbk `3级`
+- `0x0805d69c` gbk `4级`
+- `0x0805d6a0` gbk `5级`
+- `0x0805d6a4` gbk `6级`
+- `0x0805d6a8` gbk `7级`
+- `0x0805d6ac` gbk `8级`
+- `0x0805d6b0` gbk `9级`
+- `0x0805d6b4` gbk `静噪等级`
+- `0x0805d6c0` gbk `电池电压`
+- `0x0805d6cc` gbk `全信道模式`
+- `0x0805d6d8` gbk `区域模式`
+- `0x0805d6e4` gbk `调制方式`
+- `0x0805d6f0` gbk `全部`
+- `0x0805d6f8` gbk `扫描临时设置`
+- `0x0805d708` gbk `守候设置`
+- `0x0805d714` gbk `亚音设置`
+- `0x0805d720` gbk `中文`
+- `0x0805d728` gbk `信道号`
+- `0x0805d730` gbk `信道名称`
+- `0x0805d73c` gbk `低功率`
+- `0x0805d744` gbk `中功率`
+- `0x0805d74c` gbk `高功率`
+- `0x0805d754` gbk `发射功率`
+- `0x0805d760` gbk `信道频率`
+- `0x0805d76c` gbk `频差频率`
+- `0x0805d778` gbk `步进频率`
+- `0x0805d784` gbk `[/[] 行人`
+- `0x0805d790` gbk `添加`
+- `0x0805d798` gbk `关闭`
+- `0x0805d7a0` gbk `度分`
+- `0x0805d7ac` gbk `频谱`
+- `0x0805d7b4` gbk `GPS 开关`
+- `0x0805d7c0` gbk `APRS 开关`
+- `0x0805d7cc` gbk `中转开关`
+- `0x0805d7d8` gbk `声控`
+- `0x0805d7e4` gbk `英尺`
+- `0x0805d7ec` gbk `信标发射`
+- `0x0805d7f8` gbk `USER 用户自定义`
+- `0x0805d808` gbk `无定义`
+- `0x0805d810` gbk `低增益`
+- `0x0805d818` gbk `中增益`
+- `0x0805d820` gbk `高增益`
+- `0x0805d828` gbk `普通省电`
+- `0x0805d834` gbk `超级省电`
+- `0x0805d840` gbk `深度省电`
+- `0x0805d84c` gbk `手动信标`
+- `0x0805d858` gbk `定时信标`
+- `0x0805d864` gbk `智能信标`
+- `0x0805d870` gbk `GPS坐标`
+- `0x0805d878` gbk `固定坐标`
+- `0x0805d884` gbk `松开发码`
+- `0x0805d890` gbk `按下发码`
+- `0x0805d89c` gbk `发送报警码`
+- `0x0805d8a8` gbk `按键+身份码`
+- `0x0805d8b4` gbk `身份码`
+- `0x0805d8bc` gbk `编码`
+- `0x0805d8c4` gbk `解码`
+- `0x0805d8cc` gbk `度分秒`
+- `0x0805d8d4` gbk `英里`
+- `0x0805d8dc` gbk `海里`
+- `0x0805d8e4` gbk `公里`
+- `0x0805d8ec` gbk `区域选择`
+- `0x0805d8f8` gbk `反向`
+- `0x0805d900` gbk `频差方向`
+- `0x0805d90c` gbk `正向`
+- `0x0805d914` gbk `开启`
+- `0x0805d91c` gbk `发送单音`
+- `0x0805d928` gbk `发送报警音`
+- `0x0805d934` gbk `远程亚音`
+- `0x0805d940` gbk `按键侧音`
+- `0x0805d94c` gbk `通话结束音`
+- `0x0805d958` gbk `搜索`
+- `0x0805d960` gbk `窄带`
+- `0x0805d968` gbk `宽带`
+- `0x0805d970` gbk `调幅`
+- `0x0805d978` gbk `删除`
+- `0x0805d980` gbk `监听`
+- `0x0805d988` ascii ` 1K `
+- `0x0805d990` ascii ` 5K `
+- `0x0805d998` ascii ` 9K `
+- `0x0805d9a0` ascii ` 1M `
+- `0x0805d9c0` ascii ` 10K`
+- `0x0805d9c8` ascii `Devices Empty!`
+- `0x0805d9d8` gbk `没有设备!`
+- `0x0805d9e4` ascii `Ver1.00`
+- `0x0805d9ec` ascii `Ver0.29`
+- `0x0805d9f4` ascii `Hardware:`
+- `0x0805da00` ascii `Software:`
+- `0x0805da0c` ascii `CallSign:`
+- `0x0805da18` gbk `硬件版本:`
+- `0x0805da24` gbk `软件版本:`
+- `0x0805da30` gbk `呼号:`
+- `0x0805da75` gbk `@AAAAA@@@@@@@@@@@@@@@@@@          悙悙悙垐垐垐@`
+
