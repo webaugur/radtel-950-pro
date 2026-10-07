@@ -52,6 +52,7 @@ SECTIONS
   {
     . = ALIGN(4);
     KEEP(*(.rt950_oem)) /* OEM ports; main does not reference them */
+    KEEP(*(.rt950_oem*))
     *(.text)           /* .text sections (code) */
     *(.text*)          /* .text* sections (code) */
     *(.glue_7)         /* glue arm to thumb code */

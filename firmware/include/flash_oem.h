@@ -82,3 +82,21 @@ void rt950_flash_unlock(void);
  * SPIM `ctrl3` is left alone.
  */
 void rt950_flash_lock(void);
+
+/**
+ * @brief Read the model word at `0x080F0000`.
+ *
+ * OEM `FUN_08009214` at `0x08009214`. Returns 1 for `0x424A3930`
+ * (`09JB`), 2 for `0x55563835` (`58VU`), and 0 for any other word.
+ */
+int rt950_model_id(void);
+
+/**
+ * @brief Program the model word when it is still neither stamp.
+ *
+ * OEM `FUN_0800808c` at `0x0800808C`, without the tail call. A non-zero
+ * @p selector stores `58VU`. Zero stores `09JB`. The image then tail-calls
+ * `FUN_0800d174`, which draws a hardware name. That draw is not ported,
+ * and this function does not call it. Do not call this from `main`.
+ */
+void rt950_flash_stamp_model(int selector);

@@ -98,3 +98,92 @@ RT950_OEM void rt950_crm_bringup(void)
 	rt950_crm_use_hext_pll();
 	SCB->VTOR = 0x08000000u;
 }
+
+/* Bytes at 0x0802C92E. AHB uses [0..7] as a shift. APB uses [0..3]. ADC divides by [8..15]. */
+static const uint8_t rt950_div_bytes[16] = {
+	0xf2u, 0x75u, 0x0cu, 0xc0u, 0xc1u, 0x2au, 0x16u, 0x25u,
+	0xb5u, 0x62u, 0xf7u, 0xf2u, 0x01u, 0xd2u, 0x16u, 0xb0u
+};
+
+/* Thumb LSR by a register uses the low 8 bits. A shift of 32 or more yields 0. */
+static uint32_t lsr_reg(uint32_t value, uint32_t shift)
+{
+	shift &= 0xffu;
+	if (shift >= 32u) {
+		return 0u;
+	}
+	return value >> shift;
+}
+
+/* Cortex-M4 UDIV of a zero divisor returns 0. */
+static uint32_t udiv_reg(uint32_t numer, uint32_t denom)
+{
+	if (denom == 0u) {
+		return 0u;
+	}
+	return numer / denom;
+}
+
+RT950_OEM void rt950_crm_clocks_get(rt950_crm_clocks *clocks)
+{
+	const uint32_t cfg = CRM->cfg;
+	const uint32_t source = cfg & 0xcu;
+	uint32_t sclk;
+	uint32_t ahb_shift = 0u;
+	uint32_t apb1_shift = 0u;
+	uint32_t apb2_shift = 0u;
+	uint32_t adc_index;
+
+	if (source == 0u) {
+		if ((CRM->misc1 & (1u << 25)) != 0u && (CRM->misc3 & (1u << 9)) != 0u) {
+			sclk = 0x02DC6C00u; /* 48 MHz */
+		} else {
+			sclk = 0x007A1200u; /* 8 MHz */
+		}
+	} else if (source == 8u) {
+		const uint32_t fields = cfg & 0x603C0000u;
+		uint32_t factor = ((fields >> 18) & 0xfu) | (fields >> 25);
+		uint32_t extra = 1u;
+
+		if ((fields & 0x60000000u) == 0u && ((fields >> 18) & 0xfu) != 0xfu) {
+			extra = 2u;
+		}
+		factor += extra;
+		if ((cfg & 0x00010000u) == 0u) {
+			sclk = 0x003D0900u * factor; /* 4 MHz */
+		} else if ((cfg & (1u << 17)) != 0u) {
+			const uint32_t div = ((CRM->misc3 & 0x3000u) >> 12) + 2u;
+
+			sclk = factor * udiv_reg(0x007A1200u, div);
+		} else {
+			sclk = 0x007A1200u * factor;
+		}
+		if ((cfg & 0x80000000u) == 0u && sclk > 0x044AA200u) {
+			sclk = 0x044AA200u; /* 72 MHz */
+		}
+	} else {
+		sclk = 0x007A1200u;
+	}
+
+	if ((cfg & (1u << 7)) != 0u) {
+		ahb_shift = rt950_div_bytes[(cfg >> 4) & 7u];
+	}
+	clocks->sclk_hz = sclk;
+	clocks->ahb_hz = lsr_reg(sclk, ahb_shift);
+
+	if ((cfg & (1u << 10)) != 0u) {
+		apb1_shift = rt950_div_bytes[(cfg >> 8) & 3u];
+	}
+	clocks->apb1_hz = lsr_reg(clocks->ahb_hz, apb1_shift);
+
+	if ((cfg & (1u << 13)) != 0u) {
+		apb2_shift = rt950_div_bytes[(cfg >> 11) & 3u];
+	}
+	clocks->apb2_hz = lsr_reg(clocks->ahb_hz, apb2_shift);
+
+	adc_index = (cfg >> 14) & 3u;
+	if ((cfg & (1u << 28)) != 0u) {
+		adc_index |= 4u;
+	}
+	clocks->adc_hz = udiv_reg(clocks->apb2_hz, rt950_div_bytes[8u + adc_index]);
+}

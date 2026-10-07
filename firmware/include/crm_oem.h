@@ -35,8 +35,8 @@ void rt950_crm_apb2_reset(uint32_t mask, int enable);
 /**
  * @brief `CRM->misc3.auto_step_en`.
  *
- * OEM `FUN_0801a7a0` at `0x0801A7A0`. The value 1 writes `0x3`
- * (`CRM_AUTO_STEP_MODE_ENABLE`). Every other value clears bits 5:4.
+ * OEM `FUN_0801a7a0` at `0x0801A7A0`. The value 1 sets bits 5:4 (`0x30`).
+ * Every other value clears those bits.
  */
 void rt950_crm_auto_step(int enable);
 
@@ -64,3 +64,20 @@ void rt950_crm_use_hext_pll(void);
  * `rt950_crm_use_hext_pll`, and stores `0x08000000` in `SCB->VTOR`.
  */
 void rt950_crm_bringup(void);
+
+/**
+ * @brief Clock frequencies in the order `FUN_0801a680` writes them.
+ *
+ * OEM `FUN_0801a680` at `0x0801A680`. This is not `crm_clocks_freq_type`:
+ * that struct stores APB2 before APB1. The divider bytes are the 16 bytes
+ * at `0x0802C92E`, not the SDK divider table.
+ */
+typedef struct {
+	uint32_t sclk_hz;
+	uint32_t ahb_hz;
+	uint32_t apb1_hz;
+	uint32_t apb2_hz;
+	uint32_t adc_hz;
+} rt950_crm_clocks;
+
+void rt950_crm_clocks_get(rt950_crm_clocks *clocks);

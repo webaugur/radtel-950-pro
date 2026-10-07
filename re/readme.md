@@ -10,7 +10,7 @@ The short-term goal here is to document the hardware and OEM firmware behaviour.
 |------|----------|
 | `re/firmware/` | Decrypted images, radare2 notes, flash scripts, BTF packages, and EnUPDATE. Details are in [`re/firmware/README.md`](firmware/README.md). |
 | `re/cps/` | OEM CPS IL, installers, resources, USB captures, and the Python codeplug shell. |
-| `re/docs/` | Pinout, display, SPI flash, audio, function names, and status notes. |
+| `re/docs/` | Pinout, display, SPI flash, audio, function names, status notes, and [`fhss.md`](docs/fhss.md) (V0.29 FHSS code path). |
 | `re/datasheets/` | AT32F403A datasheet and reference manual, BK4829, the CH340 cable datasheet, the Si4732-A10 short sheet, and AN332. |
 | `re/sdk/` | Artery BSP (`artery_cortex-m4/`) and the reference project (`reference-project/`). |
 

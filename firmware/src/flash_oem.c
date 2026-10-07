@@ -118,3 +118,30 @@ RT950_OEM void rt950_flash_lock(void)
 	FLASH->ctrl |= 0x80u;
 	FLASH->ctrl2 |= 0x80u;
 }
+
+RT950_OEM int rt950_model_id(void)
+{
+	const uint32_t word = *(volatile uint32_t *)0x080F0000u;
+
+	if (word == 0x424A3930u) {
+		return 1;
+	}
+	if (word == 0x55563835u) {
+		return 2;
+	}
+	return 0;
+}
+
+RT950_OEM void rt950_flash_stamp_model(int selector)
+{
+	if (rt950_model_id() != 0) {
+		return;
+	}
+	rt950_flash_unlock();
+	if (selector != 0) {
+		(void)rt950_flash_word_program(0x080F0000u, 0x55563835u);
+	} else {
+		(void)rt950_flash_word_program(0x080F0000u, 0x424A3930u);
+	}
+	rt950_flash_lock();
+}

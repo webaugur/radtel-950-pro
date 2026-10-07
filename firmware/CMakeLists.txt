@@ -18,6 +18,8 @@ add_executable(rt950-firmware
 	src/crc16.c
 	src/flash_oem.c
 	src/crm_oem.c
+	src/oem_vectors.c
+	src/oem_reset.s
 	"${SDK}/startup_at32f403a_407.s"
 	"${SDK}/libraries/cmsis/cm4/device_support/system_at32f403a_407.c"
 	"${SDK}/project/src/syscalls.c"
