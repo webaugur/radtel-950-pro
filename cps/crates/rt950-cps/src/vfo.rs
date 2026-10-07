@@ -55,7 +55,7 @@ fn column(ui: &mut egui::Ui, doc: &mut Value, title: &str, key: &str) {
             edit::combo(ui, key, "Bandwidth", vfo, "cbB_BandWide", edit::BANDWIDTH);
             edit::combo(ui, key, "Encrypt", vfo, "cbB_Encrypt", edit::ON_OFF);
             edit::combo(ui, key, "RX mode", vfo, "cbB_RxModulation", edit::MODE);
-            edit::combo(ui, key, "Learn FHSS", vfo, "cbB_LearnFHSS", edit::ON_OFF);
+            edit::combo(ui, key, "Learn CDCSS", vfo, "cbB_LearnCDCSS", edit::ON_OFF);
             edit::combo(ui, key, "Band", vfo, "cbB_FreqBand", edit::FREQ_BAND);
             edit::combo(ui, key, "Step", vfo, "cbB_StepFreq", edit::STEP);
         });

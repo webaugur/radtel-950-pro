@@ -206,10 +206,10 @@ fn editor(ui: &mut egui::Ui, doc: &mut Value, idx: usize, zone: usize, width: f3
         edit::combo(ui, &salt, "Scan", ch, "scanAdd", &[(0, "Skip"), (1, "Add")]);
         edit::combo(ui, &salt, "PTT ID", ch, "pttId", edit::PTT_ID);
         edit::combo(ui, &salt, "Scramble", ch, "scram", edit::ON_OFF);
-        edit::combo(ui, &salt, "Learn FHSS", ch, "learnFHSS", edit::ON_OFF);
+        edit::combo(ui, &salt, "Learn CDCSS", ch, "learnCDCSS", edit::ON_OFF);
         edit::combo(ui, &salt, "Encrypt", ch, "encrypt", edit::ON_OFF);
         edit::combo(ui, &salt, "Busy lock", ch, "busyLockout", edit::ON_OFF);
-        edit::text_at(ui, &salt, "FHSS code", ch, "fhssCode");
+        edit::text_at(ui, &salt, "CDCSS code", ch, "CDCSSCode");
         edit::drag(ui, "Signalling group", ch, "signallingGroup", 0..=255);
     });
 }

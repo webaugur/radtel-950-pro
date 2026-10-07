@@ -145,13 +145,13 @@ fn decode_channel(rec: &[u8]) -> Value {
         "pttId": (rec[0x0D] & 0x0F) % 4,
         "txPower": (rec[0x0E] & 0x0F) % 3,
         "scram": ((rec[0x0E] & 0xF0) >> 4) % 9,
-        "learnFHSS": ((flags & 0x80) >> 7) % 2,
+        "learnCDCSS": ((flags & 0x80) >> 7) % 2,
         "bandWide": ((flags & 0x40) >> 6) % 2,
         "encrypt": ((flags & 0x30) >> 4) % 4,
         "busyLockout": ((flags & 0x08) >> 3) % 2,
         "scanAdd": ((flags & 0x04) >> 2) % 2,
         "rxModulation": (flags & 0x03) % 2,
-        "fhssCode": fhss_text(&rec[0x10..0x14]),
+        "CDCSSCode": CDCSS_text(&rec[0x10..0x14]),
         "chName": gbk_name(&rec[0x14..], NAME_LEN),
     })
 }
@@ -166,13 +166,13 @@ fn blank_channel() -> Value {
         "pttId": 0,
         "txPower": 0,
         "scram": 0,
-        "learnFHSS": 0,
+        "learnCDCSS": 0,
         "bandWide": 0,
         "encrypt": 0,
         "busyLockout": 0,
         "scanAdd": 1,
         "rxModulation": 0,
-        "fhssCode": "",
+        "CDCSSCode": "",
         "chName": "",
     })
 }
@@ -194,13 +194,13 @@ fn encode_channel(channel: &Value) -> Result<[u8; 32], ProtocolError> {
     rec[0x0C] = num(channel, "signallingGroup") as u8;
     rec[0x0D] = num(channel, "pttId") as u8;
     rec[0x0E] = ((num(channel, "scram") as u8) << 4) | (num(channel, "txPower") as u8);
-    rec[0x0F] = ((num(channel, "learnFHSS") as u8) << 7)
+    rec[0x0F] = ((num(channel, "learnCDCSS") as u8) << 7)
         | ((num(channel, "bandWide") as u8) << 6)
         | ((num(channel, "encrypt") as u8) << 4)
         | ((num(channel, "busyLockout") as u8) << 3)
         | ((num(channel, "scanAdd") as u8) << 2)
         | (num(channel, "rxModulation") as u8);
-    encode_fhss(&mut rec[0x10..0x14], &text(channel, "fhssCode"))?;
+    encode_CDCSS(&mut rec[0x10..0x14], &text(channel, "CDCSSCode"))?;
     put_gbk(&mut rec[0x14..], &text(channel, "chName"), NAME_LEN)?;
     Ok(rec)
 }
@@ -287,7 +287,7 @@ fn qt_bytes(text: &str) -> Result<[u8; 2], ProtocolError> {
     Ok([(value & 0xFF) as u8, ((value >> 8) & 0xFF) as u8])
 }
 
-fn fhss_text(bytes: &[u8]) -> String {
+fn CDCSS_text(bytes: &[u8]) -> String {
     if bytes[3] != 0xA0 {
         return String::new();
     }
@@ -306,14 +306,14 @@ fn fhss_text(bytes: &[u8]) -> String {
         .collect()
 }
 
-fn encode_fhss(slot: &mut [u8], text: &str) -> Result<(), ProtocolError> {
+fn encode_CDCSS(slot: &mut [u8], text: &str) -> Result<(), ProtocolError> {
     slot.fill(0xFF);
     if text.is_empty() {
         return Ok(());
     }
     if text.len() != 6 || !text.chars().all(|c| c.is_ascii_hexdigit()) {
         return Err(ProtocolError::Message(format!(
-            "FHSS code {text:?} is not 6 hex digits"
+            "CDCSS code {text:?} is not 6 hex digits"
         )));
     }
     let nib = |index: usize| -> u8 {
@@ -340,7 +340,7 @@ fn decode_vfo(rec: &[u8]) -> Value {
         "cbB_TxPower": (rec[0x10] & 0x0F) % 3,
         "cbB_Scram": ((rec[0x10] & 0xF0) >> 4) % 9,
         // The OEM getter masks bit 7 and then takes it modulo 1, so the field is always 0.
-        "cbB_LearnFHSS": 0,
+        "cbB_LearnCDCSS": 0,
         "cbB_BandWide": ((other & 0x40) >> 6) % 2,
         "cbB_Encrypt": ((other & 0x30) >> 4) % 4,
         "cbB_RxModulation": (other & 0x03) % 2,
@@ -366,7 +366,7 @@ fn encode_vfo(vfo: &Value) -> Result<[u8; 32], ProtocolError> {
     rec[0x0D] = num(vfo, "cbB_BusyLockout") as u8;
     rec[0x0E] = ((num(vfo, "cbB_OffsetDir") as u8) << 4) | (num(vfo, "cbB_SignallingGroup") as u8);
     rec[0x10] = ((num(vfo, "cbB_Scram") as u8) << 4) | (num(vfo, "cbB_TxPower") as u8);
-    rec[0x11] = ((num(vfo, "cbB_LearnFHSS") as u8) << 7)
+    rec[0x11] = ((num(vfo, "cbB_LearnCDCSS") as u8) << 7)
         | ((num(vfo, "cbB_BandWide") as u8) << 6)
         | ((num(vfo, "cbB_Encrypt") as u8) << 4)
         | (num(vfo, "cbB_RxModulation") as u8);
